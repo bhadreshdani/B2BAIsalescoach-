@@ -1,38 +1,6 @@
-import { Pinecone } from '@pinecone-database/pinecone';
+import { createServerClient } from './supabase';
 
-const pinecone = new Pinecone({
-  apiKey: process.env.PINECONE_API_KEY!,
-});
-
-const INDEX_NAME = process.env.PINECONE_INDEX || 'sales-coach-knowledge';
-
-// Simple but effective text-to-vector using hash-based approach
-// This works on ALL Pinecone plans without needing inference API
-function textToVector(text: string, dimensions: number = 1024): number[] {
-  const vector = new Array(dimensions).fill(0);
-  const words = text.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/);
-  
-  for (const word of words) {
-    for (let i = 0; i < word.length; i++) {
-      const hash1 = (word.charCodeAt(i) * 31 + (word.charCodeAt(i + 1) || 0) * 17) % dimensions;
-      const hash2 = (word.charCodeAt(i) * 37 + i * 13 + word.length * 7) % dimensions;
-      vector[hash1] += 1.0 / words.length;
-      vector[hash2] += 0.5 / words.length;
-    }
-  }
-  
-  // Normalize
-  const magnitude = Math.sqrt(vector.reduce((sum, val) => sum + val * val, 0));
-  if (magnitude > 0) {
-    for (let i = 0; i < vector.length; i++) {
-      vector[i] /= magnitude;
-    }
-  }
-  
-  return vector;
-}
-
-// Search the knowledge base for relevant chunks
+// Search the knowledge base using Supabase text search
 export async function searchKnowledge(params: {
   query: string;
   challenge?: string;
@@ -40,32 +8,62 @@ export async function searchKnowledge(params: {
   topK?: number;
 }): Promise<{ content: string; source: string; score: number }[]> {
   try {
-    const index = pinecone.index(INDEX_NAME);
-    const queryVector = textToVector(params.query);
-
-    const filter: Record<string, any> = {};
-    if (params.challenge) filter.challenge_tag = params.challenge;
-    if (params.situation) filter.situation_tag = params.situation;
-
-    const results = await index.query({
-      vector: queryVector,
-      topK: params.topK || 5,
-      includeMetadata: true,
-      filter: Object.keys(filter).length > 0 ? filter : undefined,
+    const supabase = createServerClient();
+    
+    // Build search query - split into keywords
+    const keywords = params.query
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, '')
+      .split(/\s+/)
+      .filter(w => w.length > 2)
+      .slice(0, 8);
+    
+    // Search using ilike for each keyword
+    let query = supabase
+      .from('knowledge_chunks')
+      .select('content, source, challenge_tag, situation_tag')
+      .limit(params.topK || 5);
+    
+    // Filter by challenge if specified
+    if (params.challenge) {
+      query = query.eq('challenge_tag', params.challenge);
+    }
+    
+    // Text search - find chunks containing any of the keywords
+    if (keywords.length > 0) {
+      const orConditions = keywords.map(k => `content.ilike.%${k}%`).join(',');
+      query = query.or(orConditions);
+    }
+    
+    const { data, error } = await query;
+    
+    if (error) {
+      console.error('Knowledge search error:', error);
+      return [];
+    }
+    
+    // Score results by keyword match count
+    const scored = (data || []).map(chunk => {
+      const lower = chunk.content.toLowerCase();
+      const matchCount = keywords.filter(k => lower.includes(k)).length;
+      return {
+        content: chunk.content,
+        source: chunk.source || 'Unknown',
+        score: matchCount / keywords.length,
+      };
     });
-
-    return (results.matches || []).map((match) => ({
-      content: (match.metadata?.content as string) || '',
-      source: (match.metadata?.source as string) || 'Unknown',
-      score: match.score || 0,
-    }));
+    
+    // Sort by score descending
+    scored.sort((a, b) => b.score - a.score);
+    
+    return scored.slice(0, params.topK || 5);
   } catch (error) {
-    console.error('Pinecone search error:', error);
+    console.error('Search error:', error);
     return [];
   }
 }
 
-// Upload chunks to Pinecone
+// Upload chunks to Supabase (replaces Pinecone upsert)
 export async function upsertChunks(chunks: {
   id: string;
   content: string;
@@ -78,48 +76,42 @@ export async function upsertChunks(chunks: {
     doc_id: string;
   };
 }[]): Promise<void> {
-  const index = pinecone.index(INDEX_NAME);
-
-  // Process in batches of 100
-  const batchSize = 100;
+  const supabase = createServerClient();
+  
+  // Insert in batches of 50
+  const batchSize = 50;
   for (let i = 0; i < chunks.length; i += batchSize) {
     const batch = chunks.slice(i, i + batchSize);
-
-    const vectors = batch.map((chunk) => ({
+    
+    const rows = batch.map(chunk => ({
       id: chunk.id,
-      values: textToVector(chunk.content),
-      metadata: {
-        ...chunk.metadata,
-        content: chunk.content,
-      },
+      doc_id: chunk.metadata.doc_id,
+      content: chunk.content,
+      source: chunk.metadata.source,
+      page_number: chunk.metadata.page || null,
+      challenge_tag: chunk.metadata.challenge_tag || 'general',
+      situation_tag: chunk.metadata.situation_tag || 'general',
+      chunk_type: chunk.metadata.chunk_type || 'framework',
     }));
-
-    await index.upsert(vectors);
+    
+    const { error } = await supabase.from('knowledge_chunks').insert(rows);
+    
+    if (error) {
+      console.error('Chunk insert error:', error);
+      throw error;
+    }
   }
 }
 
 // Delete all chunks for a document
 export async function deleteDocChunks(docId: string): Promise<void> {
-  try {
-    const index = pinecone.index(INDEX_NAME);
-    // List and delete vectors with matching doc_id
-    // Note: deleteMany with metadata filter requires paid plan
-    // Fallback: we track IDs and delete by ID
-    const results = await index.query({
-      vector: new Array(1024).fill(0),
-      topK: 10000,
-      filter: { doc_id: docId },
-      includeMetadata: false,
-    });
+  const supabase = createServerClient();
+  const { error } = await supabase
+    .from('knowledge_chunks')
+    .delete()
+    .eq('doc_id', docId);
     
-    const ids = (results.matches || []).map(m => m.id);
-    if (ids.length > 0) {
-      // Delete in batches of 1000
-      for (let i = 0; i < ids.length; i += 1000) {
-        await index.deleteMany(ids.slice(i, i + 1000));
-      }
-    }
-  } catch (error) {
+  if (error) {
     console.error('Delete chunks error:', error);
   }
 }
