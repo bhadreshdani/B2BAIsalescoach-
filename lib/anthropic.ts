@@ -1,4 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk';
+import { B2B_SALES_BUDDY_SYSTEM_PROMPT } from '@/lib/ai/system-prompt';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY!,
@@ -14,7 +15,7 @@ function getGenerationTone(yearsExp: string): string {
   return 'deferential and strategic — this is a veteran with deep industry knowledge. Focus on structured frameworks and strategic angles, not basics.';
 }
 
-// Build the coaching system prompt
+// Build the coaching system prompt — uses B2BsalesBUDDY master prompt as foundation
 export function buildCoachingPrompt(params: {
   userProfile: {
     name: string;
@@ -43,14 +44,13 @@ export function buildCoachingPrompt(params: {
 }): string {
   const tone = getGenerationTone(params.userProfile.yearsTotal);
 
-  return `You are Bhadresh Dani's AI Sales Coach, built on the "B2B Sales Transformation 2.0" methodology. You are coaching a real B2B sales professional through a specific deal situation.
+  // Layer 1: Master B2BsalesBUDDY identity and coaching rules
+  // Layer 2: Deal-specific context and user profile
+  // Layer 3: Knowledge base content (injected invisibly)
+  return `${B2B_SALES_BUDDY_SYSTEM_PROMPT}
 
-## YOUR COACHING STYLE
-- Tone: ${tone}
-- Always be direct and actionable — no generic advice
-- Every response must be grounded in the user's specific context
-- You diagnose before advising, ask before answering
-- You are warm but firm — empathetic to their struggle, but unflinching about what must change
+## TONE FOR THIS USER
+${tone}
 
 ## USER PROFILE
 - Name: ${params.userProfile.name}
@@ -75,19 +75,19 @@ export function buildCoachingPrompt(params: {
 - What they think is the real issue: ${params.reflection.issue}
 - What they've already tried: ${params.reflection.tried}
 
-## KNOWLEDGE BASE CONTEXT
-The following excerpts are from Bhadresh Dani's methodology. Use these to inform your coaching:
+## RELEVANT COACHING KNOWLEDGE
+Use the following knowledge to inform your coaching — deliver it as YOUR expertise, never reference it as documents:
 
-${params.knowledgeChunks.map((chunk, i) => `[Source ${i + 1}]: ${chunk}`).join('\n\n')}
+${params.knowledgeChunks.map((chunk: string, i: number) => `[Context ${i + 1}]: ${chunk}`).join('\n\n')}
 
 ## YOUR RESPONSE FORMAT
 Respond in valid JSON with exactly this structure:
 {
   "wrong": "What is going wrong in this specific situation. Be specific to their deal, their industry (${params.dealInfo.industry}), and their customer type. 2-3 sentences.",
-  "why": "Why this is happening — the root cause. Reference their specific context. 2-3 sentences.",
+  "why": "Why this is happening — the root cause. Reference their specific context. Trace the root cause UPSTREAM in the 11-Step Staircase. 2-3 sentences.",
   "steps": ["Step 1 — specific action", "Step 2 — specific action", "Step 3 — specific action", "Step 4 — specific action"],
   "script": "The exact words they should say in their next conversation with the customer. This must be a natural, professional script they can use immediately. Include placeholders like [customer name] or [specific number] where appropriate. 3-5 sentences.",
-  "track": "What to track after applying this coaching. Include 3 specific, measurable indicators. 2-3 sentences."
+  "track": "What to track after applying this coaching. Include 3 specific, measurable indicators. Suggest a relevant scoring model (IMPACT Score, Deal Win Probability Score, etc.) if appropriate. 2-3 sentences."
 }
 
 CRITICAL RULES:
@@ -95,6 +95,7 @@ CRITICAL RULES:
 - Scripts must sound natural for B2B conversations in India
 - Steps must be actionable within the next 48 hours
 - Never give generic advice — always tie back to their specific deal context
+- Always trace root causes upstream — if the problem is at Step 9, check Steps 6-7 first
 - Respond ONLY with the JSON object, no other text`;
 }
 
@@ -154,7 +155,7 @@ export async function generateDiagnosis(params: {
         content: `Based on these diagnostic answers for a "${params.challenge}" challenge, provide a diagnosis.
 
 Questions and answers:
-${params.answers.map((a) => `Q: ${a.question}\nA: ${a.answer}`).join('\n\n')}
+${params.answers.map((a: { question: string; answer: string }) => `Q: ${a.question}\nA: ${a.answer}`).join('\n\n')}
 
 User context: Sells ${params.userProfile.productCategory} in ${params.userProfile.industries.join(', ')}. Competes with ${params.userProfile.competitors.join(', ')}.
 
@@ -162,12 +163,17 @@ Respond in JSON:
 {
   "userPerception": "What the user thinks the problem is (2-4 words)",
   "aiDiagnosis": "The actual root cause (2-4 words)",
-  "explanation": "2-3 sentences explaining the gap between perception and reality"
+  "explanation": "2-3 sentences explaining the gap between perception and reality. Trace the root cause to a specific Step in the 11-Step Staircase Model."
 }
 
 Respond ONLY with JSON.`,
       },
     ],
+    system: `${B2B_SALES_BUDDY_SYSTEM_PROMPT}
+
+You are diagnosing a sales challenge. Use the SCORE model internally:
+S (Symptoms) → C (Causes — trace to which Step 1-11) → O (Outcomes) → R (Resources/Framework) → E (Effects).
+Always look for the root cause UPSTREAM in the staircase — problems at later steps are usually caused by mistakes at earlier steps.`,
   });
 
   const text = response.content
