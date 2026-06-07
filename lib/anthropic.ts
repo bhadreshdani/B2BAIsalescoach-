@@ -7,7 +7,7 @@ export async function loadSystemPrompt(): Promise<string> {
   const { data, error } = await supabaseAdmin
     .from('system_prompts').select('name, content').eq('is_active', true).order('sort_order')
   if (error || !data || data.length === 0) return 'You are a B2B sales coach.'
-  return data.map(s => s.content).join('\n\n')
+  return data.map((s: any) => s.content).join('\n\n')
 }
 
 export async function searchKnowledge(query: string, limit: number = 5): Promise<string> {
@@ -16,10 +16,10 @@ export async function searchKnowledge(query: string, limit: number = 5): Promise
   if (keywords.length === 0) return ''
   const { data } = await supabaseAdmin
     .from('knowledge_chunks').select('content, source, step_number, category')
-    .or(keywords.slice(0,3).map(k => `content.ilike.%${k}%`).join(','))
+    .or(keywords.slice(0,3).map((k: any) => `content.ilike.%${k}%`).join(','))
     .limit(limit)
   if (!data || data.length === 0) return ''
-  return data.map(c => c.content).join('\n\n---\n\n')
+  return data.map((c: any) => c.content).join('\n\n---\n\n')
 }
 
 export async function buildUserContext(userId: string): Promise<string> {
@@ -45,7 +45,7 @@ export async function getCoachingResponse(userId: string, userMessage: string, c
   const knowledgeContext = await searchKnowledge(userMessage)
   const userContext = await buildUserContext(userId)
   const fullSystemPrompt = [systemPrompt, userContext ? `\n\nUSER CONTEXT:\n${userContext}` : '', dealContext ? `\n\nDEAL CONTEXT:\n${dealContext}` : '', knowledgeContext ? `\n\nRELEVANT COACHING KNOWLEDGE (use as YOUR expertise):\n${knowledgeContext}` : ''].filter(Boolean).join('\n')
-  const messages = [...conversationHistory, { role: 'user', content: userMessage }].map(m => ({ role: m.role as 'user'|'assistant', content: m.content }))
+  const messages = [...conversationHistory, { role: 'user', content: userMessage }].map((m: any) => ({ role: m.role as 'user'|'assistant', content: m.content }))
   const stream = anthropic.messages.stream({ model: 'claude-sonnet-4-20250514', max_tokens: 2048, system: fullSystemPrompt, messages })
   const encoder = new TextEncoder()
   return new ReadableStream({
@@ -68,6 +68,6 @@ export async function testCoachingWithDebug(userMessage: string) {
     system: systemPrompt + (knowledgeContext ? `\n\nRELEVANT KNOWLEDGE:\n${knowledgeContext}` : ''),
     messages: [{ role: 'user', content: userMessage }],
   })
-  const text = response.content.filter(b => b.type === 'text').map(b => b.text).join('')
+  const text = response.content.filter((b: any) => b.type === 'text').map((b: any) => b.text).join('')
   return { coaching: text, debug: { systemPromptLength: systemPrompt.length, knowledgeChunksFound: knowledgeContext ? knowledgeContext.split('---').length : 0, knowledgePreview: knowledgeContext ? knowledgeContext.substring(0, 500) : 'None found', model: 'claude-sonnet-4-20250514', tokensUsed: response.usage } }
 }

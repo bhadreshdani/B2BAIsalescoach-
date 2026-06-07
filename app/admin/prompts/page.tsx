@@ -48,8 +48,8 @@ export default function SystemPromptManager() {
       <h1 style={{fontSize:24,fontWeight:'bold',marginBottom:4}}>System Prompt Manager</h1>
       <p style={{color:'#888',marginBottom:24}}>Edit coaching behaviour. Changes take effect immediately.</p>
       <div style={{display:'flex',gap:24,marginBottom:24,padding:16,background:'#f9fafb',borderRadius:8}}>
-        <div><div style={{fontSize:12,color:'#666'}}>Active</div><div style={{fontSize:28,fontWeight:'bold',color:'#16a34a'}}>{prompts.filter((p:any)=>p.is_active).length}/{prompts.length}</div></div>
-        <div><div style={{fontSize:12,color:'#666'}}>Tokens</div><div style={{fontSize:28,fontWeight:'bold',color:'#2563eb'}}>{prompts.filter((p:any)=>p.is_active).reduce((s:number,p:any)=>s+Math.ceil((p.content||'').length/4),0)}</div></div>
+        <div><div style={{fontSize:12,color:'#666'}}>Active</div><div style={{fontSize:28,fontWeight:'bold',color:'#16a34a'}}>{prompts.filter((p: any) =>p.is_active).length}/{prompts.length}</div></div>
+        <div><div style={{fontSize:12,color:'#666'}}>Tokens</div><div style={{fontSize:28,fontWeight:'bold',color:'#2563eb'}}>{prompts.filter((p: any) =>p.is_active).reduce((s:number,p:any)=>s+Math.ceil((p.content||'').length/4),0)}</div></div>
       </div>
       {prompts.map((p:any) => (
         <div key={p.id} style={{border:'1px solid #e5e7eb',borderRadius:8,marginBottom:12,background:p.is_active?'#fff':'#f9fafb',opacity:p.is_active?1:0.6}}>
