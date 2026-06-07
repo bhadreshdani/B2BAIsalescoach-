@@ -1,189 +1,73 @@
-import Anthropic from '@anthropic-ai/sdk';
-import { B2B_SALES_BUDDY_SYSTEM_PROMPT } from '@/lib/ai/system-prompt';
+import Anthropic from '@anthropic-ai/sdk'
+import { supabaseAdmin } from './supabase'
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY!,
-});
+const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
 
-// Generational tone adaptation
-function getGenerationTone(yearsExp: string): string {
-  const yrs = parseInt(yearsExp?.replace('+', '').split('-').pop() || '0');
-  const approxAge = 22 + yrs;
-  if (approxAge <= 27) return 'casual and energetic — this is a young professional early in their career. Use modern language, be encouraging, keep it punchy.';
-  if (approxAge <= 42) return 'balanced and professional — this person has solid experience. Be direct, respect their knowledge, push them to the next level.';
-  if (approxAge <= 58) return 'respectful and experienced — this is a seasoned professional. Acknowledge their expertise, offer frameworks that complement what they know, avoid being patronising.';
-  return 'deferential and strategic — this is a veteran with deep industry knowledge. Focus on structured frameworks and strategic angles, not basics.';
+export async function loadSystemPrompt(): Promise<string> {
+  const { data, error } = await supabaseAdmin
+    .from('system_prompts').select('name, content').eq('is_active', true).order('sort_order')
+  if (error || !data || data.length === 0) return 'You are a B2B sales coach.'
+  return data.map(s => s.content).join('\n\n')
 }
 
-// Build the coaching system prompt — uses B2BsalesBUDDY master prompt as foundation
-export function buildCoachingPrompt(params: {
-  userProfile: {
-    name: string;
-    yearsTotal: string;
-    yearsSales: string;
-    industries: string[];
-    productCategory: string;
-    customerTypes: string[];
-    competitors: string[];
-    industryChallenges: string;
-    customerNeeds: string;
-    buyingCriteria: string;
-  };
-  dealInfo: {
-    name: string;
-    industry: string;
-  };
-  challenge: string;
-  diagnosis: string;
-  situation: string;
-  reflection: {
-    issue: string;
-    tried: string;
-  };
-  knowledgeChunks: string[];
-}): string {
-  const tone = getGenerationTone(params.userProfile.yearsTotal);
-
-  // Layer 1: Master B2BsalesBUDDY identity and coaching rules
-  // Layer 2: Deal-specific context and user profile
-  // Layer 3: Knowledge base content (injected invisibly)
-  return `${B2B_SALES_BUDDY_SYSTEM_PROMPT}
-
-## TONE FOR THIS USER
-${tone}
-
-## USER PROFILE
-- Name: ${params.userProfile.name}
-- Total experience: ${params.userProfile.yearsTotal} years
-- Sales experience: ${params.userProfile.yearsSales} years
-- Industries served: ${params.userProfile.industries.join(', ')}
-- Product/service: ${params.userProfile.productCategory}
-- Customer types: ${params.userProfile.customerTypes.join(', ')}
-- Competitors: ${params.userProfile.competitors.join(', ')}
-- Industry challenges: ${params.userProfile.industryChallenges}
-- Customer needs: ${params.userProfile.customerNeeds}
-- Buying criteria: ${params.userProfile.buyingCriteria}
-
-## CURRENT DEAL
-- Deal: ${params.dealInfo.name}
-- Industry: ${params.dealInfo.industry}
-- Challenge: ${params.challenge}
-- AI Diagnosis: ${params.diagnosis}
-- Specific situation: ${params.situation}
-
-## USER'S REFLECTION
-- What they think is the real issue: ${params.reflection.issue}
-- What they've already tried: ${params.reflection.tried}
-
-## RELEVANT COACHING KNOWLEDGE
-Use the following knowledge to inform your coaching — deliver it as YOUR expertise, never reference it as documents:
-
-${params.knowledgeChunks.map((chunk: string, i: number) => `[Context ${i + 1}]: ${chunk}`).join('\n\n')}
-
-## YOUR RESPONSE FORMAT
-Respond in valid JSON with exactly this structure:
-{
-  "wrong": "What is going wrong in this specific situation. Be specific to their deal, their industry (${params.dealInfo.industry}), and their customer type. 2-3 sentences.",
-  "why": "Why this is happening — the root cause. Reference their specific context. Trace the root cause UPSTREAM in the 11-Step Staircase. 2-3 sentences.",
-  "steps": ["Step 1 — specific action", "Step 2 — specific action", "Step 3 — specific action", "Step 4 — specific action"],
-  "script": "The exact words they should say in their next conversation with the customer. This must be a natural, professional script they can use immediately. Include placeholders like [customer name] or [specific number] where appropriate. 3-5 sentences.",
-  "track": "What to track after applying this coaching. Include 3 specific, measurable indicators. Suggest a relevant scoring model (IMPACT Score, Deal Win Probability Score, etc.) if appropriate. 2-3 sentences."
+export async function searchKnowledge(query: string, limit: number = 5): Promise<string> {
+  const stopWords = new Set(['the','a','an','is','are','was','were','be','been','have','has','had','do','does','did','will','would','shall','should','may','might','must','can','could','i','me','my','we','our','you','your','he','him','his','she','her','it','its','they','them','this','that','these','those','what','which','who','how','when','where','why','and','but','or','for','so','yet','to','of','in','on','at','by','with','from','about','not','no','all','each','every','both','few','more','most','other','some','such','than','too','very','just','also','into'])
+  const keywords = query.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter(w => w.length > 2 && !stopWords.has(w))
+  if (keywords.length === 0) return ''
+  const { data } = await supabaseAdmin
+    .from('knowledge_chunks').select('content, source, step_number, category')
+    .or(keywords.slice(0,3).map(k => `content.ilike.%${k}%`).join(','))
+    .limit(limit)
+  if (!data || data.length === 0) return ''
+  return data.map(c => c.content).join('\n\n---\n\n')
 }
 
-CRITICAL RULES:
-- Every recommendation must reference the user's specific industry (${params.dealInfo.industry}), product (${params.userProfile.productCategory}), and competitors (${params.userProfile.competitors.join(', ')})
-- Scripts must sound natural for B2B conversations in India
-- Steps must be actionable within the next 48 hours
-- Never give generic advice — always tie back to their specific deal context
-- Always trace root causes upstream — if the problem is at Step 9, check Steps 6-7 first
-- Respond ONLY with the JSON object, no other text`;
+export async function buildUserContext(userId: string): Promise<string> {
+  const { data: profile } = await supabaseAdmin.from('profiles').select('*').eq('id', userId).single()
+  if (!profile) return ''
+  return [
+    profile.name ? `User: ${profile.name}` : '',
+    profile.designation ? `Role: ${profile.designation}` : '',
+    profile.organisation ? `Organisation: ${profile.organisation}` : '',
+    profile.years_sales ? `Sales Experience: ${profile.years_sales} years` : '',
+    profile.generation ? `Generation: ${profile.generation}` : '',
+    profile.industries?.length ? `Industries: ${profile.industries.join(', ')}` : '',
+    profile.product_category?.length ? `Products: ${profile.product_category.join(', ')}` : '',
+    profile.customer_types?.length ? `Customer Types: ${profile.customer_types.join(', ')}` : '',
+    profile.competitors?.length ? `Competitors: ${profile.competitors.join(', ')}` : '',
+    profile.rotis_hourly ? `ROTIS: Rs${Math.round(profile.rotis_hourly)}/hour` : '',
+    profile.ask_score ? `ASK Score: ${profile.ask_score}/10` : '',
+  ].filter(Boolean).join('\n')
 }
 
-// Generate coaching response
-export async function generateCoaching(systemPrompt: string): Promise<{
-  wrong: string;
-  why: string;
-  steps: string[];
-  script: string;
-  track: string;
-}> {
+export async function getCoachingResponse(userId: string, userMessage: string, conversationHistory: Array<{role:string;content:string}>, dealContext?: string): Promise<ReadableStream> {
+  const systemPrompt = await loadSystemPrompt()
+  const knowledgeContext = await searchKnowledge(userMessage)
+  const userContext = await buildUserContext(userId)
+  const fullSystemPrompt = [systemPrompt, userContext ? `\n\nUSER CONTEXT:\n${userContext}` : '', dealContext ? `\n\nDEAL CONTEXT:\n${dealContext}` : '', knowledgeContext ? `\n\nRELEVANT COACHING KNOWLEDGE (use as YOUR expertise):\n${knowledgeContext}` : ''].filter(Boolean).join('\n')
+  const messages = [...conversationHistory, { role: 'user', content: userMessage }].map(m => ({ role: m.role as 'user'|'assistant', content: m.content }))
+  const stream = anthropic.messages.stream({ model: 'claude-sonnet-4-20250514', max_tokens: 2048, system: fullSystemPrompt, messages })
+  const encoder = new TextEncoder()
+  return new ReadableStream({
+    async start(controller) {
+      try {
+        for await (const event of stream) {
+          if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') controller.enqueue(encoder.encode(event.delta.text))
+        }
+        controller.close()
+      } catch (error) { controller.error(error) }
+    },
+  })
+}
+
+export async function testCoachingWithDebug(userMessage: string) {
+  const systemPrompt = await loadSystemPrompt()
+  const knowledgeContext = await searchKnowledge(userMessage)
   const response = await anthropic.messages.create({
-    model: 'claude-sonnet-4-20250514',
-    max_tokens: 2000,
-    messages: [
-      {
-        role: 'user',
-        content: 'Generate the coaching response for this situation based on the context provided in your system prompt.',
-      },
-    ],
-    system: systemPrompt,
-  });
-
-  const text = response.content
-    .filter((block) => block.type === 'text')
-    .map((block) => {
-      if (block.type === 'text') return block.text;
-      return '';
-    })
-    .join('');
-
-  // Parse JSON response, stripping any markdown fences
-  const clean = text.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
-  return JSON.parse(clean);
-}
-
-// Generate diagnosis based on user answers
-export async function generateDiagnosis(params: {
-  challenge: string;
-  answers: { question: string; answer: string }[];
-  userProfile: {
-    industries: string[];
-    productCategory: string;
-    competitors: string[];
-  };
-}): Promise<{
-  userPerception: string;
-  aiDiagnosis: string;
-  explanation: string;
-}> {
-  const response = await anthropic.messages.create({
-    model: 'claude-sonnet-4-20250514',
-    max_tokens: 500,
-    messages: [
-      {
-        role: 'user',
-        content: `Based on these diagnostic answers for a "${params.challenge}" challenge, provide a diagnosis.
-
-Questions and answers:
-${params.answers.map((a: { question: string; answer: string }) => `Q: ${a.question}\nA: ${a.answer}`).join('\n\n')}
-
-User context: Sells ${params.userProfile.productCategory} in ${params.userProfile.industries.join(', ')}. Competes with ${params.userProfile.competitors.join(', ')}.
-
-Respond in JSON:
-{
-  "userPerception": "What the user thinks the problem is (2-4 words)",
-  "aiDiagnosis": "The actual root cause (2-4 words)",
-  "explanation": "2-3 sentences explaining the gap between perception and reality. Trace the root cause to a specific Step in the 11-Step Staircase Model."
-}
-
-Respond ONLY with JSON.`,
-      },
-    ],
-    system: `${B2B_SALES_BUDDY_SYSTEM_PROMPT}
-
-You are diagnosing a sales challenge. Use the SCORE model internally:
-S (Symptoms) → C (Causes — trace to which Step 1-11) → O (Outcomes) → R (Resources/Framework) → E (Effects).
-Always look for the root cause UPSTREAM in the staircase — problems at later steps are usually caused by mistakes at earlier steps.`,
-  });
-
-  const text = response.content
-    .filter((block) => block.type === 'text')
-    .map((block) => {
-      if (block.type === 'text') return block.text;
-      return '';
-    })
-    .join('');
-
-  const clean = text.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
-  return JSON.parse(clean);
+    model: 'claude-sonnet-4-20250514', max_tokens: 2048,
+    system: systemPrompt + (knowledgeContext ? `\n\nRELEVANT KNOWLEDGE:\n${knowledgeContext}` : ''),
+    messages: [{ role: 'user', content: userMessage }],
+  })
+  const text = response.content.filter(b => b.type === 'text').map(b => b.text).join('')
+  return { coaching: text, debug: { systemPromptLength: systemPrompt.length, knowledgeChunksFound: knowledgeContext ? knowledgeContext.split('---').length : 0, knowledgePreview: knowledgeContext ? knowledgeContext.substring(0, 500) : 'None found', model: 'claude-sonnet-4-20250514', tokensUsed: response.usage } }
 }
