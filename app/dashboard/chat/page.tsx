@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, Suspense } from 'react'
 import { createClient } from '@/lib/supabase'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
@@ -17,7 +17,7 @@ const QUICK_STARTS = [
 
 interface Message { role: 'user' | 'assistant'; content: string }
 
-export default function ChatPage() {
+function ChatInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [user, setUser] = useState<any>(null)
@@ -26,19 +26,21 @@ export default function ChatPage() {
   const [streaming, setStreaming] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
+  const initDone = useRef(false)
 
   useEffect(() => {
     async function init() {
+      if (initDone.current) return
+      initDone.current = true
       const supabase = createClient()
       const { data: { user: u } } = await supabase.auth.getUser()
       if (!u) { router.push('/auth/login'); return }
       setUser(u)
 
-      // Check if a mode-specific prompt should be auto-sent
       const mode = searchParams.get('mode')
-      if (mode === 'velocity') sendMessage('Help me calculate my Sales Velocity Engine — my daily activity targets and ROTIS', u.id)
-      else if (mode === 'ask') sendMessage('I want to assess my sales competency using the ASK framework — Attitude, Skill, Knowledge', u.id)
-      else if (mode === 'balance') sendMessage('I want to assess my work-life balance using the BALANCE Wheel of Life framework', u.id)
+      if (mode === 'velocity') sendMsg('Help me calculate my Sales Velocity Engine — my daily activity targets and ROTIS', u.id)
+      else if (mode === 'ask') sendMsg('I want to assess my sales competency using the ASK framework — Attitude, Skill, Knowledge', u.id)
+      else if (mode === 'balance') sendMsg('I want to assess my work-life balance using the BALANCE Wheel of Life framework', u.id)
     }
     init()
   }, [router, searchParams])
@@ -47,7 +49,7 @@ export default function ChatPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  async function sendMessage(text?: string, userId?: string) {
+  async function sendMsg(text?: string, userId?: string) {
     const msg = text || input.trim()
     const uid = userId || user?.id
     if (!msg || !uid || streaming) return
@@ -69,7 +71,6 @@ export default function ChatPage() {
       })
 
       if (!res.ok) throw new Error('Chat API failed')
-
       const reader = res.body?.getReader()
       if (!reader) throw new Error('No stream')
 
@@ -91,29 +92,22 @@ export default function ChatPage() {
   }
 
   function handleKeyDown(e: React.KeyboardEvent) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      sendMessage()
-    }
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg() }
   }
 
   if (!user) return <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center'}}><p>Loading...</p></div>
 
   return (
     <div style={{height:'100vh',display:'flex',flexDirection:'column',background:'#f5f0e8',fontFamily:'Arial,sans-serif'}}>
-      {/* Header */}
       <header style={{background:'#0D1B2A',color:'#fff',padding:'12px 24px',display:'flex',justifyContent:'space-between',alignItems:'center',flexShrink:0}}>
         <div style={{display:'flex',alignItems:'center',gap:12}}>
           <Link href="/dashboard" style={{color:'#888',fontSize:13,textDecoration:'none'}}>← Home</Link>
           <span style={{color:'#444'}}>|</span>
           <h1 style={{fontSize:16,fontWeight:'bold'}}>💬 Ask B2BsalesBUDDY</h1>
         </div>
-        <button onClick={() => { setMessages([]); setInput('') }} style={{fontSize:12,color:'#888',background:'rgba(255,255,255,0.1)',border:'none',padding:'6px 12px',borderRadius:6,cursor:'pointer'}}>
-          New Chat
-        </button>
+        <button onClick={() => { setMessages([]); setInput('') }} style={{fontSize:12,color:'#888',background:'rgba(255,255,255,0.1)',border:'none',padding:'6px 12px',borderRadius:6,cursor:'pointer'}}>New Chat</button>
       </header>
 
-      {/* Messages */}
       <div style={{flex:1,overflowY:'auto',padding:'24px'}}>
         <div style={{maxWidth:720,margin:'0 auto'}}>
           {messages.length === 0 ? (
@@ -125,10 +119,9 @@ export default function ChatPage() {
               </div>
               <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:10}}>
                 {QUICK_STARTS.map((qs) => (
-                  <button key={qs.label} onClick={() => sendMessage(qs.prompt)}
+                  <button key={qs.label} onClick={() => sendMsg(qs.prompt)}
                     style={{display:'flex',alignItems:'center',gap:10,padding:'12px 16px',background:'#fff',border:'1px solid #e5e7eb',borderRadius:10,textAlign:'left',cursor:'pointer',fontSize:13,color:'#1B2A4A'}}>
-                    <span style={{fontSize:20}}>{qs.icon}</span>
-                    <span>{qs.label}</span>
+                    <span style={{fontSize:20}}>{qs.icon}</span><span>{qs.label}</span>
                   </button>
                 ))}
               </div>
@@ -136,10 +129,10 @@ export default function ChatPage() {
           ) : (
             messages.map((msg, i) => (
               <div key={i} style={{display:'flex',gap:12,marginBottom:20,justifyContent:msg.role==='user'?'flex-end':'flex-start'}}>
-                {msg.role === 'assistant' && <div style={{width:32,height:32,borderRadius:'50%',background:'#0D1B2A',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,fontSize:14,color:'#C8943E',marginTop:4}}>B</div>}
+                {msg.role==='assistant' && <div style={{width:32,height:32,borderRadius:'50%',background:'#0D1B2A',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,fontSize:14,color:'#C8943E',marginTop:4}}>B</div>}
                 <div style={{maxWidth:'80%',padding:'12px 16px',borderRadius:msg.role==='user'?'16px 16px 4px 16px':'4px 16px 16px 16px',background:msg.role==='user'?'#0D1B2A':'#fff',color:msg.role==='user'?'#fff':'#1B2A4A',fontSize:14,lineHeight:1.7,whiteSpace:'pre-wrap',boxShadow:'0 1px 3px rgba(0,0,0,0.06)'}}>
                   {msg.content}
-                  {msg.role === 'assistant' && msg.content && !streaming && i === messages.length - 1 && (
+                  {msg.role==='assistant' && msg.content && !streaming && i===messages.length-1 && (
                     <div style={{display:'flex',gap:8,marginTop:12,paddingTop:8,borderTop:'1px solid #eee'}}>
                       <button onClick={() => navigator.clipboard.writeText(msg.content)} style={{fontSize:11,color:'#888',background:'#f3f4f6',border:'none',padding:'4px 10px',borderRadius:4,cursor:'pointer'}}>📋 Copy</button>
                     </div>
@@ -153,19 +146,25 @@ export default function ChatPage() {
         </div>
       </div>
 
-      {/* Input */}
       <div style={{borderTop:'1px solid #ddd',background:'#fff',padding:'16px 24px',flexShrink:0}}>
         <div style={{maxWidth:720,margin:'0 auto',display:'flex',gap:12,alignItems:'flex-end'}}>
           <textarea ref={inputRef} value={input} onChange={e => setInput(e.target.value)} onKeyDown={handleKeyDown}
-            placeholder="Type your sales question..."
-            rows={1}
+            placeholder="Type your sales question..." rows={1}
             style={{flex:1,padding:'12px 16px',border:'1px solid #ddd',borderRadius:12,fontSize:14,resize:'none',outline:'none',fontFamily:'Arial,sans-serif',maxHeight:120}} />
-          <button onClick={() => sendMessage()} disabled={!input.trim() || streaming}
+          <button onClick={() => sendMsg()} disabled={!input.trim() || streaming}
             style={{padding:'12px 20px',background:!input.trim()||streaming?'#ccc':'#C8943E',color:'#fff',border:'none',borderRadius:12,fontSize:14,fontWeight:600,cursor:!input.trim()||streaming?'default':'pointer',flexShrink:0}}>
             Send
           </button>
         </div>
       </div>
     </div>
+  )
+}
+
+export default function ChatPage() {
+  return (
+    <Suspense fallback={<div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center'}}><p>Loading...</p></div>}>
+      <ChatInner />
+    </Suspense>
   )
 }
