@@ -50,7 +50,7 @@ export default function SignupPage() {
 
     // Update user profile with experience data
     if (data.user) {
-      await supabase.from('users').update({
+      await supabase.from('profiles').update({
         name: form.name,
         years_total: form.yearsTotal,
         years_sales: form.yearsSales,
@@ -58,7 +58,7 @@ export default function SignupPage() {
     }
 
     setLoading(false);
-    router.push('/deals?onboard=true');
+    router.push('/onboarding');
   };
 
   const inputClass = (field: string) =>

@@ -1,0 +1,145 @@
+'use client'
+import { useState, useEffect } from 'react'
+import { createClient } from '@/lib/supabase'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+
+const DAILY_TIPS = [
+  "Every 5% discount impacts EBIT by ~8%. Trade — never give.",
+  "80% of deals close after the 6th follow-up. Most salespeople stop at 2.",
+  "The best time to ask for a referral is within 48 hours of delivering value.",
+  "Your ROTIS tells you if a meeting is worth your time. Calculate it daily.",
+  "Price objections at Step 9 usually started at Step 6. Trace upstream.",
+  "The buyer's brain decides emotionally (System 1) then justifies logically (System 2).",
+  "A1 customers deserve 40% of your time. C/D customers deserve 5%.",
+  "Every follow-up should ADD VALUE. 'Just checking in' destroys credibility.",
+]
+
+export default function DashboardPage() {
+  const router = useRouter()
+  const [profile, setProfile] = useState<any>(null)
+  const [deals, setDeals] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [tip] = useState(DAILY_TIPS[Math.floor(Math.random() * DAILY_TIPS.length)])
+
+  useEffect(() => {
+    async function loadData() {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) { router.push('/auth/login'); return }
+
+      const { data: p } = await supabase.from('profiles').select('*').eq('id', user.id).single()
+      if (p && !p.onboarding_completed) { router.push('/onboarding'); return }
+      setProfile(p)
+
+      const { data: d } = await supabase.from('deals').select('*').eq('user_id', user.id).eq('status', 'active').order('updated_at', { ascending: false }).limit(5)
+      setDeals(d || [])
+      setLoading(false)
+    }
+    loadData()
+  }, [router])
+
+  async function handleLogout() {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    router.push('/auth/login')
+  }
+
+  if (loading) return <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center'}}><p>Loading...</p></div>
+
+  const greeting = new Date().getHours() < 12 ? 'Good Morning' : new Date().getHours() < 17 ? 'Good Afternoon' : 'Good Evening'
+  const firstName = profile?.name?.split(' ')[0] || 'there'
+
+  return (
+    <div style={{minHeight:'100vh',background:'#f5f0e8',fontFamily:'Arial,sans-serif'}}>
+      {/* Header */}
+      <header style={{background:'#0D1B2A',color:'#fff',padding:'16px 24px'}}>
+        <div style={{maxWidth:960,margin:'0 auto',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+          <div>
+            <h1 style={{fontSize:18,fontWeight:'bold'}}>B2BsalesBUDDY</h1>
+            <p style={{fontSize:11,color:'#C8943E'}}>Your AI Sales Coach</p>
+          </div>
+          <div style={{textAlign:'right'}}>
+            <p style={{fontSize:14}}>{greeting}, {firstName}!</p>
+            {profile?.rotis_hourly ? (
+              <p style={{fontSize:12,color:'#C8943E'}}>ROTIS™: ₹{Math.round(profile.rotis_hourly).toLocaleString()}/hr</p>
+            ) : (
+              <Link href="/dashboard/chat" style={{fontSize:11,color:'#888',textDecoration:'underline'}}>Calculate your ROTIS™ →</Link>
+            )}
+          </div>
+        </div>
+      </header>
+
+      <div style={{maxWidth:960,margin:'0 auto',padding:24}}>
+        {/* Tier 1 — 4 Primary Mode Cards */}
+        <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:16,marginBottom:24}}>
+          {[
+            { icon: '💬', title: 'Ask\nBUDDY', desc: 'Ask anything about sales', href: '/dashboard/chat', color: '#2563eb' },
+            { icon: '🎯', title: 'Coach\na Deal', desc: 'Structured deal coaching', href: '/dashboard/chat?mode=deal', color: '#16a34a' },
+            { icon: '📊', title: 'Score\nSomething', desc: '7 scoring models', href: '/dashboard/chat?mode=score', color: '#9333ea' },
+            { icon: '📚', title: 'Learn\n11 Steps', desc: 'Framework library', href: '/dashboard/chat?mode=learn', color: '#dc2626' },
+          ].map((mode) => (
+            <Link key={mode.title} href={mode.href} style={{background:'#fff',borderRadius:12,padding:20,textAlign:'center',textDecoration:'none',color:'#1B2A4A',boxShadow:'0 2px 8px rgba(0,0,0,0.06)',border:'2px solid transparent',cursor:'pointer',transition:'border 0.2s'}}>
+              <div style={{fontSize:32,marginBottom:8}}>{mode.icon}</div>
+              <div style={{fontSize:14,fontWeight:700,whiteSpace:'pre-line',lineHeight:1.3}}>{mode.title}</div>
+              <p style={{fontSize:11,color:'#888',marginTop:6}}>{mode.desc}</p>
+            </Link>
+          ))}
+        </div>
+
+        {/* Tier 2 — Growth Tools */}
+        <div style={{marginBottom:24}}>
+          <h3 style={{fontSize:13,fontWeight:600,color:'#888',marginBottom:12,textTransform:'uppercase',letterSpacing:1}}>Growth & Performance Tools</h3>
+          <div style={{display:'flex',flexDirection:'column',gap:8}}>
+            {[
+              { icon: '🚀', title: 'My Sales Velocity Engine', desc: 'Calculate daily activity targets & ROTIS™', href: '/dashboard/chat?mode=velocity' },
+              { icon: '🔥', title: 'My Competency Assessment (ASK™)', desc: 'Assess Attitude, Skill, Knowledge gaps', href: '/dashboard/chat?mode=ask' },
+              { icon: '⚖️', title: 'My Work-Life Balance', desc: 'Wheel of Life assessment & action plan', href: '/dashboard/chat?mode=balance' },
+            ].map((tool) => (
+              <Link key={tool.title} href={tool.href} style={{display:'flex',alignItems:'center',gap:16,background:'#fff',borderRadius:10,padding:'14px 20px',textDecoration:'none',color:'#1B2A4A',boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}>
+                <span style={{fontSize:24}}>{tool.icon}</span>
+                <div><div style={{fontSize:14,fontWeight:600}}>{tool.title}</div><p style={{fontSize:12,color:'#888',marginTop:2}}>{tool.desc}</p></div>
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        {/* Active Deals */}
+        {deals.length > 0 && (
+          <div style={{marginBottom:24}}>
+            <h3 style={{fontSize:13,fontWeight:600,color:'#888',marginBottom:12,textTransform:'uppercase',letterSpacing:1}}>My Active Deals</h3>
+            <div style={{display:'flex',gap:12,overflowX:'auto'}}>
+              {deals.map((deal: any) => (
+                <div key={deal.id} style={{minWidth:160,background:'#fff',borderRadius:10,padding:16,boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}>
+                  <div style={{fontSize:14,fontWeight:600,marginBottom:4}}>{deal.name}</div>
+                  {deal.company && <div style={{fontSize:11,color:'#888'}}>{deal.company}</div>}
+                  <div style={{marginTop:8,display:'flex',gap:8}}>
+                    {deal.impact_score && <span style={{fontSize:11,background:'#dbeafe',color:'#2563eb',padding:'2px 8px',borderRadius:12}}>IMPACT: {deal.impact_score}</span>}
+                    {deal.stage && <span style={{fontSize:11,background:'#f3f4f6',color:'#666',padding:'2px 8px',borderRadius:12}}>Step {deal.stage}</span>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Daily Tip */}
+        <div style={{background:'#0D1B2A',borderRadius:10,padding:'16px 20px',color:'#fff'}}>
+          <div style={{display:'flex',gap:12,alignItems:'flex-start'}}>
+            <span style={{fontSize:20}}>💡</span>
+            <div>
+              <p style={{fontSize:12,color:'#C8943E',fontWeight:600,marginBottom:4}}>TODAY'S TIP</p>
+              <p style={{fontSize:14,lineHeight:1.5}}>{tip}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer Actions */}
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginTop:24,paddingTop:16,borderTop:'1px solid #ddd'}}>
+          <Link href="/admin/prompts" style={{fontSize:12,color:'#888'}}>Admin Panel</Link>
+          <button onClick={handleLogout} style={{fontSize:12,color:'#888',background:'none',border:'none',cursor:'pointer'}}>Log Out</button>
+        </div>
+      </div>
+    </div>
+  )
+}

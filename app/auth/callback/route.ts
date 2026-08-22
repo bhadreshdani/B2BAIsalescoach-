@@ -14,7 +14,7 @@ export async function GET(request: Request) {
       { cookies: { getAll: () => cookieStore.getAll(), setAll: (c: any[]) => { c.forEach(({ name, value, options }) => cookieStore.set(name, value, options)) } } }
     )
     const { error } = await supabase.auth.exchangeCodeForSession(code)
-    if (!error) return NextResponse.redirect(`${origin}/admin/prompts`)
+    if (!error) return NextResponse.redirect(`${origin}/dashboard`)
   }
   return NextResponse.redirect(`${origin}/auth/login?error=auth`)
 }
