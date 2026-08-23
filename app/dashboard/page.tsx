@@ -111,7 +111,7 @@ export default function DashboardPage() {
             { icon: '💬', title: 'Ask\nBUDDY', desc: 'Ask anything about sales', href: '/dashboard/chat', color: '#2563eb' },
             { icon: '🎯', title: 'Coach\na Deal', desc: 'Structured deal coaching', href: '/dashboard/deals', color: '#16a34a' },
             { icon: '📊', title: 'Score\nSomething', desc: '7 scoring models', href: '/dashboard/scorecard', color: '#9333ea' },
-            { icon: '📚', title: 'Learn\n11 Steps', desc: 'Framework library', href: '/dashboard/chat?mode=learn', color: '#dc2626' },
+            { icon: '📚', title: 'Learn\n11 Steps', desc: 'Framework library', href: '/dashboard/learn', color: '#dc2626' },
           ].map((mode) => (
             <Link key={mode.title} href={mode.href} style={{background:'#fff',borderRadius:12,padding:20,textAlign:'center',textDecoration:'none',color:'#1B2A4A',boxShadow:'0 2px 8px rgba(0,0,0,0.06)',border:'2px solid transparent',cursor:'pointer',transition:'border 0.2s'}}>
               <div style={{fontSize:32,marginBottom:8}}>{mode.icon}</div>
