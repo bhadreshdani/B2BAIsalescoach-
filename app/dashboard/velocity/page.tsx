@@ -87,8 +87,6 @@ export default function VelocityPage() {
     const oto = parseFloat(offerToOrder) || 30
     const conv = (eto / 100) * (oto / 100) * 100
     const vpe = parseFloat(visitsPerEnquiry) || 3
-    const eto = parseFloat(enquiryToOffer) || 50
-    const oto = parseFloat(offerToOrder) || 30
     const hpv = parseFloat(hrsPerVisit) || 2
     const avlHrs = parseFloat(availableHrs) || 8
     const impPct = parseFloat(improvePct) || 5
