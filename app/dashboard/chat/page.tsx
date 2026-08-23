@@ -13,6 +13,8 @@ const QUICK_STARTS = [
   { icon: '📈', label: 'Assess Relationship', prompt: 'Help me assess my customer relationship using the RAPPORT Score' },
   { icon: '🏆', label: 'Deal Win Probability', prompt: 'Help me assess my chances of winning a deal using the Deal Win Probability Score' },
   { icon: '📅', label: 'Plan My Week', prompt: 'Help me plan my sales visits for this week using the Sales Velocity Engine' },
+  { icon: '🔄', label: 'Help Retain Customer', prompt: 'I need help retaining an existing customer who might be at risk of leaving. Guide me using the EVOLVE framework.' },
+  { icon: '💎', label: 'Build Value Proposition', prompt: 'Help me build a strong value proposition for my customer using the VALUE framework with CPV Elevation and TVO calculation.' },
 ]
 
 interface Message { role: 'user' | 'assistant'; content: string }
@@ -134,7 +136,7 @@ function ChatInner() {
                   {msg.content}
                   {msg.role==='assistant' && msg.content && !streaming && i===messages.length-1 && (
                     <div style={{display:'flex',gap:8,marginTop:12,paddingTop:8,borderTop:'1px solid #eee'}}>
-                      <button onClick={() => navigator.clipboard.writeText(msg.content)} style={{fontSize:11,color:'#888',background:'#f3f4f6',border:'none',padding:'4px 10px',borderRadius:4,cursor:'pointer'}}>📋 Copy</button>
+                      <button onClick={() => { try { navigator.clipboard.writeText(msg.content) } catch(e) { const ta = document.createElement('textarea'); ta.value = msg.content; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta) } alert('Copied!') }} style={{fontSize:11,color:'#888',background:'#f3f4f6',border:'none',padding:'4px 10px',borderRadius:4,cursor:'pointer'}}>📋 Copy</button>
                     </div>
                   )}
                 </div>

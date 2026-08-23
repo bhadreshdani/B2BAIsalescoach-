@@ -105,23 +105,32 @@ export default function DashboardPage() {
         </div>
 
         {/* Active Deals */}
-        {deals.length > 0 && (
-          <div style={{marginBottom:24}}>
-            <h3 style={{fontSize:13,fontWeight:600,color:'#888',marginBottom:12,textTransform:'uppercase',letterSpacing:1}}>My Active Deals</h3>
+        <div style={{marginBottom:24}}>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12}}>
+            <h3 style={{fontSize:13,fontWeight:600,color:'#888',textTransform:'uppercase',letterSpacing:1}}>My Active Deals</h3>
+            <Link href="/dashboard/chat?mode=deal" style={{fontSize:12,color:'#C8943E',textDecoration:'none',fontWeight:600}}>+ New Deal</Link>
+          </div>
+          {deals.length > 0 ? (
             <div style={{display:'flex',gap:12,overflowX:'auto'}}>
               {deals.map((deal: any) => (
-                <div key={deal.id} style={{minWidth:160,background:'#fff',borderRadius:10,padding:16,boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}>
+                <div key={deal.id} style={{minWidth:180,background:'#fff',borderRadius:10,padding:16,boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}>
                   <div style={{fontSize:14,fontWeight:600,marginBottom:4}}>{deal.name}</div>
                   {deal.company && <div style={{fontSize:11,color:'#888'}}>{deal.company}</div>}
-                  <div style={{marginTop:8,display:'flex',gap:8}}>
+                  <div style={{marginTop:8,display:'flex',flexWrap:'wrap',gap:6}}>
                     {deal.impact_score && <span style={{fontSize:11,background:'#dbeafe',color:'#2563eb',padding:'2px 8px',borderRadius:12}}>IMPACT: {deal.impact_score}</span>}
+                    {deal.dealwin_score && <span style={{fontSize:11,background:'#fef3c7',color:'#92400e',padding:'2px 8px',borderRadius:12}}>Win: {deal.dealwin_score}%</span>}
                     {deal.stage && <span style={{fontSize:11,background:'#f3f4f6',color:'#666',padding:'2px 8px',borderRadius:12}}>Step {deal.stage}</span>}
                   </div>
                 </div>
               ))}
             </div>
-          </div>
-        )}
+          ) : (
+            <div style={{background:'#fff',borderRadius:10,padding:24,textAlign:'center',boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}>
+              <p style={{fontSize:14,color:'#888',marginBottom:12}}>No active deals yet</p>
+              <Link href="/dashboard/chat?mode=deal" style={{fontSize:13,color:'#fff',background:'#C8943E',padding:'8px 20px',borderRadius:8,textDecoration:'none',fontWeight:600}}>Start Coaching a Deal →</Link>
+            </div>
+          )}
+        </div>
 
         {/* Daily Tip */}
         <div style={{background:'#0D1B2A',borderRadius:10,padding:'16px 20px',color:'#fff'}}>
