@@ -101,7 +101,7 @@ export default function DashboardPage() {
               <p style={{fontSize:14,fontWeight:600,color:'#92400e'}}>⚡ Calculate your ROTIS™</p>
               <p style={{fontSize:12,color:'#a16207'}}>This 10-minute exercise tells you exactly how many visits per day you need to hit your target.</p>
             </div>
-            <Link href="/dashboard/chat?mode=velocity" style={{padding:'8px 16px',background:'#C8943E',color:'#fff',borderRadius:8,fontSize:13,fontWeight:600,textDecoration:'none',whiteSpace:'nowrap'}}>Start Now →</Link>
+            <Link href="/dashboard/velocity" style={{padding:'8px 16px',background:'#C8943E',color:'#fff',borderRadius:8,fontSize:13,fontWeight:600,textDecoration:'none',whiteSpace:'nowrap'}}>Start Now →</Link>
           </div>
         )}
 
@@ -126,9 +126,9 @@ export default function DashboardPage() {
           <h3 style={{fontSize:13,fontWeight:600,color:'#888',marginBottom:12,textTransform:'uppercase',letterSpacing:1}}>Growth & Performance Tools</h3>
           <div style={{display:'flex',flexDirection:'column',gap:8}}>
             {[
-              { icon: '🚀', title: 'My Sales Velocity Engine', desc: 'Calculate daily activity targets & ROTIS™', href: '/dashboard/chat?mode=velocity' },
-              { icon: '🔥', title: 'My Competency Assessment (ASK™)', desc: 'Assess Attitude, Skill, Knowledge gaps', href: '/dashboard/chat?mode=ask' },
-              { icon: '⚖️', title: 'My Work-Life Balance', desc: 'Wheel of Life assessment & action plan', href: '/dashboard/chat?mode=balance' },
+              { icon: '🚀', title: 'My Sales Velocity Engine', desc: 'Calculate daily activity targets & ROTIS™', href: '/dashboard/velocity' },
+              { icon: '🔥', title: 'My Competency Assessment (ASK™)', desc: 'Assess Attitude, Skill, Knowledge gaps', href: '/dashboard/assessment' },
+              { icon: '⚖️', title: 'My Work-Life Balance', desc: 'Wheel of Life assessment & action plan', href: '/dashboard/balance' },
             ].map((tool) => (
               <Link key={tool.title} href={tool.href} style={{display:'flex',alignItems:'center',gap:16,background:'#fff',borderRadius:10,padding:'14px 20px',textDecoration:'none',color:'#1B2A4A',boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}>
                 <span style={{fontSize:24}}>{tool.icon}</span>
