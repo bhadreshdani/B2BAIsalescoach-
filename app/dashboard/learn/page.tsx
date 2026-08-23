@@ -71,7 +71,7 @@ export default function LearnPage() {
     const next = new Set(completed)
     if (next.has(stepN)) next.delete(stepN); else next.add(stepN)
     setCompleted(next)
-    localStorage.setItem('learnCompleted', JSON.stringify([...next]))
+    localStorage.setItem('learnCompleted', JSON.stringify(Array.from(next)))
   }
 
   const step = STEPS.find(s => s.n === selectedStep)
