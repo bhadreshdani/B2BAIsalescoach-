@@ -24,6 +24,7 @@ function ChatInner() {
   const searchParams = useSearchParams()
   const [user, setUser] = useState<any>(null)
   const [messages, setMessages] = useState<Message[]>([])
+  const [dealLabel, setDealLabel] = useState<string>('')
   const [input, setInput] = useState('')
   const [streaming, setStreaming] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -40,7 +41,13 @@ function ChatInner() {
       setUser(u)
 
       const mode = searchParams.get('mode')
-      if (mode === 'velocity') sendMsg('Help me calculate my Sales Velocity Engine — my daily activity targets and ROTIS', u.id)
+      const prompt = searchParams.get('prompt')
+      const dealName = searchParams.get('dealName')
+
+      if (dealName) setDealLabel(dealName)
+
+      if (prompt) sendMsg(decodeURIComponent(prompt), u.id)
+      else if (mode === 'velocity') sendMsg('Help me calculate my Sales Velocity Engine — my daily activity targets and ROTIS', u.id)
       else if (mode === 'ask') sendMsg('I want to assess my sales competency using the ASK framework — Attitude, Skill, Knowledge', u.id)
       else if (mode === 'balance') sendMsg('I want to assess my work-life balance using the BALANCE Wheel of Life framework', u.id)
     }
@@ -105,7 +112,7 @@ function ChatInner() {
         <div style={{display:'flex',alignItems:'center',gap:12}}>
           <Link href="/dashboard" style={{color:'#888',fontSize:13,textDecoration:'none'}}>← Home</Link>
           <span style={{color:'#444'}}>|</span>
-          <h1 style={{fontSize:16,fontWeight:'bold'}}>💬 Ask B2BsalesBUDDY</h1>
+          <h1 style={{fontSize:16,fontWeight:'bold'}}>{dealLabel ? `🎯 Coaching: ${dealLabel}` : '💬 Ask B2BsalesBUDDY'}</h1>
         </div>
         <button onClick={() => { setMessages([]); setInput('') }} style={{fontSize:12,color:'#888',background:'rgba(255,255,255,0.1)',border:'none',padding:'6px 12px',borderRadius:6,cursor:'pointer'}}>New Chat</button>
       </header>
