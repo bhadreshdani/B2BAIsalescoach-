@@ -35,11 +35,11 @@ const MODELS: Record<string, { name:string; step:string; factors: {id:string;lab
   discover: { name:'DISCOVER Score™', step:'Step 6', factors:[
     {id:'DD',label:'Disarm — Create Comfort',weight:15,desc:'Did you create a safe environment for the buyer to share openly? Score 1-3 = formal/stiff, 7-8 = comfortable conversation, 9-10 = buyer opened up freely.'},
     {id:'DI',label:'Investigate — Deep Questions',weight:20,desc:'Did you ask layered questions that uncovered root needs, not just surface wants? Score 1-3 = surface questions only, 7-8 = good depth, 9-10 = uncovered hidden needs.'},
-    {id:'DS',label:'Surface — Hidden Needs',weight:15,desc:'Did you uncover needs the buyer didn't initially mention? Score 1-3 = only discussed stated needs, 7-8 = found 1-2 hidden needs, 9-10 = completely mapped all needs.'},
+    {id:'DS',label:'Surface — Hidden Needs',weight:15,desc:'Did you uncover needs the buyer did not initially mention? Score 1-3 = only discussed stated needs, 7-8 = found 1-2 hidden needs, 9-10 = completely mapped all needs.'},
     {id:'DC',label:'Cost — Quantify the Problem',weight:15,desc:'Can you put a ₹ value on the buyer's problem? Score 1-3 = no cost quantified, 7-8 = rough estimate, 9-10 = precise cost of problem documented.'},
     {id:'DO',label:'Organise — Map Stakeholders',weight:15,desc:'Have you identified ALL decision-makers and influencers? Score 1-3 = know only 1 contact, 4-6 = know 2-3, 7-8 = mapped full committee, 9-10 = know each person's role and preference.'},
     {id:'DV',label:'Validate — Confirm Understanding',weight:10,desc:'Did you summarise and get buyer's confirmation of needs? Score 1-3 = no validation, 7-8 = verbal confirmation, 9-10 = written/email confirmation.'},
-    {id:'DE',label:'Exit — Clear Next Steps',weight:10,desc:'Did you leave with agreed next steps and timeline? Score 1-3 = vague "we'll be in touch", 7-8 = clear next meeting, 9-10 = documented action plan with dates.'},
+    {id:'DE',label:'Exit — Clear Next Steps',weight:10,desc:'Did you leave with agreed next steps and timeline? Score 1-3 = vague "we will be in touch", 7-8 = clear next meeting, 9-10 = documented action plan with dates.'},
   ], bands:[{min:8,max:10,label:'Excellent Discovery',color:'#16a34a'},{min:6,max:7.9,label:'Good — Some Gaps',color:'#2563eb'},{min:4,max:5.9,label:'Incomplete — Dig Deeper',color:'#f59e0b'},{min:0,max:3.9,label:'Poor — Redo Discovery',color:'#dc2626'}]},
   value: { name:'VALUE Score™', step:'Step 7', factors:[
     {id:'VV',label:'Visualise Outcome',weight:20,desc:'Can the buyer clearly picture life AFTER implementing your solution? Score 1-3 = abstract/vague, 7-8 = clear picture, 9-10 = buyer is excited about the outcome.'},
