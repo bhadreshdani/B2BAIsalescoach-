@@ -32,9 +32,11 @@ export default function VelocityPage() {
 
   // Phase 3: Velocity Engine (11 inputs)
   const [achieved, setAchieved] = useState('')
+  const [billingDone, setBillingDone] = useState('')
+  const [openOrders, setOpenOrders] = useState('')
+  const [retainerBusiness, setRetainerBusiness] = useState('')
   const [pipeline, setPipeline] = useState('')
   const [avgDealSize, setAvgDealSize] = useState('')
-  const [conversionRate, setConversionRate] = useState('')
   const [visitsPerEnquiry, setVisitsPerEnquiry] = useState('')
   const [enquiryToOffer, setEnquiryToOffer] = useState('')
   const [offerToOrder, setOfferToOrder] = useState('')
@@ -75,9 +77,15 @@ export default function VelocityPage() {
   function calcVelocity() {
     const target = parseFloat(annualTarget) || 0
     const ach = parseFloat(achieved) || 0
-    const shortfall = target - ach
+    const billing = parseFloat(billingDone) || 0
+    const openOrd = parseFloat(openOrders) || 0
+    const retainer = parseFloat(retainerBusiness) || 0
+    const secured = billing + openOrd + retainer
+    const shortfall = target - ach - secured
     const avgDeal = parseFloat(avgDealSize) || 1
-    const conv = parseFloat(conversionRate) || 50
+    const eto = parseFloat(enquiryToOffer) || 50
+    const oto = parseFloat(offerToOrder) || 30
+    const conv = (eto / 100) * (oto / 100) * 100
     const vpe = parseFloat(visitsPerEnquiry) || 3
     const eto = parseFloat(enquiryToOffer) || 50
     const oto = parseFloat(offerToOrder) || 30
@@ -111,7 +119,7 @@ export default function VelocityPage() {
     ].sort((a, b) => b.gain - a.gain)
 
     return {
-      shortfall, ordersNeeded: Math.ceil(ordersNeeded), offersNeeded: Math.ceil(offersNeeded),
+      shortfall: Math.max(0, shortfall), secured, ordersNeeded: Math.ceil(Math.max(0, ordersNeeded)), offersNeeded: Math.ceil(offersNeeded),
       enquiriesNeeded: Math.ceil(enquiriesNeeded), visitsNeeded: Math.ceil(visitsNeeded),
       visitsPerDay: visitsPerDay.toFixed(1), hrsNeeded: hrsNeeded.toFixed(1),
       feasible, coverageRatio: coverageRatio.toFixed(1), pctAchieved: pctAchieved.toFixed(0),
@@ -156,7 +164,11 @@ export default function VelocityPage() {
     <div style={{minHeight:'100vh',background:'#f5f0e8',fontFamily:'Arial,sans-serif'}}>
       <header style={{background:'#0D1B2A',color:'#fff',padding:'12px 24px',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
         <div style={{display:'flex',alignItems:'center',gap:12}}>
-          <Link href="/dashboard" style={{color:'#888',fontSize:13,textDecoration:'none'}}>← Home</Link>
+          <button onClick={() => {
+            if (phase > 1 && phase < 5) setPhase(phase - 1)
+            else if (phase === 5) setPhase(3)
+            else window.location.href = '/dashboard'
+          }} style={{color:'#888',fontSize:13,background:'none',border:'none',cursor:'pointer'}}>← Back</button>
           <span style={{color:'#444'}}>|</span>
           <h1 style={{fontSize:16,fontWeight:'bold'}}>🚀 Sales Velocity Engine</h1>
         </div>
@@ -235,21 +247,37 @@ export default function VelocityPage() {
             <h2 style={{fontSize:18,fontWeight:'bold',marginBottom:4}}>Phase 3: Sales Velocity Engine</h2>
             <p style={{fontSize:13,color:'#888',marginBottom:16}}>Enter your current numbers to calculate daily activity targets</p>
             {[
-              {label:'Revenue Achieved So Far (₹)',val:achieved,set:setAchieved,type:'number',hint:'Year-to-date revenue'},
-              {label:'Current Pipeline Value (₹)',val:pipeline,set:setPipeline,type:'number',hint:'Total value of active opportunities'},
-              {label:'Average Deal Size (₹)',val:avgDealSize,set:setAvgDealSize,type:'number',hint:'Typical order value'},
-              {label:'Overall Conversion Rate (%)',val:conversionRate,set:setConversionRate,type:'number',hint:'Enquiry to order: typically 20-40%'},
-              {label:'Visits Needed per Enquiry',val:visitsPerEnquiry,set:setVisitsPerEnquiry,type:'number',hint:'How many visits to generate 1 enquiry?'},
-              {label:'Enquiry to Offer Rate (%)',val:enquiryToOffer,set:setEnquiryToOffer,type:'number',hint:'What % of enquiries become formal offers?'},
-              {label:'Offer to Order Rate (%)',val:offerToOrder,set:setOfferToOrder,type:'number',hint:'What % of offers convert to orders?'},
-              {label:'Average Sales Cycle (weeks)',val:avgCycleWeeks,set:setAvgCycleWeeks,type:'number',hint:'From first contact to order'},
-              {label:'Hours per Customer Visit',val:hrsPerVisit,set:setHrsPerVisit,type:'number',hint:'Including travel + meeting time'},
+              {label:'Revenue Achieved So Far (₹)',val:achieved,set:setAchieved,hint:'Year-to-date order booking'},
+              {label:'Billing Done Till Now (₹)',val:billingDone,set:setBillingDone,hint:'Total billing/invoicing done this year'},
+              {label:'Unexecuted Open Orders (₹)',val:openOrders,set:setOpenOrders,hint:'Open orders that can be billed this financial year'},
+              {label:'Retainer / Repeat Business Expected (₹)',val:retainerBusiness,set:setRetainerBusiness,hint:'Expected from annual rate contracts or repeat customers'},
+              {label:'Current Pipeline Value (₹)',val:pipeline,set:setPipeline,hint:'Total value of active opportunities'},
+              {label:'Average Deal Size (₹)',val:avgDealSize,set:setAvgDealSize,hint:'Typical order value'},
+              {label:'Visits Needed per Enquiry',val:visitsPerEnquiry,set:setVisitsPerEnquiry,hint:'How many visits to generate 1 enquiry?'},
+              {label:'Enquiry to Offer Rate (%)',val:enquiryToOffer,set:setEnquiryToOffer,hint:'What % of enquiries become formal offers?'},
+              {label:'Offer to Order Rate (%)',val:offerToOrder,set:setOfferToOrder,hint:'What % of offers convert to orders?'},
+              {label:'Average Sales Cycle (weeks)',val:avgCycleWeeks,set:setAvgCycleWeeks,hint:'From first contact to order'},
+              {label:'Hours per Customer Visit',val:hrsPerVisit,set:setHrsPerVisit,hint:'Including travel + meeting time'},
             ].map(f => (
               <div key={f.label} style={{marginBottom:14}}>
                 <label style={{fontSize:13,fontWeight:600}}>{f.label}</label>
                 <input type="number" value={f.val} onChange={e=>f.set(e.target.value)} placeholder={f.hint} style={{width:'100%',padding:10,border:'1px solid #ddd',borderRadius:8,fontSize:14,marginTop:4}} />
+                {f.val && parseFloat(f.val) > 0 && f.label.includes('₹') && <p style={{fontSize:11,color:'#C8943E',marginTop:2}}>{parseFloat(f.val)>=10000000?'₹'+(parseFloat(f.val)/10000000).toFixed(1)+' Cr':parseFloat(f.val)>=100000?'₹'+(parseFloat(f.val)/100000).toFixed(1)+' L':'₹'+parseFloat(f.val).toLocaleString()}</p>}
               </div>
             ))}
+            {/* Show calculated deduction summary */}
+            {(billingDone || openOrders || retainerBusiness) && (
+              <div style={{background:'#f0fdf4',borderRadius:8,padding:12,marginBottom:14,border:'1px solid #86efac'}}>
+                <p style={{fontSize:12,fontWeight:600,color:'#16a34a',marginBottom:4}}>Secured Business Summary:</p>
+                <p style={{fontSize:12,color:'#666'}}>
+                  Billing: {formatCurrency(parseFloat(billingDone)||0)} + Open Orders: {formatCurrency(parseFloat(openOrders)||0)} + Retainer: {formatCurrency(parseFloat(retainerBusiness)||0)}
+                  = <strong>{formatCurrency((parseFloat(billingDone)||0)+(parseFloat(openOrders)||0)+(parseFloat(retainerBusiness)||0))}</strong> secured
+                </p>
+                <p style={{fontSize:12,color:'#C8943E',fontWeight:600,marginTop:4}}>
+                  Remaining target for new orders: {formatCurrency(Math.max(0, (parseFloat(annualTarget)||0) - (parseFloat(achieved)||0) - (parseFloat(billingDone)||0) - (parseFloat(openOrders)||0) - (parseFloat(retainerBusiness)||0)))}
+                </p>
+              </div>
+            )}
             <div style={{display:'flex',gap:8}}>
               <button onClick={()=>setPhase(2)} style={{padding:14,background:'#f3f4f6',border:'none',borderRadius:8,fontSize:14,cursor:'pointer'}}>← Back</button>
               <button onClick={handleFinish} disabled={saving} style={{flex:1,padding:14,background:saving?'#d4a855':'#C8943E',color:'#fff',border:'none',borderRadius:8,fontSize:15,fontWeight:700,cursor:saving?'wait':'pointer'}}>{saving?'Calculating...':'Calculate My Velocity →'}</button>
@@ -264,6 +292,7 @@ export default function VelocityPage() {
               <h2 style={{fontSize:20,fontWeight:'bold',marginBottom:4}}>Your Sales Velocity Dashboard</h2>
               <p style={{fontSize:36,fontWeight:'bold',color:'#C8943E'}}>₹{Math.round(results.rotis).toLocaleString()}/hr</p>
               <p style={{fontSize:13,color:'#888'}}>ROTIS™ — Make every hour count</p>
+              {results.secured > 0 && <p style={{fontSize:12,color:'#86efac',marginTop:8}}>Secured: {formatCurrency(results.secured)} | Shortfall: {formatCurrency(results.shortfall)}</p>}
             </div>
 
             <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:12,marginBottom:16}}>

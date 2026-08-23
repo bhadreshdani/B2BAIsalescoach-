@@ -118,7 +118,14 @@ export default function BalancePage() {
     <div style={{minHeight:'100vh',background:'#f5f0e8',fontFamily:'Arial,sans-serif'}}>
       <header style={{background:'#0D1B2A',color:'#fff',padding:'12px 24px',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
         <div style={{display:'flex',alignItems:'center',gap:12}}>
-          <Link href="/dashboard" style={{color:'#888',fontSize:13,textDecoration:'none'}}>← Home</Link>
+          <button onClick={() => {
+            if (phase === 'current' && spokeIdx > 0) setSpokeIdx(spokeIdx - 1)
+            else if (phase === 'current' && spokeIdx === 0) setPhase('intro')
+            else if (phase === 'desired') { setPhase('current'); setSpokeIdx(7) }
+            else if (phase === 'importance') setPhase('desired')
+            else if (phase === 'results') setPhase('importance')
+            else window.location.href = '/dashboard'
+          }} style={{color:'#888',fontSize:13,background:'none',border:'none',cursor:'pointer'}}>← Back</button>
           <span style={{color:'#444'}}>|</span>
           <h1 style={{fontSize:16,fontWeight:'bold'}}>⚖️ Work-Life Balance — Wheel of Life</h1>
         </div>
