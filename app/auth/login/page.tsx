@@ -1,5 +1,4 @@
 'use client';
-
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -21,7 +20,7 @@ export default function LoginPage() {
 
     setLoading(true);
     const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email: form.email,
       password: form.password,
     });
@@ -32,54 +31,62 @@ export default function LoginPage() {
       return;
     }
 
-    router.push('/dashboard');
+    // Check if onboarding is completed
+    if (data.user) {
+      const { data: profile } = await supabase.from('profiles').select('onboarding_completed').eq('id', data.user.id).single();
+      if (profile && !profile.onboarding_completed) {
+        router.push('/onboarding');
+      } else {
+        router.push('/dashboard');
+      }
+    } else {
+      router.push('/dashboard');
+    }
     router.refresh();
   };
 
-  const inputClass = (field: string) =>
-    `w-full px-4 py-3 text-sm border rounded-lg outline-none font-sans transition ${
-      errors[field] ? 'border-red-400' : 'border-gray-300 focus:border-gold'
-    }`;
-
   return (
-    <div className="min-h-screen flex font-sans">
-      <div className="flex-1 bg-charcoal flex flex-col justify-center px-10 py-12">
-        <span className="font-serif text-xl text-cream tracking-wide">BHADRESH DANI</span>
-        <div className="w-8 h-[1.5px] bg-gold my-6" />
-        <p className="font-serif text-[26px] text-cream leading-snug mb-4">
-          Welcome back.
-        </p>
-        <p className="text-sm text-gray-400 leading-relaxed max-w-[300px]">
-          Continue your coaching journey. Your deals and session history are waiting for you.
-        </p>
+    <div style={{minHeight:'100vh',display:'flex',fontFamily:'Arial,sans-serif'}}>
+      <div style={{flex:1,background:'#0D1B2A',display:'flex',flexDirection:'column',justifyContent:'center',padding:'48px 40px',color:'#fff'}}>
+        <h1 style={{fontSize:22,fontWeight:'bold',color:'#C8943E',marginBottom:24}}>B2BsalesBUDDY</h1>
+        <p style={{fontSize:26,lineHeight:1.4,marginBottom:16}}>Welcome back.</p>
+        <p style={{fontSize:14,color:'#999',lineHeight:1.6,maxWidth:320}}>Continue your coaching journey. Your deals and session history are waiting for you.</p>
       </div>
 
-      <div className="flex-1 flex items-center justify-center px-10 py-8 bg-cream">
-        <div className="w-full max-w-[400px]">
-          <h2 className="font-serif text-2xl mb-1">Log in</h2>
-          <p className="text-sm text-gray-500 mb-7">Continue your coaching journey.</p>
+      <div style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center',padding:'40px',background:'#f5f0e8'}}>
+        <div style={{width:'100%',maxWidth:400}}>
+          <h2 style={{fontSize:24,fontWeight:'bold',marginBottom:4}}>Log in</h2>
+          <p style={{fontSize:14,color:'#888',marginBottom:28}}>Continue your coaching journey.</p>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-1.5">Email address</label>
+          <form onSubmit={handleSubmit}>
+            <div style={{marginBottom:16}}>
+              <label style={{display:'block',fontSize:13,fontWeight:600,marginBottom:6}}>Email Address</label>
               <input type="email" placeholder="you@company.com" value={form.email}
-                onChange={e => setForm({ ...form, email: e.target.value })} className={inputClass('email')} />
-              {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
+                onChange={e => setForm({...form, email: e.target.value})}
+                style={{width:'100%',padding:'12px 16px',border:errors.email?'1px solid #ef4444':'1px solid #ddd',borderRadius:8,fontSize:14,outline:'none'}} />
+              {errors.email && <p style={{fontSize:12,color:'#ef4444',marginTop:4}}>{errors.email}</p>}
             </div>
-            <div>
-              <label className="block text-sm font-medium mb-1.5">Password</label>
+
+            <div style={{marginBottom:8}}>
+              <label style={{display:'block',fontSize:13,fontWeight:600,marginBottom:6}}>Password</label>
               <input type="password" placeholder="Your password" value={form.password}
-                onChange={e => setForm({ ...form, password: e.target.value })} className={inputClass('password')} />
-              {errors.password && <p className="text-xs text-red-500 mt-1">{errors.password}</p>}
+                onChange={e => setForm({...form, password: e.target.value})}
+                style={{width:'100%',padding:'12px 16px',border:errors.password?'1px solid #ef4444':'1px solid #ddd',borderRadius:8,fontSize:14,outline:'none'}} />
+              {errors.password && <p style={{fontSize:12,color:'#ef4444',marginTop:4}}>{errors.password}</p>}
             </div>
-            <button type="submit" disabled={loading} className="btn-gold w-full">
-              {loading ? 'Logging in...' : 'Log in'}
+
+            <div style={{textAlign:'right',marginBottom:20}}>
+              <Link href="/auth/forgot-password" style={{fontSize:12,color:'#C8943E',textDecoration:'none'}}>Forgot password?</Link>
+            </div>
+
+            <button type="submit" disabled={loading}
+              style={{width:'100%',padding:'14px',background:loading?'#d4a855':'#C8943E',color:'#fff',border:'none',borderRadius:8,fontSize:15,fontWeight:700,cursor:loading?'default':'pointer'}}>
+              {loading ? 'Logging in...' : 'Log In →'}
             </button>
           </form>
 
-          <p className="text-xs text-gray-500 text-center mt-5">
-            Don't have an account?{' '}
-            <Link href="/auth/signup" className="text-gold font-medium">Sign up free</Link>
+          <p style={{fontSize:13,color:'#888',textAlign:'center',marginTop:20}}>
+            Don't have an account? <Link href="/auth/signup" style={{color:'#C8943E',fontWeight:600,textDecoration:'none'}}>Sign up free</Link>
           </p>
         </div>
       </div>

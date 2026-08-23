@@ -49,6 +49,9 @@ export default function DashboardPage() {
 
   const greeting = new Date().getHours() < 12 ? 'Good Morning' : new Date().getHours() < 17 ? 'Good Afternoon' : 'Good Evening'
   const firstName = profile?.name?.split(' ')[0] || 'there'
+  const lastLogin = profile?.last_login_at ? new Date(profile.last_login_at) : null
+  const daysSinceLogin = lastLogin ? Math.floor((Date.now() - lastLogin.getTime()) / (1000*60*60*24)) : 0
+  const showVelocityNudge = !profile?.velocity_completed
 
   return (
     <div style={{minHeight:'100vh',background:'#f5f0e8',fontFamily:'Arial,sans-serif'}}>
@@ -71,6 +74,30 @@ export default function DashboardPage() {
       </header>
 
       <div style={{maxWidth:960,margin:'0 auto',padding:24}}>
+        {/* Welcome Message */}
+        {daysSinceLogin > 7 ? (
+          <div style={{background:'#fff',borderRadius:10,padding:20,marginBottom:20,border:'1px solid #e5e7eb'}}>
+            <p style={{fontSize:16,fontWeight:600,marginBottom:8}}>Welcome back, {firstName}! 👋 It's been {daysSinceLogin} days.</p>
+            <p style={{fontSize:13,color:'#666'}}>I'd suggest: Update your Sales Velocity Engine → Check your deal pipeline → Re-run Growth Lever Finder</p>
+          </div>
+        ) : (
+          <div style={{background:'#fff',borderRadius:10,padding:16,marginBottom:20,border:'1px solid #e5e7eb'}}>
+            <p style={{fontSize:16,fontWeight:600}}>Welcome back, {firstName}! 👋 Ready to move deals forward?</p>
+            {deals.length > 0 && <p style={{fontSize:13,color:'#666',marginTop:4}}>You have {deals.length} active deal{deals.length>1?'s':''} in your pipeline.</p>}
+          </div>
+        )}
+
+        {/* Velocity Nudge */}
+        {showVelocityNudge && (
+          <div style={{background:'#fef3c7',borderRadius:10,padding:16,marginBottom:20,border:'1px solid #fbbf24',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+            <div>
+              <p style={{fontSize:14,fontWeight:600,color:'#92400e'}}>⚡ Calculate your ROTIS™</p>
+              <p style={{fontSize:12,color:'#a16207'}}>This 10-minute exercise tells you exactly how many visits per day you need to hit your target.</p>
+            </div>
+            <Link href="/dashboard/chat?mode=velocity" style={{padding:'8px 16px',background:'#C8943E',color:'#fff',borderRadius:8,fontSize:13,fontWeight:600,textDecoration:'none',whiteSpace:'nowrap'}}>Start Now →</Link>
+          </div>
+        )}
+
         {/* Tier 1 — 4 Primary Mode Cards */}
         <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:16,marginBottom:24}}>
           {[

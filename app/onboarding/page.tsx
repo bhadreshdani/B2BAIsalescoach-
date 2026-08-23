@@ -16,6 +16,7 @@ interface Question { id: string; text: string; type: 'text'|'select'|'multi'|'co
 const QUESTIONS: Question[] = [
   { id: 'organisation', text: "Which organisation do you work with?", type: 'text' },
   { id: 'designation', text: "What is your designation or area of responsibility?", type: 'select', options: DESIGNATIONS },
+  { id: 'sales_time_percentage', text: "As a business leader, what percentage of your working time do you personally spend on sales-related activities?", type: 'select', options: ['10%','20%','30%','40%','50%','60%','70%','80%','90%','100%'], optional: true },
   { id: 'years_total', text: "How many years of total professional experience do you have?", type: 'select', options: EXP_OPTIONS },
   { id: 'years_sales', text: "How many of those years have been in sales or business development?", type: 'select', options: SALES_EXP },
   { id: 'linkedin_url', text: "Would you like to share your LinkedIn profile URL? (Optional — you can skip)", type: 'text', optional: true },
@@ -53,6 +54,15 @@ export default function OnboardingPage() {
 
   const q = QUESTIONS[step]
 
+  function shouldSkipQuestion(questionId: string): boolean {
+    if (questionId === 'sales_time_percentage') {
+      const designation = answers['designation'] || ''
+      const isOwner = designation.includes('Owner') || designation.includes('CEO') || designation.includes('MD') || designation.includes('Founder')
+      return !isOwner
+    }
+    return false
+  }
+
   function handleNext() {
     if (q.type === 'multi') {
       if (selectedMulti.length === 0 && !q.optional) return
@@ -65,7 +75,11 @@ export default function OnboardingPage() {
       setAnswers({ ...answers, [q.id]: currentInput.trim() })
       setCurrentInput('')
     }
-    if (step < QUESTIONS.length - 1) setStep(step + 1)
+    let nextStep = step + 1
+    while (nextStep < QUESTIONS.length && shouldSkipQuestion(QUESTIONS[nextStep].id)) {
+      nextStep++
+    }
+    if (nextStep < QUESTIONS.length) setStep(nextStep)
     else handleSubmit()
   }
 
@@ -73,9 +87,16 @@ export default function OnboardingPage() {
     setAnswers({ ...answers, [q.id]: q.type === 'multi' ? [] : '' })
     setCurrentInput('')
     setSelectedMulti([])
-    if (step < QUESTIONS.length - 1) setStep(step + 1)
+    let nextStep = step + 1
+    while (nextStep < QUESTIONS.length && shouldSkipQuestion(QUESTIONS[nextStep].id)) {
+      nextStep++
+    }
+    if (nextStep < QUESTIONS.length) setStep(nextStep)
     else handleSubmit()
   }
+
+  const [showSummary, setShowSummary] = useState(false)
+  const [finalData, setFinalData] = useState<Record<string, any>>({})
 
   async function handleSubmit() {
     setSaving(true)
@@ -84,12 +105,19 @@ export default function OnboardingPage() {
     else if (q.type === 'competitors') finalAnswers[q.id] = competitors.filter((c: string) => c.trim())
     else finalAnswers[q.id] = currentInput.trim()
 
+    // Convert sales_time_percentage to number
+    if (finalAnswers.sales_time_percentage) {
+      finalAnswers.sales_time_percentage = parseInt(finalAnswers.sales_time_percentage)
+    }
+
     await fetch('/api/onboarding', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId: user.id, ...finalAnswers }),
     })
-    router.push('/dashboard')
+    setFinalData(finalAnswers)
+    setSaving(false)
+    setShowSummary(true)
   }
 
   function toggleMulti(item: string) {
@@ -97,6 +125,39 @@ export default function OnboardingPage() {
   }
 
   if (!user) return <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center'}}><p>Loading...</p></div>
+
+  // O5/O6: Show profile summary after onboarding
+  if (showSummary) return (
+    <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:'#f5f0e8',fontFamily:'Arial,sans-serif'}}>
+      <div style={{maxWidth:540,padding:40,textAlign:'center'}}>
+        <div style={{fontSize:48,marginBottom:16}}>🎉</div>
+        <h1 style={{fontSize:24,fontWeight:'bold',color:'#1B2A4A',marginBottom:16}}>Excellent, {user.name?.split(' ')[0]}!</h1>
+        <div style={{background:'#fff',borderRadius:12,padding:24,textAlign:'left',marginBottom:24,boxShadow:'0 2px 8px rgba(0,0,0,0.06)'}}>
+          <p style={{fontSize:15,lineHeight:1.8,color:'#444'}}>
+            I now have a clear picture of your world:
+            <br/><br/>
+            You're a <strong>{finalData.designation || 'sales professional'}</strong> at <strong>{finalData.organisation || 'your company'}</strong>, 
+            with <strong>{finalData.years_sales || 'several'} years</strong> in sales.
+            {finalData.industries?.length > 0 && <><br/><br/>Your customers are in <strong>{finalData.industries.slice(0,3).join(', ')}</strong>.</>}
+            {finalData.competitors?.length > 0 && <><br/>You compete against <strong>{finalData.competitors.join(', ')}</strong>.</>}
+            <br/><br/>
+            I'll use all of this to give you coaching that's specific to YOUR reality — not generic advice.
+          </p>
+        </div>
+        <p style={{fontSize:14,color:'#666',marginBottom:24}}>I recommend we start with your <strong>Sales Velocity Engine</strong> — it takes 10 minutes and tells you exactly how many visits per day you need to hit your target.</p>
+        <div style={{display:'flex',gap:12,justifyContent:'center'}}>
+          <button onClick={() => router.push('/dashboard/chat?mode=velocity')}
+            style={{padding:'14px 28px',background:'#C8943E',color:'#fff',border:'none',borderRadius:8,fontSize:15,fontWeight:700,cursor:'pointer'}}>
+            🚀 Start Velocity Engine
+          </button>
+          <button onClick={() => router.push('/dashboard')}
+            style={{padding:'14px 28px',background:'#fff',color:'#1B2A4A',border:'1px solid #ddd',borderRadius:8,fontSize:15,fontWeight:600,cursor:'pointer'}}>
+            Explore Platform
+          </button>
+        </div>
+      </div>
+    </div>
+  )
 
   if (showWelcome) return (
     <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:'linear-gradient(135deg,#0D1B2A 0%,#1B2A4A 100%)',fontFamily:'Arial,sans-serif'}}>
