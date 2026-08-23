@@ -42,11 +42,20 @@ export default function VelocityPage() {
   const [offerToOrder, setOfferToOrder] = useState('')
   const [avgCycleWeeks, setAvgCycleWeeks] = useState('')
   const [hrsPerVisit, setHrsPerVisit] = useState('')
+  const [deliveryWeeks, setDeliveryWeeks] = useState('')
   const [availableHrs, setAvailableHrs] = useState('8')
   const [improvePct, setImprovePct] = useState('5')
 
   // Results
   const [results, setResults] = useState<any>(null)
+
+  // Auto-calculate unexecuted open orders = achieved - billing done
+  useEffect(() => {
+    if (achieved && billingDone) {
+      const derived = Math.max(0, (parseFloat(achieved) || 0) - (parseFloat(billingDone) || 0))
+      setOpenOrders(String(derived))
+    }
+  }, [achieved, billingDone])
 
   useEffect(() => {
     async function init() {
@@ -247,7 +256,7 @@ export default function VelocityPage() {
             {[
               {label:'Revenue Achieved So Far (₹)',val:achieved,set:setAchieved,hint:'Year-to-date order booking'},
               {label:'Billing Done Till Now (₹)',val:billingDone,set:setBillingDone,hint:'Total billing/invoicing done this year'},
-              {label:'Unexecuted Open Orders (₹)',val:openOrders,set:setOpenOrders,hint:'Open orders that can be billed this financial year'},
+              {label:'Unexecuted Open Orders (can be billed in same financial year) (₹)',val:openOrders,set:setOpenOrders,hint:'Auto-calculated from Achieved - Billing. Override if needed.'},
               {label:'Retainer / Repeat Business Expected (₹)',val:retainerBusiness,set:setRetainerBusiness,hint:'Expected from annual rate contracts or repeat customers'},
               {label:'Current Pipeline Value (₹)',val:pipeline,set:setPipeline,hint:'Total value of active opportunities'},
               {label:'Average Deal Size (₹)',val:avgDealSize,set:setAvgDealSize,hint:'Typical order value'},
@@ -255,6 +264,7 @@ export default function VelocityPage() {
               {label:'Enquiry to Offer Rate (%)',val:enquiryToOffer,set:setEnquiryToOffer,hint:'What % of enquiries become formal offers?'},
               {label:'Offer to Order Rate (%)',val:offerToOrder,set:setOfferToOrder,hint:'What % of offers convert to orders?'},
               {label:'Average Sales Cycle (weeks)',val:avgCycleWeeks,set:setAvgCycleWeeks,hint:'From first contact to order'},
+              {label:'Average Delivery/Execution Time (weeks)',val:deliveryWeeks,set:setDeliveryWeeks,hint:'From order to billing — affects what can be billed this year'},
               {label:'Hours per Customer Visit',val:hrsPerVisit,set:setHrsPerVisit,hint:'Including travel + meeting time'},
             ].map(f => (
               <div key={f.label} style={{marginBottom:14}}>
@@ -274,6 +284,15 @@ export default function VelocityPage() {
                 <p style={{fontSize:12,color:'#C8943E',fontWeight:600,marginTop:4}}>
                   Remaining target for new orders: {formatCurrency(Math.max(0, (parseFloat(annualTarget)||0) - (parseFloat(achieved)||0) - (parseFloat(billingDone)||0) - (parseFloat(openOrders)||0) - (parseFloat(retainerBusiness)||0)))}
                 </p>
+                {deliveryWeeks && parseInt(deliveryWeeks) > 0 && (() => {
+                  const weeksLeft = remainingDays / 5
+                  const canBill = parseInt(deliveryWeeks) < weeksLeft
+                  return <p style={{fontSize:11,color:canBill?'#16a34a':'#f97316',marginTop:4}}>
+                    {canBill 
+                      ? '✓ Orders booked now can be billed this financial year ('+parseInt(deliveryWeeks)+' weeks delivery < '+Math.round(weeksLeft)+' weeks remaining)'
+                      : '⚠️ Orders booked now may NOT be billable this year ('+parseInt(deliveryWeeks)+' weeks delivery > '+Math.round(weeksLeft)+' weeks remaining). Focus on closing existing pipeline.'}
+                  </p>
+                })()}
               </div>
             )}
             <div style={{display:'flex',gap:8}}>

@@ -259,6 +259,7 @@ export default function BalancePage() {
 
             <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
               <Link href={`/dashboard/chat?prompt=${encodeURIComponent(`Based on my Wheel of Life assessment, my top 3 priority areas are: ${gapAnalysis().slice(0,3).map(g=>`${g.label} (current: ${g.current}, desired: ${g.desired}, gap: ${g.gap})`).join(', ')}. Help me create a 21-day challenge with daily habits for each priority area.`)}`} style={{padding:'10px 20px',background:'#C8943E',color:'#fff',borderRadius:8,fontSize:13,fontWeight:600,textDecoration:'none'}}>💬 Get 21-Day Challenge</Link>
+              <button onClick={() => setPhase('importance')} style={{padding:'10px 20px',background:'#fff',border:'1px solid #ddd',borderRadius:8,fontSize:13,cursor:'pointer'}}>← Edit Ratings</button>
               <button onClick={() => {
                 const gaps = gapAnalysis()
                 const txt = `BALANCE™ Wheel of Life Assessment\nOverall: ${overallCurrent().toFixed(1)}/10\n\n${gaps.map(g=>`${g.icon} ${g.label}: Current=${g.current} → Desired=${g.desired} (Gap: ${g.gap}, Weight: ${g.weight}%)`).join('\n')}\n\nTop 3 Priorities:\n${gaps.slice(0,3).map((g,i)=>`${i+1}. ${g.label} — Gap: ${g.gap}, Weighted: ${g.weightedGap}`).join('\n')}`

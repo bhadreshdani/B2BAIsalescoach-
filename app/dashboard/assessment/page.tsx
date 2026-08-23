@@ -177,7 +177,8 @@ export default function AssessmentPage() {
                 try{navigator.clipboard.writeText(txt)}catch(e){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta)}
                 alert('Copied!')
               }} style={{padding:'10px 20px',background:'#f3f4f6',borderRadius:8,fontSize:13,fontWeight:600,border:'none',cursor:'pointer'}}>📋 Copy</button>
-              <button onClick={() => {setPhase('intro');setScores({});setPillarIdx(0)}} style={{padding:'10px 20px',background:'#fff',border:'1px solid #ddd',borderRadius:8,fontSize:13,cursor:'pointer'}}>↻ Retake</button>
+              <button onClick={() => {setPhase('scoring');setPillarIdx(2)}} style={{padding:'10px 20px',background:'#fff',border:'1px solid #ddd',borderRadius:8,fontSize:13,cursor:'pointer'}}>← Edit Scores</button>
+              <button onClick={() => {setPhase('intro');setScores({});setPillarIdx(0)}} style={{padding:'10px 20px',background:'#fef2f2',border:'1px solid #fca5a5',borderRadius:8,fontSize:13,cursor:'pointer',color:'#dc2626'}}>↻ Start Fresh</button>
               <Link href="/dashboard" style={{padding:'10px 20px',background:'#0D1B2A',color:'#fff',borderRadius:8,fontSize:13,fontWeight:600,textDecoration:'none'}}>← Dashboard</Link>
             </div>
           </div>
