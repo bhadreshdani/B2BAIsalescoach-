@@ -22,6 +22,13 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
   const [tip] = useState(DAILY_TIPS[Math.floor(Math.random() * DAILY_TIPS.length)])
 
+  function formatCurrency(val: number): string {
+    if (val >= 10000000) return (val / 10000000).toFixed(1) + ' Cr'
+    if (val >= 100000) return (val / 100000).toFixed(1) + ' L'
+    if (val >= 1000) return (val / 1000).toFixed(1) + 'K'
+    return val.toLocaleString()
+  }
+
   useEffect(() => {
     async function loadData() {
       const supabase = createClient()
@@ -140,15 +147,16 @@ export default function DashboardPage() {
           {deals.length > 0 ? (
             <div style={{display:'flex',gap:12,overflowX:'auto'}}>
               {deals.map((deal: any) => (
-                <div key={deal.id} style={{minWidth:180,background:'#fff',borderRadius:10,padding:16,boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}>
+                <Link key={deal.id} href={'/dashboard/deals'} style={{minWidth:180,background:'#fff',borderRadius:10,padding:16,boxShadow:'0 1px 4px rgba(0,0,0,0.04)',textDecoration:'none',color:'#1B2A4A',cursor:'pointer'}}>
                   <div style={{fontSize:14,fontWeight:600,marginBottom:4}}>{deal.name}</div>
                   {deal.company && <div style={{fontSize:11,color:'#888'}}>{deal.company}</div>}
+                  {deal.deal_value && <div style={{fontSize:12,color:'#C8943E',fontWeight:600,marginTop:4}}>₹{formatCurrency(deal.deal_value)}</div>}
                   <div style={{marginTop:8,display:'flex',flexWrap:'wrap',gap:6}}>
                     {deal.impact_score && <span style={{fontSize:11,background:'#dbeafe',color:'#2563eb',padding:'2px 8px',borderRadius:12}}>IMPACT: {deal.impact_score}</span>}
                     {deal.dealwin_score && <span style={{fontSize:11,background:'#fef3c7',color:'#92400e',padding:'2px 8px',borderRadius:12}}>Win: {deal.dealwin_score}%</span>}
                     {deal.stage && <span style={{fontSize:11,background:'#f3f4f6',color:'#666',padding:'2px 8px',borderRadius:12}}>Step {deal.stage}</span>}
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           ) : (

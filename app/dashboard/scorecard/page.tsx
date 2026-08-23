@@ -6,12 +6,12 @@ import Link from 'next/link'
 
 const MODELS: Record<string, { name:string; step:string; factors: {id:string;label:string;weight:number;desc:string}[]; bands: {min:number;max:number;label:string;color:string}[] }> = {
   impact: { name:'IMPACT Score™', step:'Step 2', factors:[
-    {id:'I',label:'Impact / Revenue Potential',weight:25,desc:'How large is the potential annual business?'},
-    {id:'M',label:'Match / Fit',weight:20,desc:'How well does your product match their needs?'},
-    {id:'P',label:'Power / Decision-Maker Access',weight:20,desc:'Can you reach the actual decision-maker?'},
-    {id:'A',label:'Appetite / Urgency',weight:15,desc:'How urgent is their need to buy?'},
-    {id:'C',label:'Credit / Payment Risk',weight:10,desc:'Can they pay? What is their credit history?'},
-    {id:'T',label:'Terrain / Competition',weight:10,desc:'How strong is competition for this deal?'},
+    {id:'I',label:'Impact / Revenue Potential',weight:25,desc:'What is the estimated annual purchase potential from this customer? Consider: order size, repeat frequency, and growth potential. Score 1-3 = below ₹5L/year, 4-6 = ₹5L-25L/year, 7-8 = ₹25L-1Cr/year, 9-10 = above ₹1Cr/year.'},
+    {id:'M',label:'Match / Fit',weight:20,desc:'How well does your product or solution match their actual requirement? Consider: technical fit, application suitability, capacity match, and specification compliance. Score 1-3 = poor fit (need heavy customisation), 7-8 = good fit, 9-10 = perfect match.'},
+    {id:'P',label:'Power / Decision-Maker Access',weight:20,desc:'Can you reach and influence the actual decision-maker (not just the contact person)? Score 1-3 = only talking to junior staff, 4-6 = have access to influencer but not decision-maker, 7-8 = met decision-maker once, 9-10 = direct relationship with MD/CEO/final authority.'},
+    {id:'A',label:'Appetite / Urgency',weight:15,desc:'How urgently does the customer need to buy? Is there a project deadline, budget expiry, or pain point driving urgency? Score 1-3 = no urgency (exploring), 4-6 = planning stage (6+ months), 7-8 = active evaluation (1-3 months), 9-10 = immediate need (buying this month).'},
+    {id:'C',label:'Credit / Payment Risk',weight:10,desc:'What is the payment risk? Consider: company financial health, payment track record, credit terms acceptable to you. Score 1-3 = high risk (bad payment history or unknown), 4-6 = moderate (some delays), 7-8 = good payer, 9-10 = excellent (advance payment or blue-chip company).'},
+    {id:'T',label:'Terrain / Competition',weight:10,desc:'How strong is competition for this specific deal? Score 1-3 = very strong competitor already entrenched, 4-6 = 2-3 competitors actively quoting, 7-8 = limited competition, 9-10 = no competition or you are the preferred/specified brand.'},
   ], bands:[{min:8.5,max:10,label:'A1 — Must Pursue',color:'#16a34a'},{min:6.5,max:8.4,label:'A2 — High Potential',color:'#2563eb'},{min:5,max:6.4,label:'B — Moderate',color:'#f59e0b'},{min:3.5,max:4.9,label:'C — Low Priority',color:'#f97316'},{min:0,max:3.4,label:'D/E — Avoid',color:'#dc2626'}]},
   dealwin: { name:'Deal Win Probability™', step:'Step 10', factors:[
     {id:'VC',label:'Value Concurrence',weight:20,desc:'Has the customer agreed your value justifies the price?'},
@@ -206,8 +206,16 @@ function ScorecardInner() {
             <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
               <Link href={`/dashboard/chat?prompt=${encodeURIComponent(`Coach me on improving my weakest areas from my ${model?.name} assessment. My lowest scores were in: ${model?.factors.map((f: any) => ({...f,score:scores[f.id]||0})).sort((a: any,b: any) => a.score-b.score).slice(0,3).map((f: any) => `${f.label} (${f.score}/10)`).join(', ')}`)}`}
                 style={{padding:'10px 20px',background:'#C8943E',color:'#fff',borderRadius:8,fontSize:13,fontWeight:600,textDecoration:'none'}}>💬 Coach Me on Weak Areas</Link>
-              <button onClick={() => { try { navigator.clipboard.writeText(`${model?.name} Result: ${total.toFixed(1)}/10 — ${cls.label}`) } catch(e) { const ta=document.createElement('textarea');ta.value=`${model?.name}: ${total.toFixed(1)}/10 — ${cls.label}`;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta) } alert('Copied!') }}
-                style={{padding:'10px 20px',background:'#f3f4f6',borderRadius:8,fontSize:13,fontWeight:600,border:'none',cursor:'pointer'}}>📋 Copy</button>
+              <button onClick={() => {
+                  const sorted = model?.factors.map((f: any) => ({...f, score: scores[f.id]||0})).sort((a: any,b: any) => b.score-a.score) || []
+                  const strengths = sorted.slice(0,3).map((f: any) => `  ✓ ${f.label}: ${f.score}/10`).join('\n')
+                  const gaps = sorted.slice(-3).reverse().map((f: any) => `  ✗ ${f.label}: ${f.score}/10`).join('\n')
+                  const allFactors = (model?.factors || []).map((f: any) => `  ${f.label} (${f.weight}%): ${scores[f.id]||0}/10`).join('\n')
+                  const fullText = `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n${model?.name} — Assessment Report\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nOverall Score: ${total.toFixed(1)} / 10\nClassification: ${cls.label}\n${selectedDeal ? `Deal: ${deals.find((d: any)=>d.id===selectedDeal)?.name || ''}\n` : ''}Date: ${new Date().toLocaleDateString()}\n\n📊 Factor Scores:\n${allFactors}\n\n💪 Top 3 Strengths:\n${strengths}\n\n⚠️ Top 3 Gaps (Focus Areas):\n${gaps}\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nPowered by B2BsalesBUDDY\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`
+                  try { navigator.clipboard.writeText(fullText) } catch(e) { const ta=document.createElement('textarea');ta.value=fullText;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta) }
+                  alert('Full score report copied to clipboard!')
+                }}
+                style={{padding:'10px 20px',background:'#f3f4f6',borderRadius:8,fontSize:13,fontWeight:600,border:'none',cursor:'pointer'}}>📋 Copy Full Report</button>
               <button onClick={() => { setSelectedModel(null); setScores({}); setSubmitted(false) }}
                 style={{padding:'10px 20px',background:'#fff',border:'1px solid #ddd',borderRadius:8,fontSize:13,cursor:'pointer'}}>← Back to Models</button>
             </div>

@@ -4,6 +4,13 @@ import { createClient } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
+function formatCurrency(val: number): string {
+  if (val >= 10000000) return (val / 10000000).toFixed(1) + ' Cr'
+  if (val >= 100000) return (val / 100000).toFixed(1) + ' L'
+  if (val >= 1000) return (val / 1000).toFixed(1) + 'K'
+  return val.toLocaleString()
+}
+
 const STAGES = [{n:1,name:'Prospecting'},{n:2,name:'Qualification'},{n:3,name:'Planning'},{n:4,name:'Preparation'},{n:5,name:'Rapport'},{n:6,name:'Discovery'},{n:7,name:'Value Proposition'},{n:8,name:'Proposal'},{n:9,name:'Objection Handling'},{n:10,name:'Negotiation & Closing'},{n:11,name:'Post-Sales'}]
 const CHALLENGES = STAGES.map(s => ({ value: s.name, label: `Step ${s.n}: ${s.name}` }))
 
@@ -106,7 +113,7 @@ export default function DealsPage() {
                   <div>
                     <h3 style={{fontSize:16,fontWeight:700}}>{deal.name}</h3>
                     <p style={{fontSize:13,color:'#888'}}>{[deal.company, deal.industry, deal.customer_type].filter(Boolean).join(' · ')}</p>
-                    {deal.deal_value && <p style={{fontSize:13,color:'#C8943E',fontWeight:600,marginTop:4}}>₹{Number(deal.deal_value).toLocaleString()}</p>}
+                    {deal.deal_value && <p style={{fontSize:13,color:'#C8943E',fontWeight:600,marginTop:4}}>₹{formatCurrency(Number(deal.deal_value))}</p>}
                   </div>
                   <span style={{fontSize:11,padding:'4px 10px',borderRadius:12,background:deal.status==='active'?'#dcfce7':'#fee2e2',color:deal.status==='active'?'#16a34a':'#dc2626'}}>{deal.status}</span>
                 </div>
