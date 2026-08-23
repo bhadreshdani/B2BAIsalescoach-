@@ -23,6 +23,42 @@ const MODELS: Record<string, { name:string; step:string; factors: {id:string;lab
     {id:'BL',label:'Body Language / Engagement',weight:10,desc:'Is the customer engaged and responsive?'},
     {id:'ZA',label:'ZOPA Alignment',weight:5,desc:'Is there overlap in acceptable price ranges?'},
   ], bands:[{min:8.5,max:10,label:'Close Now — 85-95%',color:'#16a34a'},{min:7,max:8.4,label:'Strong — 65-80%',color:'#2563eb'},{min:5.5,max:6.9,label:'Moderate — 40-60%',color:'#f59e0b'},{min:3.5,max:5.4,label:'Weak — 15-35%',color:'#f97316'},{min:0,max:3.4,label:'Unlikely — <15%',color:'#dc2626'}]},
+  rapport: { name:'RAPPORT Score™', step:'Step 5', factors:[
+    {id:'RP',label:'Read the Profile (DISC)',weight:10,desc:'Have you identified the buyer's DISC personality style and adapted your approach? Score 1-3 = no profiling, 4-6 = basic awareness, 7-8 = adapted communication, 9-10 = fully profiled and tailored.'},
+    {id:'AC',label:'Adapt Communication',weight:15,desc:'Are you matching their communication style — pace, detail level, formality? Score 1-3 = one-style-fits-all, 7-8 = mostly adapted, 9-10 = perfectly mirrored.'},
+    {id:'PP',label:'Persuasion Principles',weight:15,desc:'Are you using Cialdini's principles (reciprocity, social proof, authority, scarcity)? Score 1-3 = none, 4-6 = 1-2 principles, 7-8 = 3-4 principles, 9-10 = all relevant principles applied.'},
+    {id:'PL',label:'Pace & Lead',weight:10,desc:'Are you matching the buyer's energy first, then gradually leading them? Score 1-3 = pushing too fast, 7-8 = good pacing, 9-10 = natural pace-and-lead.'},
+    {id:'OC',label:'Open Personal Connection',weight:15,desc:'Have you found personal common ground beyond business? Score 1-3 = purely transactional, 7-8 = some personal rapport, 9-10 = genuine personal bond.'},
+    {id:'RB',label:'Resonate & Bond',weight:20,desc:'Does the buyer see you as a trusted advisor, not just a vendor? Score 1-3 = vendor only, 4-6 = respected supplier, 7-8 = preferred partner, 9-10 = trusted advisor.'},
+    {id:'TS',label:'Trust Stage Assessment',weight:15,desc:'What trust stage are you at? Score 1-3 = stranger, 4-5 = acquaintance, 6-7 = professional, 8-9 = trusted, 10 = partner.'},
+  ], bands:[{min:8,max:10,label:'Strong Rapport — Trusted',color:'#16a34a'},{min:6,max:7.9,label:'Good — Building Trust',color:'#2563eb'},{min:4,max:5.9,label:'Developing — Needs Work',color:'#f59e0b'},{min:0,max:3.9,label:'Weak — Start Building',color:'#dc2626'}]},
+  discover: { name:'DISCOVER Score™', step:'Step 6', factors:[
+    {id:'DD',label:'Disarm — Create Comfort',weight:15,desc:'Did you create a safe environment for the buyer to share openly? Score 1-3 = formal/stiff, 7-8 = comfortable conversation, 9-10 = buyer opened up freely.'},
+    {id:'DI',label:'Investigate — Deep Questions',weight:20,desc:'Did you ask layered questions that uncovered root needs, not just surface wants? Score 1-3 = surface questions only, 7-8 = good depth, 9-10 = uncovered hidden needs.'},
+    {id:'DS',label:'Surface — Hidden Needs',weight:15,desc:'Did you uncover needs the buyer didn't initially mention? Score 1-3 = only discussed stated needs, 7-8 = found 1-2 hidden needs, 9-10 = completely mapped all needs.'},
+    {id:'DC',label:'Cost — Quantify the Problem',weight:15,desc:'Can you put a ₹ value on the buyer's problem? Score 1-3 = no cost quantified, 7-8 = rough estimate, 9-10 = precise cost of problem documented.'},
+    {id:'DO',label:'Organise — Map Stakeholders',weight:15,desc:'Have you identified ALL decision-makers and influencers? Score 1-3 = know only 1 contact, 4-6 = know 2-3, 7-8 = mapped full committee, 9-10 = know each person's role and preference.'},
+    {id:'DV',label:'Validate — Confirm Understanding',weight:10,desc:'Did you summarise and get buyer's confirmation of needs? Score 1-3 = no validation, 7-8 = verbal confirmation, 9-10 = written/email confirmation.'},
+    {id:'DE',label:'Exit — Clear Next Steps',weight:10,desc:'Did you leave with agreed next steps and timeline? Score 1-3 = vague "we'll be in touch", 7-8 = clear next meeting, 9-10 = documented action plan with dates.'},
+  ], bands:[{min:8,max:10,label:'Excellent Discovery',color:'#16a34a'},{min:6,max:7.9,label:'Good — Some Gaps',color:'#2563eb'},{min:4,max:5.9,label:'Incomplete — Dig Deeper',color:'#f59e0b'},{min:0,max:3.9,label:'Poor — Redo Discovery',color:'#dc2626'}]},
+  value: { name:'VALUE Score™', step:'Step 7', factors:[
+    {id:'VV',label:'Visualise Outcome',weight:20,desc:'Can the buyer clearly picture life AFTER implementing your solution? Score 1-3 = abstract/vague, 7-8 = clear picture, 9-10 = buyer is excited about the outcome.'},
+    {id:'VA',label:'Assemble Proof',weight:20,desc:'Do you have concrete evidence — case studies, references, data, demos? Score 1-3 = claims only, 4-6 = some proof, 7-8 = strong proof package, 9-10 = overwhelming evidence.'},
+    {id:'VL',label:'Leverage Differentiators',weight:20,desc:'Is your unique advantage clearly articulated vs competition? Score 1-3 = "we are also good", 7-8 = 2-3 clear differentiators, 9-10 = unique position competitors cannot match.'},
+    {id:'VU',label:'Unify Stakeholders',weight:20,desc:'Are all stakeholders aligned on the value of your solution? Score 1-3 = only 1 person sees value, 4-6 = mixed views, 7-8 = majority aligned, 9-10 = unanimous support.'},
+    {id:'VE',label:'Earn the Right to Price',weight:20,desc:'Has value been established BEFORE price is discussed? Score 1-3 = price came up before value, 7-8 = value mostly established, 9-10 = buyer says "this is worth it" before seeing price.'},
+  ], bands:[{min:8,max:10,label:'Strong Value — Price Justified',color:'#16a34a'},{min:6,max:7.9,label:'Good — Strengthen Proof',color:'#2563eb'},{min:4,max:5.9,label:'Weak — Needs CPV Elevation',color:'#f59e0b'},{min:0,max:3.9,label:'No Value Built — Do Not Quote Yet',color:'#dc2626'}]},
+  evolution: { name:'Customer Evolution Score™', step:'Step 11', factors:[
+    {id:'RP2',label:'Repeat Purchase',weight:15,desc:'Does the customer buy from you regularly? Score 1-3 = one-time buyer, 4-6 = occasional, 7-8 = regular repeat, 9-10 = automatic reorder.'},
+    {id:'PS',label:'Price Sensitivity',weight:10,desc:'How price-sensitive is this customer with you? Score 1-3 = always negotiates hard, 4-6 = compares sometimes, 7-8 = rarely questions price, 9-10 = trusts your pricing completely.'},
+    {id:'SW',label:'Share of Wallet',weight:15,desc:'What % of their total spend in your category comes to you? Score 1-3 = less than 20%, 4-6 = 20-50%, 7-8 = 50-80%, 9-10 = 80%+ sole supplier.'},
+    {id:'IS',label:'Information Sharing',weight:10,desc:'Does the customer share plans, forecasts, and insider info with you? Score 1-3 = shares nothing, 7-8 = shares relevant info, 9-10 = treats you as insider.'},
+    {id:'RB2',label:'Referral Behaviour',weight:15,desc:'Does the customer actively refer you to others? Score 1-3 = never, 4-6 = if asked, 7-8 = sometimes proactively, 9-10 = regularly champions you.'},
+    {id:'RD',label:'Relationship Depth',weight:10,desc:'At how many levels do you have relationships? Score 1-3 = one contact only, 4-6 = 2-3 contacts, 7-8 = multiple levels, 9-10 = CEO to operator.'},
+    {id:'JD',label:'Joint Development',weight:10,desc:'Do you co-develop solutions or share roadmaps? Score 1-3 = purely transactional, 7-8 = some collaboration, 9-10 = joint development partner.'},
+    {id:'TN',label:'Tenure & Loyalty',weight:10,desc:'How long has this customer been with you? Score 1-3 = less than 1 year, 4-6 = 1-3 years, 7-8 = 3-5 years, 9-10 = 5+ years loyal.'},
+    {id:'SR',label:'Switching Resistance',weight:5,desc:'How difficult would it be for them to switch away from you? Score 1-3 = easy to switch, 7-8 = some switching cost, 9-10 = deeply integrated and hard to replace.'},
+  ], bands:[{min:8.6,max:10,label:'Stage 5 — Partner',color:'#16a34a'},{min:7.6,max:8.5,label:'Stage 4 — Advocate',color:'#2563eb'},{min:6.1,max:7.5,label:'Stage 3 — Loyal',color:'#f59e0b'},{min:3.1,max:6,label:'Stage 2 — Repeat',color:'#f97316'},{min:0,max:3,label:'Stage 1 — First-Time',color:'#dc2626'}]},
   kycw: { name:'KYCW Readiness™', step:'Step 4', factors:[
     {id:'CK',label:'Company Knowledge',weight:15,desc:'How well do you know the company background?'},
     {id:'PK',label:'Person Knowledge',weight:15,desc:'Do you know the people you will meet?'},
@@ -38,7 +74,11 @@ const MODELS: Record<string, { name:string; step:string; factors: {id:string;lab
 const MODEL_LIST = [
   {id:'impact',icon:'🎯',name:'IMPACT Score™',step:'Step 2',desc:'Qualify prospects'},
   {id:'kycw',icon:'📋',name:'KYCW Readiness™',step:'Step 4',desc:'Meeting preparation'},
+  {id:'rapport',icon:'🤝',name:'RAPPORT Score™',step:'Step 5',desc:'Relationship strength'},
+  {id:'discover',icon:'🔬',name:'DISCOVER Score™',step:'Step 6',desc:'Discovery quality'},
+  {id:'value',icon:'💎',name:'VALUE Score™',step:'Step 7',desc:'Value proposition strength'},
   {id:'dealwin',icon:'🏆',name:'Deal Win Probability™',step:'Step 10',desc:'Closing readiness'},
+  {id:'evolution',icon:'📈',name:'Customer Evolution™',step:'Step 11',desc:'Relationship stage'},
 ]
 
 function ScorecardInner() {
@@ -52,6 +92,7 @@ function ScorecardInner() {
   const [submitted, setSubmitted] = useState(false)
   const [saving, setSaving] = useState(false)
   const [history, setHistory] = useState<any[]>([])
+  const [fromStep, setFromStep] = useState<string>('')
 
   useEffect(() => {
     async function init() {
@@ -64,6 +105,10 @@ function ScorecardInner() {
       setDeals(Array.isArray(d) ? d : [])
       const dealParam = searchParams.get('deal')
       if (dealParam) setSelectedDeal(dealParam)
+      const modelParam = searchParams.get('model')
+      if (modelParam && MODELS[modelParam]) setSelectedModel(modelParam)
+      const fromParam = searchParams.get('from')
+      if (fromParam) setFromStep(fromParam)
     }
     init()
   }, [router, searchParams])
@@ -218,8 +263,9 @@ function ScorecardInner() {
                   alert('Full score report copied to clipboard!')
                 }}
                 style={{padding:'10px 20px',background:'#f3f4f6',borderRadius:8,fontSize:13,fontWeight:600,border:'none',cursor:'pointer'}}>📋 Copy Full Report</button>
+              {fromStep && <Link href={`/dashboard/learn`} style={{padding:'10px 20px',background:'#0D1B2A',color:'#fff',borderRadius:8,fontSize:13,fontWeight:600,textDecoration:'none'}}>← Back to Learn</Link>}
               <button onClick={() => { setSelectedModel(null); setScores({}); setSubmitted(false) }}
-                style={{padding:'10px 20px',background:'#fff',border:'1px solid #ddd',borderRadius:8,fontSize:13,cursor:'pointer'}}>← Back to Models</button>
+                style={{padding:'10px 20px',background:'#fff',border:'1px solid #ddd',borderRadius:8,fontSize:13,cursor:'pointer'}}>← All Models</button>
             </div>
           </div>
         ) : (
