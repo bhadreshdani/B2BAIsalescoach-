@@ -120,8 +120,8 @@ export default function LearnPage() {
             <div style={{marginTop:16}}>
               <p style={{fontSize:12,fontWeight:700,color:'#888',marginBottom:6}}>CROSS-STEP</p>
               <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
-                {CROSS_STEPS.map(c => (
-                  <span key={c.name} style={{padding:'6px 14px',background:'#fef3e2',border:'1px solid #C8943E',borderRadius:20,fontSize:12,color:'#92400e'}}>{c.framework}: {c.name}</span>
+                {CROSS_STEPS_DATA.map((c: any) => (
+                  <span key={c.name} style={{padding:'6px 14px',background:'#fef3e2',border:'1px solid #C8943E',borderRadius:20,fontSize:12,color:'#92400e'}}>{c.frameworks.join(" · ")}: {c.name}</span>
                 ))}
               </div>
             </div>
