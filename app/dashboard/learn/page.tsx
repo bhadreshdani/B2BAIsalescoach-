@@ -137,28 +137,34 @@ export default function LearnPage() {
               <p style={{fontSize:12,color:'#16a34a',marginTop:4}}>{completed.size} of {STEPS.length + CROSS_STEPS_DATA.length} steps completed</p>
             </div>
 
-            {/* Visual Staircase */}
-            <div style={{display:'flex',flexDirection:'column',gap:4,marginBottom:24}}>
-              {[...STEPS].reverse().map((s, i) => {
-                const isComplete = completed.has(s.n)
-                const width = 40 + (STEPS.length - i) * 5
-                return (
-                  <button key={s.n} onClick={() => setSelectedStep(s.n)}
-                    style={{width:`${width}%`,marginLeft:'auto',padding:'12px 16px',borderRadius:8,border:'none',cursor:'pointer',textAlign:'left',display:'flex',alignItems:'center',justifyContent:'space-between',
-                      background:isComplete?'#16a34a':'#fff',color:isComplete?'#fff':'#1B2A4A',
-                      boxShadow:'0 1px 3px rgba(0,0,0,0.08)',transition:'transform 0.15s',
-                    }}>
-                    <div style={{display:'flex',alignItems:'center',gap:10}}>
-                      <span style={{fontSize:18}}>{s.icon}</span>
-                      <div>
-                        <span style={{fontSize:13,fontWeight:700}}>Step {s.n}: {s.name}</span>
-                        <div style={{fontSize:11,color:isComplete?'rgba(255,255,255,0.7)':'#888',marginTop:2}}>{s.frameworks.join(' · ')}</div>
-                      </div>
-                    </div>
-                    <span style={{fontSize:14}}>{isComplete ? '✅' : '→'}</span>
-                  </button>
-                )
-              })}
+            {/* Visual Staircase — ascending left to right */}
+            <div style={{position:'relative',marginBottom:32,paddingBottom:20}}>
+              <div style={{display:'flex',alignItems:'flex-end',gap:3,height:360,overflowX:'auto',paddingBottom:4}}>
+                {STEPS.map((s, i) => {
+                  const isComplete = completed.has(s.n)
+                  const height = 80 + i * 25
+                  return (
+                    <button key={s.n} onClick={() => setSelectedStep(s.n)}
+                      style={{
+                        minWidth:62,flex:'1',height:height,
+                        borderRadius:'8px 8px 0 0',border:'none',cursor:'pointer',
+                        display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'flex-end',
+                        padding:'8px 4px 10px',
+                        background:isComplete?'#16a34a':'#fff',color:isComplete?'#fff':'#1B2A4A',
+                        boxShadow:'0 1px 4px rgba(0,0,0,0.08)',transition:'transform 0.15s',
+                      }}>
+                      <span style={{fontSize:16,marginBottom:4}}>{isComplete ? '✅' : s.icon}</span>
+                      <span style={{fontSize:10,fontWeight:700,textAlign:'center',lineHeight:1.2}}>Step {s.n}</span>
+                      <span style={{fontSize:8,textAlign:'center',marginTop:2,color:isComplete?'rgba(255,255,255,0.8)':'#888',lineHeight:1.2}}>{s.name}</span>
+                    </button>
+                  )
+                })}
+              </div>
+              <div style={{position:'absolute',bottom:0,left:0,right:0,height:4,background:'#0D1B2A',borderRadius:2}} />
+              <div style={{display:'flex',justifyContent:'space-between',marginTop:8}}>
+                <span style={{fontSize:10,color:'#888'}}>Start Here →</span>
+                <span style={{fontSize:10,color:'#C8943E',fontWeight:600}}>→ Master Level 🏆</span>
+              </div>
             </div>
 
             {/* Cross-Step Modules */}
