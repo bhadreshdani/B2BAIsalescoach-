@@ -134,7 +134,7 @@ export default function LearnPage() {
             <div style={{textAlign:'center',marginBottom:24}}>
               <h2 style={{fontSize:20,fontWeight:'bold'}}>The 11-Step Sales Staircase</h2>
               <p style={{fontSize:13,color:'#888'}}>Click any step to learn the frameworks, concepts, and scripts</p>
-              <p style={{fontSize:12,color:'#16a34a',marginTop:4}}>{completed.size} of {STEPS.length + CROSS_STEPS_DATA.length} steps completed</p>
+              <p style={{fontSize:12,color:'#16a34a',marginTop:4}}>{completed.size} of 11 steps completed</p>
             </div>
 
             {/* Visual Staircase — ascending left to right */}
