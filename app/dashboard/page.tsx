@@ -142,7 +142,7 @@ export default function DashboardPage() {
         <div style={{marginBottom:24}}>
           <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12}}>
             <h3 style={{fontSize:13,fontWeight:600,color:'#888',textTransform:'uppercase',letterSpacing:1}}>My Active Deals</h3>
-            <Link href="/dashboard/chat?mode=deal" style={{fontSize:12,color:'#C8943E',textDecoration:'none',fontWeight:600}}>+ New Deal</Link>
+            <Link href="/dashboard/deals" style={{fontSize:12,color:'#C8943E',textDecoration:'none',fontWeight:600}}>+ New Deal</Link>
           </div>
           {deals.length > 0 ? (
             <div style={{display:'flex',gap:12,overflowX:'auto'}}>
@@ -162,7 +162,7 @@ export default function DashboardPage() {
           ) : (
             <div style={{background:'#fff',borderRadius:10,padding:24,textAlign:'center',boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}>
               <p style={{fontSize:14,color:'#888',marginBottom:12}}>No active deals yet</p>
-              <Link href="/dashboard/chat?mode=deal" style={{fontSize:13,color:'#fff',background:'#C8943E',padding:'8px 20px',borderRadius:8,textDecoration:'none',fontWeight:600}}>Start Coaching a Deal →</Link>
+              <Link href="/dashboard/deals" style={{fontSize:13,color:'#fff',background:'#C8943E',padding:'8px 20px',borderRadius:8,textDecoration:'none',fontWeight:600}}>Start Coaching a Deal →</Link>
             </div>
           )}
         </div>

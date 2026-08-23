@@ -20,6 +20,7 @@ export default function DealsPage() {
   const [deals, setDeals] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [showNew, setShowNew] = useState(false)
+  const [expandedDeal, setExpandedDeal] = useState<string|null>(null)
   const [newDeal, setNewDeal] = useState({ name:'', company:'', industry:'', customer_type:'', deal_value:'', stage:1 })
   const [saving, setSaving] = useState(false)
 
@@ -108,36 +109,56 @@ export default function DealsPage() {
         ) : (
           <div>
             {deals.map((deal: any) => (
-              <div key={deal.id} style={{background:'#fff',borderRadius:12,padding:20,marginBottom:12,boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}>
-                <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:12}}>
+              <div key={deal.id} style={{background:'#fff',borderRadius:12,marginBottom:12,boxShadow:'0 1px 4px rgba(0,0,0,0.04)',overflow:'hidden'}}>
+                {/* Clickable Header */}
+                <div onClick={() => setExpandedDeal(expandedDeal===deal.id ? null : deal.id)} 
+                  style={{padding:20,cursor:'pointer',display:'flex',justifyContent:'space-between',alignItems:'flex-start'}}>
                   <div>
                     <h3 style={{fontSize:16,fontWeight:700}}>{deal.name}</h3>
                     <p style={{fontSize:13,color:'#888'}}>{[deal.company, deal.industry, deal.customer_type].filter(Boolean).join(' · ')}</p>
                     {deal.deal_value && <p style={{fontSize:13,color:'#C8943E',fontWeight:600,marginTop:4}}>₹{formatCurrency(Number(deal.deal_value))}</p>}
                   </div>
-                  <span style={{fontSize:11,padding:'4px 10px',borderRadius:12,background:deal.status==='active'?'#dcfce7':'#fee2e2',color:deal.status==='active'?'#16a34a':'#dc2626'}}>{deal.status}</span>
+                  <div style={{display:'flex',alignItems:'center',gap:8}}>
+                    <span style={{fontSize:11,padding:'4px 10px',borderRadius:12,background:deal.status==='active'?'#dcfce7':'#fee2e2',color:deal.status==='active'?'#16a34a':'#dc2626'}}>{deal.status}</span>
+                    <span style={{fontSize:16,color:'#888'}}>{expandedDeal===deal.id ? '▲' : '▼'}</span>
+                  </div>
                 </div>
 
-                {/* Staircase Minimap */}
-                <div style={{display:'flex',gap:2,marginBottom:12}}>
-                  {STAGES.map(s => (
-                    <button key={s.n} onClick={() => updateStage(deal.id, s.n)} title={`Step ${s.n}: ${s.name}`}
-                      style={{flex:1,height:8,borderRadius:4,background:s.n<=deal.stage?stageColor(deal.stage):'#e5e7eb',cursor:'pointer',border:'none',transition:'background 0.2s'}} />
-                  ))}
+                {/* Staircase Minimap — always visible */}
+                <div style={{padding:'0 20px 12px'}}>
+                  <div style={{display:'flex',gap:2,marginBottom:4}}>
+                    {STAGES.map(s => (
+                      <button key={s.n} onClick={(e) => { e.stopPropagation(); updateStage(deal.id, s.n) }} title={`Step ${s.n}: ${s.name}`}
+                        style={{flex:1,height:8,borderRadius:4,background:s.n<=deal.stage?stageColor(deal.stage):'#e5e7eb',cursor:'pointer',border:'none',transition:'background 0.2s'}} />
+                    ))}
+                  </div>
+                  <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                    <p style={{fontSize:11,color:'#888'}}>Step {deal.stage} — {deal.stage_name || STAGES.find(s=>s.n===deal.stage)?.name}</p>
+                    <div style={{display:'flex',gap:6}}>
+                      {deal.impact_score && <span style={{fontSize:11,background:'#dbeafe',color:'#2563eb',padding:'2px 8px',borderRadius:12}}>IMPACT: {deal.impact_score}</span>}
+                      {deal.dealwin_score && <span style={{fontSize:11,background:'#fef3c7',color:'#92400e',padding:'2px 8px',borderRadius:12}}>Win: {deal.dealwin_score}%</span>}
+                    </div>
+                  </div>
                 </div>
-                <p style={{fontSize:11,color:'#888',marginBottom:12}}>Stage: Step {deal.stage} — {deal.stage_name || STAGES.find(s=>s.n===deal.stage)?.name}</p>
 
-                {/* Scores */}
-                <div style={{display:'flex',gap:8,flexWrap:'wrap',marginBottom:12}}>
-                  {deal.impact_score && <span style={{fontSize:12,background:'#dbeafe',color:'#2563eb',padding:'4px 10px',borderRadius:12}}>IMPACT: {deal.impact_score} ({deal.impact_classification})</span>}
-                  {deal.dealwin_score && <span style={{fontSize:12,background:'#fef3c7',color:'#92400e',padding:'4px 10px',borderRadius:12}}>Win: {deal.dealwin_score}%</span>}
-                </div>
-
-                {/* Actions */}
-                <div style={{display:'flex',gap:8}}>
-                  <Link href={`/dashboard/chat?deal=${deal.id}&dealName=${encodeURIComponent(deal.name)}`} style={{padding:'8px 16px',background:'#0D1B2A',color:'#fff',borderRadius:8,fontSize:12,fontWeight:600,textDecoration:'none'}}>💬 Coach This Deal</Link>
-                  <Link href={`/dashboard/scorecard?deal=${deal.id}`} style={{padding:'8px 16px',background:'#f3f4f6',color:'#1B2A4A',borderRadius:8,fontSize:12,fontWeight:600,textDecoration:'none'}}>📊 Score</Link>
-                </div>
+                {/* Expanded Details */}
+                {expandedDeal===deal.id && (
+                  <div style={{padding:'0 20px 20px',borderTop:'1px solid #f3f4f6'}}>
+                    <p style={{fontSize:13,color:'#666',marginTop:12,marginBottom:4}}>Select a coaching challenge for this deal:</p>
+                    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:6,marginBottom:16}}>
+                      {STAGES.map(s => (
+                        <Link key={s.n} href={`/dashboard/chat?deal=${deal.id}&dealName=${encodeURIComponent(deal.name)}&prompt=${encodeURIComponent(`I need coaching on Step ${s.n}: ${s.name} for my deal "${deal.name}"${deal.company ? ` with ${deal.company}` : ''}${deal.industry ? ` in ${deal.industry} industry` : ''}`)}`}
+                          style={{padding:'8px 12px',border:s.n===deal.stage?'2px solid #C8943E':'1px solid #e5e7eb',borderRadius:8,fontSize:12,textDecoration:'none',color:'#1B2A4A',background:s.n===deal.stage?'#fef3e2':'#fff'}}>
+                          Step {s.n}: {s.name}
+                        </Link>
+                      ))}
+                    </div>
+                    <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+                      <Link href={`/dashboard/chat?deal=${deal.id}&dealName=${encodeURIComponent(deal.name)}`} style={{padding:'10px 20px',background:'#0D1B2A',color:'#fff',borderRadius:8,fontSize:13,fontWeight:600,textDecoration:'none'}}>💬 Free Coach This Deal</Link>
+                      <Link href={`/dashboard/scorecard?deal=${deal.id}`} style={{padding:'10px 20px',background:'#9333ea',color:'#fff',borderRadius:8,fontSize:13,fontWeight:600,textDecoration:'none'}}>📊 Score This Deal</Link>
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>
