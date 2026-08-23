@@ -150,11 +150,28 @@ export default function VelocityPage() {
       body: JSON.stringify({ userId: user.id, rotis_hourly: r.rotis, annual_target: parseFloat(annualTarget), velocity_completed: true })
     })
 
-    // Save snapshot
-    await fetch('/api/onboarding', {
+    // Save velocity snapshot for future reference
+    await fetch('/api/scores', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: user.id, rotis_hourly: r.rotis, annual_target: parseFloat(annualTarget), velocity_completed: true })
-    })
+      body: JSON.stringify({
+        userId: user.id,
+        modelType: 'velocity',
+        factors: {
+          annualTarget: parseFloat(annualTarget),
+          achieved: parseFloat(achieved) || 0,
+          billingDone: parseFloat(billingDone) || 0,
+          openOrders: parseFloat(openOrders) || 0,
+          retainerBusiness: parseFloat(retainerBusiness) || 0,
+          pipeline: parseFloat(pipeline) || 0,
+          avgDealSize: parseFloat(avgDealSize) || 0,
+          visitsPerDay: r.visitsPerDay,
+          enquiriesPerDay: r.enquiriesPerDay,
+          rotis: r.rotis,
+        },
+        totalScore: r.rotis,
+        classification: r.feasible ? 'Feasible' : 'Not Feasible',
+      })
+    }).catch(() => {})
 
     setSaving(false)
     setPhase(5)
@@ -356,7 +373,22 @@ export default function VelocityPage() {
                 try{navigator.clipboard.writeText(txt)}catch(e){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta)}
                 alert('Copied!')
               }} style={{padding:'10px 20px',background:'#f3f4f6',borderRadius:8,fontSize:13,fontWeight:600,border:'none',cursor:'pointer'}}>📋 Copy Report</button>
-              <Link href="/dashboard/chat?prompt=Based+on+my+Sales+Velocity+Engine+results,+help+me+plan+my+week" style={{padding:'10px 20px',background:'#C8943E',color:'#fff',borderRadius:8,fontSize:13,fontWeight:600,textDecoration:'none'}}>📅 Plan My Week</Link>
+              <Link href={`/dashboard/chat?prompt=${encodeURIComponent(
+                  `Based on my Sales Velocity Engine results, help me plan my week. Here are my numbers — DO NOT ask me for these again:\n` +
+                  `- Annual Target: ${formatCurrency(parseFloat(annualTarget))}\n` +
+                  `- ROTIS: ₹${Math.round(results.rotis).toLocaleString()}/hr\n` +
+                  `- New Orders Required: ${formatCurrency(results.shortfall)}\n` +
+                  `- Visits Required Per Day: ${results.visitsPerDay}\n` +
+                  `- Enquiries Per Day: ${results.enquiriesPerDay}\n` +
+                  `- Offers Per Day: ${results.offersPerDay}\n` +
+                  `- Pipeline Value: ${formatCurrency(parseFloat(pipeline))}\n` +
+                  `- Pipeline Coverage: ${results.coverageRatio}x\n` +
+                  `- Days Remaining: ${results.remainingDays}\n` +
+                  `- Cost of Delay: ${formatCurrency(results.costOfDelay)}/day\n` +
+                  `- #1 Growth Lever: ${results.levers[0]?.name}\n` +
+                  `- Feasible: ${results.feasible ? 'Yes' : 'No'} (${results.hrsNeeded} hrs needed, ${availableHrs} hrs available)\n\n` +
+                  `Now create a specific DAY-BY-DAY plan for this week (Monday to Friday) with exact activities, customer names from my pipeline, and time allocation based on these velocity targets.`
+                )}`} style={{padding:'10px 20px',background:'#C8943E',color:'#fff',borderRadius:8,fontSize:13,fontWeight:600,textDecoration:'none'}}>📅 Plan My Week</Link>
               <Link href="/dashboard" style={{padding:'10px 20px',background:'#0D1B2A',color:'#fff',borderRadius:8,fontSize:13,fontWeight:600,textDecoration:'none'}}>← Dashboard</Link>
             </div>
           </div>
