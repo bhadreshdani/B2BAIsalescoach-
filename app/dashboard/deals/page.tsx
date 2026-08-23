@@ -1,7 +1,7 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { createClient } from '@/lib/supabase'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
 function formatCurrency(val: number): string {
@@ -14,7 +14,7 @@ function formatCurrency(val: number): string {
 const STAGES = [{n:1,name:'Prospecting'},{n:2,name:'Qualification'},{n:3,name:'Planning'},{n:4,name:'Preparation'},{n:5,name:'Rapport'},{n:6,name:'Discovery'},{n:7,name:'Value Proposition'},{n:8,name:'Proposal'},{n:9,name:'Objection Handling'},{n:10,name:'Negotiation & Closing'},{n:11,name:'Post-Sales'}]
 const CHALLENGES = STAGES.map(s => ({ value: s.name, label: `Step ${s.n}: ${s.name}` }))
 
-export default function DealsPage() {
+function DealsInner() {
   const router = useRouter()
   const [user, setUser] = useState<any>(null)
   const [deals, setDeals] = useState<any[]>([])
@@ -24,6 +24,8 @@ export default function DealsPage() {
   const [newDeal, setNewDeal] = useState({ name:'', company:'', industry:'', customer_type:'', deal_value:'', stage:1 })
   const [saving, setSaving] = useState(false)
 
+  const searchParams = useSearchParams()
+
   useEffect(() => {
     async function init() {
       const supabase = createClient()
@@ -31,9 +33,10 @@ export default function DealsPage() {
       if (!u) { router.push('/auth/login'); return }
       setUser(u)
       await loadDeals(u.id)
+      if (searchParams.get('new') === 'true') setShowNew(true)
     }
     init()
-  }, [router])
+  }, [router, searchParams])
 
   async function loadDeals(userId: string) {
     const res = await fetch(`/api/deals?userId=${userId}`)
@@ -166,4 +169,8 @@ export default function DealsPage() {
       </div>
     </div>
   )
+}
+
+export default function DealsPage() {
+  return <Suspense fallback={<div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center'}}><p>Loading...</p></div>}><DealsInner /></Suspense>
 }
