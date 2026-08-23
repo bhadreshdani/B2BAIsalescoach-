@@ -76,6 +76,8 @@ export default function AssessmentPage() {
     <div style={{minHeight:'100vh',background:'#f5f0e8',fontFamily:'Arial,sans-serif'}}>
       <header style={{background:'#0D1B2A',color:'#fff',padding:'12px 24px',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
         <div style={{display:'flex',alignItems:'center',gap:12}}>
+          <span style={{fontSize:14,fontWeight:'bold',color:'#C8943E'}}>B2BsalesBUDDY</span>
+          <span style={{color:'#444'}}>|</span>
           <button onClick={() => {
             if (phase === 'scoring' && pillarIdx > 0) setPillarIdx(pillarIdx - 1)
             else if (phase === 'scoring' && pillarIdx === 0) setPhase('intro')

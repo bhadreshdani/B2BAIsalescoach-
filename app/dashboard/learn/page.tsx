@@ -82,10 +82,12 @@ export default function LearnPage() {
     <div style={{minHeight:'100vh',background:'#f5f0e8',fontFamily:'Arial,sans-serif'}}>
       <header style={{background:'#0D1B2A',color:'#fff',padding:'12px 24px',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
         <div style={{display:'flex',alignItems:'center',gap:12}}>
+          <span style={{fontSize:14,fontWeight:'bold',color:'#C8943E',marginRight:8}}>B2BsalesBUDDY</span>
+          <span style={{color:'#444'}}>|</span>
           <button onClick={() => { if (selectedStep) setSelectedStep(null); else if (showFrameworks) setShowFrameworks(false); else window.location.href='/dashboard' }}
             style={{color:'#888',fontSize:13,background:'none',border:'none',cursor:'pointer'}}>← Back</button>
           <span style={{color:'#444'}}>|</span>
-          <h1 style={{fontSize:16,fontWeight:'bold'}}>📚 Learn the 11-Step Staircase</h1>
+          <h1 style={{fontSize:16,fontWeight:'bold'}}>{selectedStep && step ? `📚 Step ${step.n}: ${step.name}` : '📚 Learn the 11-Step Staircase'}</h1>
         </div>
         <button onClick={() => {setShowFrameworks(!showFrameworks); setSelectedStep(null)}}
           style={{fontSize:12,color:'#C8943E',background:'rgba(200,148,62,0.1)',border:'none',padding:'6px 12px',borderRadius:6,cursor:'pointer'}}>
@@ -225,8 +227,8 @@ export default function LearnPage() {
             <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
               <Link href={`/dashboard/chat?prompt=${encodeURIComponent(`I want to learn about Step ${step.n}: ${step.name}. Explain the ${step.frameworks[0]} framework in detail with examples relevant to my industry. My name is already in your context.`)}`}
                 style={{padding:'10px 20px',background:'#C8943E',color:'#fff',borderRadius:8,fontSize:13,fontWeight:600,textDecoration:'none'}}>💬 Ask Coach About This</Link>
-              <Link href={`/dashboard/scorecard${step.n===2?'':'?model='+['','','impact','','kycw','','','','','','dealwin',''][step.n]}`}
-                style={{padding:'10px 20px',background:'#9333ea',color:'#fff',borderRadius:8,fontSize:13,fontWeight:600,textDecoration:'none'}}>📊 Practice Scoring</Link>
+              <Link href={`/dashboard/scorecard?model=${{1:'impact',2:'impact',3:'impact',4:'kycw',5:'rapport',6:'discover',6.1:'impact',7:'value',8:'impact',9:'dealwin',10:'dealwin',11:'evolution'}[step.n]||'impact'}`}
+                style={{padding:'10px 20px',background:'#9333ea',color:'#fff',borderRadius:8,fontSize:13,fontWeight:600,textDecoration:'none'}}>📊 Practice {step.n<=2?'IMPACT Score':step.n<=4?'KYCW Readiness':step.n<=9?'Deal Readiness':'Deal Win'} Scoring</Link>
               <button onClick={() => setSelectedStep(null)} style={{padding:'10px 20px',background:'#f3f4f6',border:'none',borderRadius:8,fontSize:13,cursor:'pointer'}}>← Back to Staircase</button>
             </div>
           </div>

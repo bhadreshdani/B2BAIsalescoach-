@@ -111,6 +111,8 @@ function ScorecardInner() {
     <div style={{minHeight:'100vh',background:'#f5f0e8',fontFamily:'Arial,sans-serif'}}>
       <header style={{background:'#0D1B2A',color:'#fff',padding:'12px 24px',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
         <div style={{display:'flex',alignItems:'center',gap:12}}>
+          <span style={{fontSize:14,fontWeight:'bold',color:'#C8943E'}}>B2BsalesBUDDY</span>
+          <span style={{color:'#444'}}>|</span>
           <Link href="/dashboard" style={{color:'#888',fontSize:13,textDecoration:'none'}}>← Home</Link>
           <span style={{color:'#444'}}>|</span>
           <h1 style={{fontSize:16,fontWeight:'bold'}}>📊 Scorecard</h1>
