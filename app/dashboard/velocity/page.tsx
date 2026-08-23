@@ -90,7 +90,9 @@ export default function VelocityPage() {
     const openOrd = parseFloat(openOrders) || 0
     const retainer = parseFloat(retainerBusiness) || 0
     const secured = billing + openOrd + retainer
-    const shortfall = target - ach - secured
+    // Note: Achieved = Billing + Open Orders (don't deduct separately to avoid double-counting)
+    // Shortfall = Target - Secured (billing + open orders + retainer)
+    const shortfall = target - secured
     const avgDeal = parseFloat(avgDealSize) || 1
     const eto = parseFloat(enquiryToOffer) || 50
     const oto = parseFloat(offerToOrder) || 30
@@ -254,7 +256,7 @@ export default function VelocityPage() {
             <h2 style={{fontSize:18,fontWeight:'bold',marginBottom:4}}>Phase 3: Sales Velocity Engine</h2>
             <p style={{fontSize:13,color:'#888',marginBottom:16}}>Enter your current numbers to calculate daily activity targets</p>
             {[
-              {label:'Revenue Achieved So Far (₹)',val:achieved,set:setAchieved,hint:'Year-to-date order booking'},
+              {label:'Total Order Booking Done (₹)',val:achieved,set:setAchieved,hint:'Year-to-date total orders booked (for reference — deductions are from fields below)'},
               {label:'Billing Done Till Now (₹)',val:billingDone,set:setBillingDone,hint:'Total billing/invoicing done this year'},
               {label:'Unexecuted Open Orders (can be billed in same financial year) (₹)',val:openOrders,set:setOpenOrders,hint:'Auto-calculated from Achieved - Billing. Override if needed.'},
               {label:'Retainer / Repeat Business Expected (₹)',val:retainerBusiness,set:setRetainerBusiness,hint:'Expected from annual rate contracts or repeat customers'},
@@ -282,7 +284,7 @@ export default function VelocityPage() {
                   = <strong>{formatCurrency((parseFloat(billingDone)||0)+(parseFloat(openOrders)||0)+(parseFloat(retainerBusiness)||0))}</strong> secured
                 </p>
                 <p style={{fontSize:12,color:'#C8943E',fontWeight:600,marginTop:4}}>
-                  Remaining target for new orders: {formatCurrency(Math.max(0, (parseFloat(annualTarget)||0) - (parseFloat(achieved)||0) - (parseFloat(billingDone)||0) - (parseFloat(openOrders)||0) - (parseFloat(retainerBusiness)||0)))}
+                  Remaining target for new order booking: {formatCurrency(Math.max(0, (parseFloat(annualTarget)||0) - (parseFloat(billingDone)||0) - (parseFloat(openOrders)||0) - (parseFloat(retainerBusiness)||0)))}
                 </p>
                 {deliveryWeeks && parseInt(deliveryWeeks) > 0 && (() => {
                   const weeksLeft = remainingDays / 5
@@ -309,7 +311,7 @@ export default function VelocityPage() {
               <h2 style={{fontSize:20,fontWeight:'bold',marginBottom:4}}>Your Sales Velocity Dashboard</h2>
               <p style={{fontSize:36,fontWeight:'bold',color:'#C8943E'}}>₹{Math.round(results.rotis).toLocaleString()}/hr</p>
               <p style={{fontSize:13,color:'#888'}}>ROTIS™ — Make every hour count</p>
-              {results.secured > 0 && <p style={{fontSize:12,color:'#86efac',marginTop:8}}>Secured: {formatCurrency(results.secured)} | Shortfall: {formatCurrency(results.shortfall)}</p>}
+              {results.secured > 0 && <p style={{fontSize:12,color:'#86efac',marginTop:8}}>Secured: {formatCurrency(results.secured)} | New Orders Required: {formatCurrency(results.shortfall)}</p>}
             </div>
 
             <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:12,marginBottom:16}}>
@@ -348,6 +350,7 @@ export default function VelocityPage() {
             </div>
 
             <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+              <button onClick={() => setPhase(3)} style={{padding:'10px 20px',background:'#fff',border:'1px solid #ddd',borderRadius:8,fontSize:13,cursor:'pointer'}}>← Edit Inputs</button>
               <button onClick={() => {
                 const txt = `Sales Velocity Dashboard\nROTIS: ₹${Math.round(results.rotis).toLocaleString()}/hr\nVisits/Day: ${results.visitsPerDay}\nEnquiries/Day: ${results.enquiriesPerDay}\nShortfall: ${formatCurrency(results.shortfall)}\nCoverage: ${results.coverageRatio}x | Achieved: ${results.pctAchieved}%\nCost of Delay: ${formatCurrency(results.costOfDelay)}/day\nFeasible: ${results.feasible?'Yes':'No'}\n#1 Lever: ${results.levers[0]?.name}`
                 try{navigator.clipboard.writeText(txt)}catch(e){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta)}
