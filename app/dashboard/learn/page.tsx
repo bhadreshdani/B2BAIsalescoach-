@@ -43,9 +43,13 @@ const STEPS = [
    scripts:['QBR: "In the last quarter, here is what we delivered [metrics]. For next quarter, here is what I propose we work on together."','Referral: "Since you have seen the results, would you be comfortable introducing me to [similar company]?"']},
 ]
 
-const CROSS_STEPS = [
-  {name:'Follow-Up Mastery',icon:'🔄',framework:'PULSE™',desc:'Purpose, Unique, Layered, Spaced, Escalate — 12 value-add types for follow-ups that work'},
-  {name:'Neuroscience of Selling',icon:'🧠',framework:'Brain Science',desc:'System 1/2 thinking, SCARF model, cognitive biases, buyer psychology across all 11 steps'},
+const CROSS_STEPS_DATA = [
+  {n:12,name:'Follow-Up Mastery',icon:'🔄',frameworks:['PULSE™'],
+   concepts:['PULSE: Purpose (clear reason) → Unique (different each time) → Layered (multi-channel) → Spaced (strategic timing) → Escalate (increase urgency)','80% of deals close after the 6th-10th follow-up. Most salespeople stop at 2.','12 value-add types: Industry report, case study, ROI calculator, comparison chart, testimonial video, article, invitation, introduction, competitive intel, technical update, holiday greeting, personal milestone','Never send "just checking in" — every follow-up must ADD VALUE to the customer','Multi-channel approach: Email → WhatsApp → LinkedIn → Phone → In-person visit → Video message'],
+   scripts:['Value-add follow-up: "I came across this [industry report/case study] that is directly relevant to the [challenge] you mentioned. Thought you should see this before your [upcoming decision/meeting]."','After no response (3rd follow-up): "I understand you are busy. I have put together a one-page summary of how [similar company] saved [₹X] using our solution. Worth a 5-minute look?"','Breakup email (5th follow-up): "I have reached out a few times and I understand if the timing is not right. I will close this from my end unless I hear back. If things change in the future, I am always here to help."']},
+  {n:13,name:'Neuroscience of Selling',icon:'🧠',frameworks:['SCARF™ Model','System 1/2','Cialdini 7 Principles'],
+   concepts:['System 1 (Fast/Emotional) vs System 2 (Slow/Logical): 95% of buying decisions are emotional first, then justified logically. Win System 1 with trust, safety, and liking — then satisfy System 2 with data and ROI.','SCARF Model: Every buyer has 5 threat/reward domains — Status, Certainty, Autonomy, Relatedness, Fairness. If ANY is threatened, the buyer shifts to defensive mode and stops buying.','Brain Chemistry: Dopamine (create excitement about outcomes), Oxytocin (build trust through rapport), Cortisol (reduce fear and perceived risk), Serotonin (make buyer feel important and recognised).','12 Cognitive Biases: Anchoring (present high number first), Loss Aversion (cost of NOT buying), Status Quo Bias ("no decision" is your biggest competitor), Decoy Effect (Rule of 3 pricing), Social Proof (reference customers), Reciprocity (give value first).','Buying Committee Dynamics: CEO needs vision and status, CFO needs certainty and risk mitigation, CTO needs autonomy and competence proof, End User needs safety and ease, Champion needs recognition and relatedness.'],
+   scripts:['Loss aversion: "Every month without this solution, you are losing approximately ₹[X] in [downtime/energy/labour]. Over the next 12 months, that is ₹[12X] — more than the investment in our solution."','Anchoring: "Companies typically invest ₹[high number] for this level of capability. Our solution delivers the same outcome at ₹[your price] — roughly [X]% less than the industry benchmark."','Social proof: "We have [X] installations running in the [industry] sector. [Company name] achieved [specific result] within [timeframe]. Your application is very similar to theirs."']},
 ]
 
 export default function LearnPage() {
@@ -74,7 +78,7 @@ export default function LearnPage() {
     localStorage.setItem('learnCompleted', JSON.stringify(Array.from(next)))
   }
 
-  const step = STEPS.find(s => s.n === selectedStep)
+  const step = [...STEPS, ...CROSS_STEPS_DATA].find(s => s.n === selectedStep)
 
   if (!user) return <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center'}}><p>Loading...</p></div>
 
@@ -130,7 +134,7 @@ export default function LearnPage() {
             <div style={{textAlign:'center',marginBottom:24}}>
               <h2 style={{fontSize:20,fontWeight:'bold'}}>The 11-Step Sales Staircase</h2>
               <p style={{fontSize:13,color:'#888'}}>Click any step to learn the frameworks, concepts, and scripts</p>
-              <p style={{fontSize:12,color:'#16a34a',marginTop:4}}>{completed.size} of {STEPS.length} steps completed</p>
+              <p style={{fontSize:12,color:'#16a34a',marginTop:4}}>{completed.size} of {STEPS.length + CROSS_STEPS_DATA.length} steps completed</p>
             </div>
 
             {/* Visual Staircase */}
@@ -159,11 +163,13 @@ export default function LearnPage() {
 
             {/* Cross-Step Modules */}
             <h3 style={{fontSize:14,fontWeight:700,color:'#888',marginBottom:8}}>CROSS-STEP MODULES</h3>
-            {CROSS_STEPS.map(c => (
-              <div key={c.name} style={{background:'#fef3e2',borderRadius:8,padding:14,marginBottom:8,display:'flex',alignItems:'center',gap:12}}>
+            {CROSS_STEPS_DATA.map(c => (
+              <button key={c.name} onClick={() => setSelectedStep(c.n)}
+                style={{width:'100%',background:'#fef3e2',borderRadius:8,padding:14,marginBottom:8,display:'flex',alignItems:'center',gap:12,border:'none',cursor:'pointer',textAlign:'left'}}>
                 <span style={{fontSize:24}}>{c.icon}</span>
-                <div><div style={{fontSize:14,fontWeight:600}}>{c.name}</div><div style={{fontSize:12,color:'#888'}}>{c.framework} — {c.desc}</div></div>
-              </div>
+                <div style={{flex:1}}><div style={{fontSize:14,fontWeight:600}}>{c.name}</div><div style={{fontSize:12,color:'#888'}}>{c.frameworks.join(' · ')}</div></div>
+                <span style={{fontSize:14,color:'#C8943E'}}>→</span>
+              </button>
             ))}
           </div>
         )}
@@ -227,8 +233,8 @@ export default function LearnPage() {
             <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
               <Link href={`/dashboard/chat?prompt=${encodeURIComponent(`I want to learn about Step ${step.n}: ${step.name}. Explain the ${step.frameworks[0]} framework in detail with examples relevant to my industry. My name is already in your context.`)}`}
                 style={{padding:'10px 20px',background:'#C8943E',color:'#fff',borderRadius:8,fontSize:13,fontWeight:600,textDecoration:'none'}}>💬 Ask Coach About This</Link>
-              <Link href={`/dashboard/scorecard?model=${{1:'impact',2:'impact',3:'impact',4:'kycw',5:'rapport',6:'discover',6.1:'impact',7:'value',8:'impact',9:'dealwin',10:'dealwin',11:'evolution'}[step.n]||'impact'}`}
-                style={{padding:'10px 20px',background:'#9333ea',color:'#fff',borderRadius:8,fontSize:13,fontWeight:600,textDecoration:'none'}}>📊 Practice {step.n<=2?'IMPACT Score':step.n<=4?'KYCW Readiness':step.n<=9?'Deal Readiness':'Deal Win'} Scoring</Link>
+              {step.n <= 11 && <Link href={`/dashboard/scorecard?model=${{1:'impact',2:'impact',3:'impact',4:'kycw',5:'rapport',6:'discover',6.1:'impact',7:'value',8:'impact',9:'dealwin',10:'dealwin',11:'evolution'}[step.n]||'impact'}`}
+                style={{padding:'10px 20px',background:'#9333ea',color:'#fff',borderRadius:8,fontSize:13,fontWeight:600,textDecoration:'none'}}>📊 Practice {step.n<=2?'IMPACT Score':step.n<=4?'KYCW Readiness':step.n<=9?'Deal Readiness':'Deal Win'} Scoring</Link>}
               <button onClick={() => setSelectedStep(null)} style={{padding:'10px 20px',background:'#f3f4f6',border:'none',borderRadius:8,fontSize:13,cursor:'pointer'}}>← Back to Staircase</button>
             </div>
           </div>
