@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import CalendlyButton from '@/components/CalendlyButton'
 
 const DEDUCTIONS = [
   {id:'sundays',label:'Sundays',default:52},
@@ -396,6 +397,7 @@ export default function VelocityPage() {
           </div>
         )}
       </div>
+      <CalendlyButton />
     </div>
   )
 }

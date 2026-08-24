@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import CalendlyButton from '@/components/CalendlyButton'
 
 const ATTITUDE = [{id:'a1',q:'Goal Orientation',desc:'How driven are you to achieve and exceed sales targets?'},{id:'a2',q:'Resilience & Persistence',desc:'How well do you bounce back from rejections and setbacks?'},{id:'a3',q:'Self-Motivation',desc:'Can you push yourself without external pressure?'},{id:'a4',q:'Positive Mindset',desc:'Do you see challenges as opportunities?'},{id:'a5',q:'Ownership & Accountability',desc:'Do you take full responsibility for your results?'},{id:'a6',q:'Customer-First Thinking',desc:'Do you genuinely prioritise customer success?'},{id:'a7',q:'Growth Mindset',desc:'Are you constantly learning and improving?'},{id:'a8',q:'Ethical Standards',desc:'Do you maintain integrity even under pressure?'},{id:'a9',q:'Time Discipline',desc:'Do you respect your own and others\' time?'},{id:'a10',q:'Competitive Drive',desc:'Do you actively study and outperform competitors?'},{id:'a11',q:'Adaptability',desc:'How quickly do you adjust to changing situations?'}]
 const SKILL = [{id:'s1',q:'Prospecting & Lead Generation',desc:'Can you consistently identify and reach new prospects?'},{id:'s2',q:'Discovery & Questioning',desc:'Do you ask deep questions that uncover real needs?'},{id:'s3',q:'Presentation & Communication',desc:'Can you articulate value clearly and persuasively?'},{id:'s4',q:'Objection Handling',desc:'Do you address concerns confidently without discounting?'},{id:'s5',q:'Negotiation & Closing',desc:'Can you navigate complex negotiations to a win-win?'},{id:'s6',q:'Relationship Building',desc:'Do you build trust that lasts beyond individual transactions?'},{id:'s7',q:'Pipeline Management',desc:'Do you manage a healthy, balanced pipeline?'},{id:'s8',q:'Follow-Up Discipline',desc:'Do you follow up consistently with added value?'},{id:'s9',q:'Stakeholder Management',desc:'Can you manage multiple decision-makers in a deal?'},{id:'s10',q:'Digital Selling',desc:'Do you effectively use LinkedIn, email, CRM tools?'}]
@@ -186,6 +187,7 @@ export default function AssessmentPage() {
           </div>
         )}
       </div>
+      <CalendlyButton />
     </div>
   )
 }

@@ -3,6 +3,7 @@ import { useState, useEffect, Suspense } from 'react'
 import { createClient } from '@/lib/supabase'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import CalendlyButton from '@/components/CalendlyButton'
 
 function formatCurrency(val: number): string {
   if (val >= 10000000) return (val / 10000000).toFixed(1) + ' Cr'
@@ -169,6 +170,7 @@ function DealsInner() {
           </div>
         )}
       </div>
+      <CalendlyButton />
     </div>
   )
 }

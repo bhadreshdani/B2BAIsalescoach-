@@ -187,20 +187,20 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Calendly Floating Button */}
-        <CalendlyButton />
-
-        {/* Star Rating Modal */}
-        {pendingRating && (
-          <StarRating userId={profile?.id} onComplete={() => setPendingRating(false)} />
-        )}
-
         {/* Footer Actions */}
         <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginTop:24,paddingTop:16,borderTop:'1px solid #ddd'}}>
           <Link href="/admin/prompts" style={{fontSize:12,color:'#888'}}>Admin Panel</Link>
           <button onClick={handleLogout} style={{fontSize:12,color:'#888',background:'none',border:'none',cursor:'pointer'}}>Log Out</button>
         </div>
       </div>
+
+      {/* Calendly Floating Button */}
+      <CalendlyButton />
+
+      {/* Star Rating Modal */}
+      {pendingRating && (
+        <StarRating userId={profile?.id} onComplete={() => setPendingRating(false)} />
+      )}
     </div>
   )
 }

@@ -4,6 +4,8 @@ import { createClient } from '@/lib/supabase'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import DownloadButtons from '@/components/DownloadButtons'
+import StarRating from '@/components/StarRating'
+import CalendlyButton from '@/components/CalendlyButton'
 
 const QUICK_STARTS = [
   { icon: '🎯', label: 'Score a Prospect', prompt: 'Help me score a prospect using the IMPACT Score framework' },
@@ -25,6 +27,8 @@ function ChatInner() {
   const searchParams = useSearchParams()
   const [user, setUser] = useState<any>(null)
   const [messages, setMessages] = useState<Message[]>([])
+  const [messageCount, setMessageCount] = useState(0)
+  const [showRating, setShowRating] = useState(false)
   const [dealLabel, setDealLabel] = useState<string>('')
   const [input, setInput] = useState('')
   const [streaming, setStreaming] = useState(false)
@@ -98,6 +102,12 @@ function ChatInner() {
       setMessages([...newMessages, { role: 'assistant', content: 'Sorry, I encountered an error. Please try again.' }])
     }
     setStreaming(false)
+    const newCount = messageCount + 1
+    setMessageCount(newCount)
+    // Show star rating every 5 exchanges
+    if (newCount > 0 && newCount % 5 === 0) {
+      setTimeout(() => setShowRating(true), 1000)
+    }
     inputRef.current?.focus()
   }
 

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import CalendlyButton from '@/components/CalendlyButton'
 
 const STEPS = [
   {n:1,name:'Prospecting',icon:'🔍',frameworks:['Golden Hour','Platinum Hour','IQL/MQL/SQL'],
@@ -252,6 +253,7 @@ export default function LearnPage() {
           </div>
         )}
       </div>
+      <CalendlyButton />
     </div>
   )
 }

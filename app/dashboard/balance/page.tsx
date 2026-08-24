@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import CalendlyButton from '@/components/CalendlyButton'
 
 const SPOKES = [
   {id:'career',label:'Career & Work',icon:'💼',questions:['Satisfaction with current role','Growth opportunities in career','Work challenge and engagement','Recognition for contributions','Alignment with career goals']},
@@ -273,6 +274,7 @@ export default function BalancePage() {
           </div>
         )}
       </div>
+      <CalendlyButton />
     </div>
   )
 }

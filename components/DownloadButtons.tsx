@@ -97,7 +97,7 @@ function buildHTML(title: string, content: string): string {
 <h1>${title}</h1>
 <pre>${content.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>
 <div class="footer">
-  <p>Powered by B2B Sales Transformation 2.0 by Bhadresh Dani</p>
+  <p>Powered by Book B2B Sales Transformation 2.0, authored by Bhadresh Dani</p>
   <p class="confidential">CONFIDENTIAL: This report contains proprietary methodology. Do not distribute.</p>
 </div>
 </body></html>`
@@ -118,7 +118,7 @@ function buildWordHTML(title: string, content: string): string {
 <h1>${title}</h1>
 <pre>${content.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>
 <div class="footer">
-  <p>Powered by B2B Sales Transformation 2.0 by Bhadresh Dani</p>
+  <p>Powered by Book B2B Sales Transformation 2.0, authored by Bhadresh Dani</p>
   <p style="color:#dc2626;font-size:8pt">CONFIDENTIAL: This report contains proprietary methodology. Do not distribute.</p>
 </div></body></html>`
 }

@@ -3,6 +3,7 @@ import { useState, useEffect, Suspense } from 'react'
 import { createClient } from '@/lib/supabase'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import CalendlyButton from '@/components/CalendlyButton'
 
 const MODELS: Record<string, { name:string; step:string; factors: {id:string;label:string;weight:number;desc:string}[]; bands: {min:number;max:number;label:string;color:string}[] }> = {
   impact: { name:'IMPACT Score™', step:'Step 2', factors:[
@@ -311,6 +312,7 @@ function ScorecardInner() {
           </div>
         )}
       </div>
+      <CalendlyButton />
     </div>
   )
 }
