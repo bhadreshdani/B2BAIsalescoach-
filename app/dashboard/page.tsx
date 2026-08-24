@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import CalendlyButton from '@/components/CalendlyButton'
+import StarRating from '@/components/StarRating'
 
 const DAILY_TIPS = [
   "Every 5% discount impacts EBIT by ~8%. Trade — never give.",
@@ -20,6 +22,8 @@ export default function DashboardPage() {
   const [profile, setProfile] = useState<any>(null)
   const [deals, setDeals] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [showRating, setShowRating] = useState(false)
+  const [pendingRating, setPendingRating] = useState(false)
   const [tip] = useState(DAILY_TIPS[Math.floor(Math.random() * DAILY_TIPS.length)])
 
   function formatCurrency(val: number): string {
@@ -41,6 +45,11 @@ export default function DashboardPage() {
 
       const { data: d } = await supabase.from('deals').select('*').eq('user_id', user.id).eq('status', 'active').order('updated_at', { ascending: false }).limit(5)
       setDeals(d || [])
+      // Check if user has a pending rating
+      const feedbackRes = await fetch('/api/feedback?userId=' + u.id)
+      const feedbackData = await feedbackRes.json().catch(() => ({}))
+      if (feedbackData.pendingRating) setPendingRating(true)
+      
       setLoading(false)
     }
     loadData()
@@ -106,7 +115,7 @@ export default function DashboardPage() {
         )}
 
         {/* Tier 1 — 4 Primary Mode Cards */}
-        <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:16,marginBottom:24}}>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(140px,1fr))',gap:12,marginBottom:24}}>
           {[
             { icon: '💬', title: 'Ask\nBUDDY', desc: 'Ask anything about sales', href: '/dashboard/chat', color: '#2563eb' },
             { icon: '🎯', title: 'Coach\na Deal', desc: 'Structured deal coaching', href: '/dashboard/deals', color: '#16a34a' },
@@ -177,6 +186,14 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
+
+        {/* Calendly Floating Button */}
+        <CalendlyButton />
+
+        {/* Star Rating Modal */}
+        {pendingRating && (
+          <StarRating userId={profile?.id} onComplete={() => setPendingRating(false)} />
+        )}
 
         {/* Footer Actions */}
         <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginTop:24,paddingTop:16,borderTop:'1px solid #ddd'}}>

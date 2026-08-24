@@ -3,6 +3,7 @@ import { useState, useEffect, useRef, Suspense } from 'react'
 import { createClient } from '@/lib/supabase'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import DownloadButtons from '@/components/DownloadButtons'
 
 const QUICK_STARTS = [
   { icon: '🎯', label: 'Score a Prospect', prompt: 'Help me score a prospect using the IMPACT Score framework' },
@@ -144,9 +145,7 @@ function ChatInner() {
                 <div style={{maxWidth:'80%',padding:'12px 16px',borderRadius:msg.role==='user'?'16px 16px 4px 16px':'4px 16px 16px 16px',background:msg.role==='user'?'#0D1B2A':'#fff',color:msg.role==='user'?'#fff':'#1B2A4A',fontSize:14,lineHeight:1.7,whiteSpace:'pre-wrap',boxShadow:'0 1px 3px rgba(0,0,0,0.06)'}}>
                   {msg.content}
                   {msg.role==='assistant' && msg.content && !streaming && i===messages.length-1 && (
-                    <div style={{display:'flex',gap:8,marginTop:12,paddingTop:8,borderTop:'1px solid #eee'}}>
-                      <button onClick={() => { try { navigator.clipboard.writeText(msg.content) } catch(e) { const ta = document.createElement('textarea'); ta.value = msg.content; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta) } alert('Copied!') }} style={{fontSize:11,color:'#888',background:'#f3f4f6',border:'none',padding:'4px 10px',borderRadius:4,cursor:'pointer'}}>📋 Copy</button>
-                    </div>
+                    <DownloadButtons title="B2BsalesBUDDY Coaching Session" content={msg.content} filename="coaching-session" />
                   )}
                 </div>
               </div>

@@ -1,6 +1,12 @@
 import './globals.css';
 import type { Metadata } from 'next';
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+}
+
 export const metadata: Metadata = {
   title: 'Bhadresh Dani — AI Sales Coach',
   description: 'AI-powered B2B sales coaching platform. Diagnose real sales problems, get contextual coaching, and close more deals.',

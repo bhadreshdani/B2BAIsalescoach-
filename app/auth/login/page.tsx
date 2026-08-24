@@ -46,8 +46,8 @@ export default function LoginPage() {
   };
 
   return (
-    <div style={{minHeight:'100vh',display:'flex',fontFamily:'Arial,sans-serif'}}>
-      <div style={{flex:1,background:'#0D1B2A',display:'flex',flexDirection:'column',justifyContent:'center',padding:'48px 40px',color:'#fff'}}>
+    <div style={{minHeight:'100vh',display:'flex',flexDirection:'row',fontFamily:'Arial,sans-serif'}}>
+      <div className='auth-left' style={{flex:1,background:'#0D1B2A',display:'flex',flexDirection:'column',justifyContent:'center',padding:'48px 40px',color:'#fff'}}>
         <h1 style={{fontSize:22,fontWeight:'bold',color:'#C8943E',marginBottom:24}}>B2BsalesBUDDY</h1>
         <p style={{fontSize:26,lineHeight:1.4,marginBottom:16}}>Welcome back.</p>
         <p style={{fontSize:14,color:'#999',lineHeight:1.6,maxWidth:320}}>Continue your coaching journey. Your deals and session history are waiting for you.</p>
