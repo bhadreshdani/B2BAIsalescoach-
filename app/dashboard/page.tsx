@@ -46,7 +46,7 @@ export default function DashboardPage() {
       const { data: d } = await supabase.from('deals').select('*').eq('user_id', user.id).eq('status', 'active').order('updated_at', { ascending: false }).limit(5)
       setDeals(d || [])
       // Check if user has a pending rating
-      const feedbackRes = await fetch('/api/feedback?userId=' + u.id)
+      const feedbackRes = await fetch('/api/feedback?userId=' + user.id)
       const feedbackData = await feedbackRes.json().catch(() => ({}))
       if (feedbackData.pendingRating) setPendingRating(true)
       
