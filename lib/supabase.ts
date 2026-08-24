@@ -19,4 +19,4 @@ export const createClient = () => supabase
 
 export const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || 'B2BsalesBUDDY'
 export const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'bhadreshdani69@gmail.com'
-export const CALENDLY_URL = process.env.NEXT_PUBLIC_CALENDLY_URL || 'https://calendly.com/bhadreshdani/15min'
+export const CALENDLY_URL = process.env.NEXT_PUBLIC_CALENDLY_URL || 'https://calendly.com/bhadreshdani/b2bsalesbuddy-coaching-call'
