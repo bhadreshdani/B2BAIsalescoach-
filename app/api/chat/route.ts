@@ -1,3 +1,5 @@
+export const maxDuration = 60
+
 import { NextRequest } from 'next/server'
 import { getCoachingResponse } from '@/lib/anthropic'
 import { supabaseAdmin } from '@/lib/supabase'

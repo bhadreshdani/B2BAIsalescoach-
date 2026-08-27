@@ -46,7 +46,7 @@ export async function getCoachingResponse(userId: string, userMessage: string, c
   const userContext = await buildUserContext(userId)
   const fullSystemPrompt = [systemPrompt, userContext ? `\n\nUSER CONTEXT:\n${userContext}` : '', dealContext ? `\n\nDEAL CONTEXT:\n${dealContext}` : '', knowledgeContext ? `\n\nRELEVANT COACHING KNOWLEDGE (use as YOUR expertise):\n${knowledgeContext}` : ''].filter(Boolean).join('\n')
   const messages = [...conversationHistory, { role: 'user', content: userMessage }].map((m: any) => ({ role: m.role as 'user'|'assistant', content: m.content }))
-  const stream = anthropic.messages.stream({ model: 'claude-sonnet-4-20250514', max_tokens: 2048, system: fullSystemPrompt, messages })
+  const stream = anthropic.messages.stream({ model: 'claude-sonnet-4-6', max_tokens: 2048, system: fullSystemPrompt, messages })
   const encoder = new TextEncoder()
   return new ReadableStream({
     async start(controller) {
@@ -64,10 +64,10 @@ export async function testCoachingWithDebug(userMessage: string) {
   const systemPrompt = await loadSystemPrompt()
   const knowledgeContext = await searchKnowledge(userMessage)
   const response = await anthropic.messages.create({
-    model: 'claude-sonnet-4-20250514', max_tokens: 2048,
+    model: 'claude-sonnet-4-6', max_tokens: 2048,
     system: systemPrompt + (knowledgeContext ? `\n\nRELEVANT KNOWLEDGE:\n${knowledgeContext}` : ''),
     messages: [{ role: 'user', content: userMessage }],
   })
   const text = response.content.filter((b: any) => b.type === 'text').map((b: any) => b.text).join('')
-  return { coaching: text, debug: { systemPromptLength: systemPrompt.length, knowledgeChunksFound: knowledgeContext ? knowledgeContext.split('---').length : 0, knowledgePreview: knowledgeContext ? knowledgeContext.substring(0, 500) : 'None found', model: 'claude-sonnet-4-20250514', tokensUsed: response.usage } }
+  return { coaching: text, debug: { systemPromptLength: systemPrompt.length, knowledgeChunksFound: knowledgeContext ? knowledgeContext.split('---').length : 0, knowledgePreview: knowledgeContext ? knowledgeContext.substring(0, 500) : 'None found', model: 'claude-sonnet-4-6', tokensUsed: response.usage } }
 }
