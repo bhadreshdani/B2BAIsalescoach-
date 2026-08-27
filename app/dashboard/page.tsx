@@ -20,6 +20,7 @@ const DAILY_TIPS = [
 export default function DashboardPage() {
   const router = useRouter()
   const [profile, setProfile] = useState<any>(null)
+  const [authUser, setAuthUser] = useState<any>(null)
   const [deals, setDeals] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [showRating, setShowRating] = useState(false)
@@ -38,6 +39,7 @@ export default function DashboardPage() {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) { router.push('/auth/login'); return }
+      setAuthUser(user)
 
       const { data: p } = await supabase.from('profiles').select('*').eq('id', user.id).single()
       if (p && !p.onboarding_completed) { router.push('/onboarding'); return }
@@ -64,7 +66,7 @@ export default function DashboardPage() {
   if (loading) return <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center'}}><p>Loading...</p></div>
 
   const greeting = new Date().getHours() < 12 ? 'Good Morning' : new Date().getHours() < 17 ? 'Good Afternoon' : 'Good Evening'
-  const firstName = profile?.name?.split(' ')[0] || 'there'
+  const firstName = profile?.name?.split(' ')[0] || authUser?.user_metadata?.name?.split(' ')[0] || 'there'
   const lastLogin = profile?.last_login_at ? new Date(profile.last_login_at) : null
   const daysSinceLogin = lastLogin ? Math.floor((Date.now() - lastLogin.getTime()) / (1000*60*60*24)) : 0
   const showVelocityNudge = !profile?.velocity_completed

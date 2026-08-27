@@ -47,7 +47,12 @@ export default function SignupPage() {
     }
 
     if (data.user) {
-      await supabase.from('profiles').update({ name: form.name }).eq('id', data.user.id);
+      // Save name via API (bypasses RLS)
+      await fetch('/api/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: data.user.id, name: form.name }),
+      });
     }
 
     setLoading(false);
