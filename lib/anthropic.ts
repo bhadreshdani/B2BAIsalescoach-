@@ -44,7 +44,7 @@ export async function getCoachingResponse(userId: string, userMessage: string, c
   const systemPrompt = await loadSystemPrompt()
   const knowledgeContext = await searchKnowledge(userMessage)
   const userContext = await buildUserContext(userId)
-  const fullSystemPrompt = [systemPrompt, userContext ? `\n\nUSER CONTEXT:\n${userContext}` : '', dealContext ? `\n\nDEAL CONTEXT:\n${dealContext}` : '', knowledgeContext ? `\n\nRELEVANT COACHING KNOWLEDGE (use as YOUR expertise):\n${knowledgeContext}` : ''].filter(Boolean).join('\n')
+  const fullSystemPrompt = [systemPrompt, userContext ? `\n\n=== CRITICAL: USER PROFILE (ALREADY REGISTERED) ===\nThe user has ALREADY provided all this information during registration. NEVER ask for their name, industry, experience, products, customer types, or competitors. Use this data directly:\n${userContext}\n=== END USER PROFILE ===` : '', dealContext ? `\n\nDEAL CONTEXT:\n${dealContext}` : '', knowledgeContext ? `\n\nRELEVANT COACHING KNOWLEDGE (use as YOUR expertise):\n${knowledgeContext}` : ''].filter(Boolean).join('\n')
   const messages = [...conversationHistory, { role: 'user', content: userMessage }].map((m: any) => ({ role: m.role as 'user'|'assistant', content: m.content }))
   const stream = anthropic.messages.stream({ model: 'claude-sonnet-4-6', max_tokens: 2048, system: fullSystemPrompt, messages })
   const encoder = new TextEncoder()
