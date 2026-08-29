@@ -78,7 +78,7 @@ export default function DashboardPage() {
         <div style={{maxWidth:960,margin:'0 auto',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
           <div>
             <h1 style={{fontSize:18,fontWeight:'bold'}}>B2BsalesBUDDY</h1>
-            <p style={{fontSize:11,color:'#C8943E'}}>Your AI Sales Coach</p>
+            <p style={{fontSize:11,color:'#C8943E'}}>Your Personal AI Sales Coach</p>
           </div>
           <div style={{textAlign:'right'}}>
             <p style={{fontSize:14}}>{greeting}, {firstName}!</p>

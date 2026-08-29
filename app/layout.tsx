@@ -8,7 +8,7 @@ export const viewport = {
 }
 
 export const metadata: Metadata = {
-  title: 'Bhadresh Dani — AI Sales Coach',
+  title: 'B2BsalesBUDDY — Your Personal AI Sales Coach',
   description: 'AI-powered B2B sales coaching platform. Diagnose real sales problems, get contextual coaching, and close more deals.',
   keywords: ['B2B sales', 'sales coaching', 'AI coach', 'Bhadresh Dani', 'sales transformation'],
 };
