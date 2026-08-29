@@ -159,7 +159,7 @@ function ScorecardInner() {
         <div style={{display:'flex',alignItems:'center',gap:12}}>
           <span style={{fontSize:14,fontWeight:'bold',color:'#C8943E'}}>B2BsalesBUDDY</span>
           <span style={{color:'#444'}}>|</span>
-          <Link href="/dashboard" style={{color:'#888',fontSize:13,textDecoration:'none'}}>← Home</Link>
+          <button onClick={() => router.back()} style={{color:'#888',fontSize:13,background:'none',border:'none',cursor:'pointer'}}>← Back</button>
           <span style={{color:'#444'}}>|</span>
           <h1 style={{fontSize:16,fontWeight:'bold'}}>📊 Scorecard</h1>
         </div>
