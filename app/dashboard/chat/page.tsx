@@ -80,7 +80,7 @@ function ChatInner() {
         body: JSON.stringify({
           message: msg,
           userId: uid,
-          conversationHistory: newMessages.slice(-10).map((m: Message) => ({ role: m.role, content: m.content })),
+          conversationHistory: newMessages.slice(-6).map((m: Message) => ({ role: m.role, content: m.content })),
         }),
       })
 
