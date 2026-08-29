@@ -89,7 +89,7 @@ export default function LearnPage() {
         <div style={{display:'flex',alignItems:'center',gap:12}}>
           <span style={{fontSize:14,fontWeight:'bold',color:'#C8943E',marginRight:8}}>B2BsalesBUDDY</span>
           <span style={{color:'#444'}}>|</span>
-          <button onClick={() => { if (selectedStep) setSelectedStep(null); else if (showFrameworks) setShowFrameworks(false); else window.location.href='/dashboard' }}
+          <button onClick={() => { if (selectedStep) setSelectedStep(null); else if (showFrameworks) setShowFrameworks(false); else router.back() }}
             style={{color:'#888',fontSize:13,background:'none',border:'none',cursor:'pointer'}}>← Back</button>
           <span style={{color:'#444'}}>|</span>
           <h1 style={{fontSize:16,fontWeight:'bold'}}>{selectedStep && step ? (step.n <= 11 ? `📚 Step ${step.n}: ${step.name}` : `📚 Cross-Step: ${step.name}`) : '📚 Learn the 11-Step Staircase'}</h1>

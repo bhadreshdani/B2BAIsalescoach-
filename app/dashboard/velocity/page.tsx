@@ -196,7 +196,7 @@ export default function VelocityPage() {
           <button onClick={() => {
             if (phase > 1 && phase < 5) setPhase(phase - 1)
             else if (phase === 5) setPhase(3)
-            else window.location.href = '/dashboard'
+            else router.back()
           }} style={{color:'#888',fontSize:13,background:'none',border:'none',cursor:'pointer'}}>← Back</button>
           <span style={{color:'#444'}}>|</span>
           <h1 style={{fontSize:16,fontWeight:'bold'}}>🚀 Sales Velocity Engine</h1>

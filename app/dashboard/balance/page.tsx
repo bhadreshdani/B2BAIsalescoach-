@@ -127,7 +127,7 @@ export default function BalancePage() {
             else if (phase === 'desired') { setPhase('current'); setSpokeIdx(7) }
             else if (phase === 'importance') setPhase('desired')
             else if (phase === 'results') setPhase('importance')
-            else window.location.href = '/dashboard'
+            else router.back()
           }} style={{color:'#888',fontSize:13,background:'none',border:'none',cursor:'pointer'}}>← Back</button>
           <span style={{color:'#444'}}>|</span>
           <h1 style={{fontSize:16,fontWeight:'bold'}}>⚖️ Work-Life Balance — Wheel of Life</h1>

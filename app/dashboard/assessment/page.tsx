@@ -83,7 +83,7 @@ export default function AssessmentPage() {
             if (phase === 'scoring' && pillarIdx > 0) setPillarIdx(pillarIdx - 1)
             else if (phase === 'scoring' && pillarIdx === 0) setPhase('intro')
             else if (phase === 'results') setPhase('scoring')
-            else window.location.href = '/dashboard'
+            else router.back()
           }} style={{color:'#888',fontSize:13,background:'none',border:'none',cursor:'pointer'}}>← Back</button>
           <span style={{color:'#444'}}>|</span>
           <h1 style={{fontSize:16,fontWeight:'bold'}}>🔥 ASK™ Competency Assessment</h1>
