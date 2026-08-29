@@ -87,6 +87,8 @@ export default function LearnPage() {
     <div style={{minHeight:'100vh',background:'#f5f0e8',fontFamily:'Arial,sans-serif'}}>
       <header style={{background:'#0D1B2A',color:'#fff',padding:'12px 24px',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
         <div style={{display:'flex',alignItems:'center',gap:12}}>
+          <a href="/dashboard" style={{display:'flex',alignItems:'center',gap:4,color:'#C8943E',fontSize:13,textDecoration:'none',fontWeight:600,background:'rgba(200,148,62,0.15)',padding:'6px 12px',borderRadius:6}}>🏠 Home</a>
+          <span style={{color:'#444'}}>|</span>
           <span style={{fontSize:14,fontWeight:'bold',color:'#C8943E',marginRight:8}}>B2BsalesBUDDY</span>
           <span style={{color:'#444'}}>|</span>
           <button onClick={() => { if (selectedStep) setSelectedStep(null); else if (showFrameworks) setShowFrameworks(false); else router.back() }}
