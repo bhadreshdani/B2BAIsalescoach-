@@ -128,7 +128,7 @@ export default function BalancePage() {
             else if (phase === 'importance') setPhase('desired')
             else if (phase === 'results') setPhase('importance')
             else router.back()
-          }} style={{color:'#888',fontSize:13,background:'none',border:'none',cursor:'pointer'}}>← Back</button>
+          }} style={{display:'flex',alignItems:'center',gap:4,color:'#C8943E',fontSize:13,background:'rgba(200,148,62,0.15)',border:'none',cursor:'pointer',padding:'6px 12px',borderRadius:6,fontWeight:600}}>🏠 Home</button>
           <span style={{color:'#444'}}>|</span>
           <h1 style={{fontSize:16,fontWeight:'bold'}}>⚖️ Work-Life Balance — Wheel of Life</h1>
         </div>
@@ -274,6 +274,10 @@ export default function BalancePage() {
           </div>
         )}
       </div>
+      <div style={{position:'fixed',bottom:24,left:24,zIndex:50}}>
+        <button onClick={() => router.back()} style={{display:'flex',alignItems:'center',gap:6,padding:'10px 18px',background:'#0D1B2A',color:'#fff',borderRadius:40,boxShadow:'0 4px 16px rgba(0,0,0,0.2)',border:'none',cursor:'pointer',fontSize:13,fontWeight:600}}>← Back</button>
+      </div>
+
       <CalendlyButton />
     </div>
   )

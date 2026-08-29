@@ -26,6 +26,11 @@ export default function ForgotPasswordPage() {
   return (
     <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:'#f5f0e8',fontFamily:'Arial,sans-serif'}}>
       <div style={{width:'100%',maxWidth:400,padding:40}}>
+        <div style={{textAlign:'center',marginBottom:24}}>
+          <div style={{fontSize:36,marginBottom:8}}>🎯</div>
+          <h1 style={{fontSize:22,fontWeight:'bold',color:'#C8943E'}}>B2BsalesBUDDY</h1>
+          <p style={{fontSize:12,color:'#888'}}>Your Personal AI Sales Coach</p>
+        </div>
         <h1 style={{fontSize:24,fontWeight:'bold',marginBottom:8}}>Forgot Password?</h1>
 
         {sent ? (

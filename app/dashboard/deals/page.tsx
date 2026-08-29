@@ -77,7 +77,7 @@ function DealsInner() {
         <div style={{display:'flex',alignItems:'center',gap:12}}>
           <span style={{fontSize:14,fontWeight:'bold',color:'#C8943E'}}>B2BsalesBUDDY</span>
           <span style={{color:'#444'}}>|</span>
-          <button onClick={() => router.back()} style={{color:'#888',fontSize:13,background:'none',border:'none',cursor:'pointer'}}>← Back</button>
+          <a href="/dashboard" style={{display:'flex',alignItems:'center',gap:4,color:'#C8943E',fontSize:13,textDecoration:'none',fontWeight:600,background:'rgba(200,148,62,0.15)',padding:'6px 12px',borderRadius:6}}>🏠 Home</a>
           <span style={{color:'#444'}}>|</span>
           <h1 style={{fontSize:16,fontWeight:'bold'}}>🎯 Deal Coach</h1>
         </div>
@@ -170,6 +170,10 @@ function DealsInner() {
           </div>
         )}
       </div>
+      <div style={{position:'fixed',bottom:24,left:24,zIndex:50}}>
+        <button onClick={() => router.back()} style={{display:'flex',alignItems:'center',gap:6,padding:'10px 18px',background:'#0D1B2A',color:'#fff',borderRadius:40,boxShadow:'0 4px 16px rgba(0,0,0,0.2)',border:'none',cursor:'pointer',fontSize:13,fontWeight:600}}>← Back</button>
+      </div>
+
       <CalendlyButton />
     </div>
   )

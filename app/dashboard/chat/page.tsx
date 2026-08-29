@@ -154,7 +154,7 @@ function ChatInner() {
         <div style={{display:'flex',alignItems:'center',gap:12}}>
           <span style={{fontSize:14,fontWeight:'bold',color:'#C8943E'}}>B2BsalesBUDDY</span>
           <span style={{color:'#444'}}>|</span>
-          <button onClick={() => router.back()} style={{color:'#888',fontSize:13,background:'none',border:'none',cursor:'pointer'}}>← Back</button>
+          <a href="/dashboard" style={{display:'flex',alignItems:'center',gap:4,color:'#C8943E',fontSize:13,textDecoration:'none',fontWeight:600,background:'rgba(200,148,62,0.15)',padding:'6px 12px',borderRadius:6}}>🏠 Home</a>
           <span style={{color:'#444'}}>|</span>
           <h1 style={{fontSize:16,fontWeight:'bold'}}>{dealLabel ? `🎯 Coaching: ${dealLabel}` : '💬 Ask B2BsalesBUDDY'}</h1>
         </div>

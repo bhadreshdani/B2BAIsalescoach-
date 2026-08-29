@@ -55,6 +55,11 @@ export default function LoginPage() {
 
       <div style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center',padding:'40px',background:'#f5f0e8'}}>
         <div style={{width:'100%',maxWidth:400}}>
+          <div style={{textAlign:'center',marginBottom:24}}>
+            <div style={{fontSize:36,marginBottom:8}}>🎯</div>
+            <h1 style={{fontSize:22,fontWeight:'bold',color:'#C8943E'}}>B2BsalesBUDDY</h1>
+            <p style={{fontSize:12,color:'#888'}}>Your Personal AI Sales Coach</p>
+          </div>
           <h2 style={{fontSize:24,fontWeight:'bold',marginBottom:4}}>Log in</h2>
           <p style={{fontSize:14,color:'#888',marginBottom:28}}>Continue your coaching journey.</p>
 
