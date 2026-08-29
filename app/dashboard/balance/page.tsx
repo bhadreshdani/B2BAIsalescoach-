@@ -274,8 +274,8 @@ export default function BalancePage() {
           </div>
         )}
       </div>
-      <div style={{position:'fixed',bottom:24,left:24,zIndex:50}}>
-        <button onClick={() => router.back()} style={{display:'flex',alignItems:'center',gap:6,padding:'10px 18px',background:'#0D1B2A',color:'#fff',borderRadius:40,boxShadow:'0 4px 16px rgba(0,0,0,0.2)',border:'none',cursor:'pointer',fontSize:13,fontWeight:600}}>← Back</button>
+      <div style={{position:'fixed',bottom:24,left:24,zIndex:9999}}>
+        <button onClick={() => router.back()} style={{display:'flex',alignItems:'center',gap:6,padding:'12px 20px',background:'#0D1B2A',color:'#fff',borderRadius:40,boxShadow:'0 4px 16px rgba(0,0,0,0.25)',border:'none',cursor:'pointer',fontSize:13,fontWeight:600}}>← Back</button>
       </div>
 
       <CalendlyButton />
