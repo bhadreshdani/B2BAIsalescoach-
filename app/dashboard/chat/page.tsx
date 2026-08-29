@@ -99,7 +99,38 @@ function ChatInner() {
         setMessages([...newMessages, { role: 'assistant', content: assistantMsg }])
       }
     } catch (err) {
-      setMessages([...newMessages, { role: 'assistant', content: 'Sorry, I encountered an error. Please try again.' }])
+      // Auto-retry once on failure
+      try {
+        const retryRes = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: msg,
+            userId: uid,
+            conversationHistory: newMessages.slice(-6).map((m: Message) => ({ role: m.role, content: m.content })),
+          }),
+        })
+        if (retryRes.ok) {
+          const retryReader = retryRes.body?.getReader()
+          if (retryReader) {
+            let retryMsg = ''
+            setMessages([...newMessages, { role: 'assistant', content: '' }])
+            const retryDecoder = new TextDecoder()
+            while (true) {
+              const { done, value } = await retryReader.read()
+              if (done) break
+              retryMsg += retryDecoder.decode(value, { stream: true })
+              setMessages([...newMessages, { role: 'assistant', content: retryMsg }])
+            }
+          } else {
+            throw new Error('No stream on retry')
+          }
+        } else {
+          throw new Error('Retry failed')
+        }
+      } catch (retryErr) {
+        setMessages([...newMessages, { role: 'assistant', content: 'I\'m taking a moment to think. Please click Send again with your question — I\'ll respond right away.' }])
+      }
     }
     setStreaming(false)
     const newCount = messageCount + 1
