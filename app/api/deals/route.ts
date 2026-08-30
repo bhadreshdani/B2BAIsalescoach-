@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
   if (!userId || !name) return NextResponse.json({ error: 'Missing userId or name' }, { status: 400 })
   const stageNames: Record<number,string> = {1:'Prospecting',2:'Qualification',3:'Planning',4:'Preparation',5:'Rapport',6:'Discovery',7:'Value Proposition',8:'Proposal',9:'Objection Handling',10:'Negotiation',11:'Post-Sales'}
   const { data, error } = await supabaseAdmin
-    .from('deals').insert({ user_id: userId, name, company, industry, customer_type, deal_value, stage: stage||1, stage_name: stageNames[stage||1]||'Prospecting' }).select().single()
+    .from('deals').insert({ user_id: userId, name, company: company||null, industry: industry||null, customer_type: customer_type||null, deal_value: deal_value||0, stage: stage||1, stage_name: stageNames[stage||1]||'Prospecting', status: 'active' }).select().single()
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json(data)
 }

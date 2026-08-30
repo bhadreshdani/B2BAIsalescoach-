@@ -13,6 +13,9 @@ function formatCurrency(val: number): string {
 }
 
 const STAGES = [{n:1,name:'Prospecting'},{n:2,name:'Qualification'},{n:3,name:'Planning'},{n:4,name:'Preparation'},{n:5,name:'Rapport'},{n:6,name:'Discovery'},{n:7,name:'Value Proposition'},{n:8,name:'Proposal'},{n:9,name:'Objection Handling'},{n:10,name:'Negotiation & Closing'},{n:11,name:'Post-Sales'}]
+const INDUSTRIES = ['Manufacturing — Plastics, Metals, Machine Tools','Chemical / Pharmaceutical','E-Mobility / EV / New Technology','Material Handling / Printing & Packaging','SaaS / Software / IT Services','Agriculture / Agri-Tech','Food & Beverage / FMCG Manufacturing','Oil & Gas / Energy / Petrochemical','Construction / Real Estate / Infrastructure','Healthcare / Medical Devices','Textiles / Apparel','Automotive / Auto Components','Logistics / Warehousing / Supply Chain','Education / EdTech','Renewable Energy / Solar / Wind','BFSI','Hospitality / Hotels / Facility Management','HVAC / Refrigeration / Cold Chain','Water Treatment / Environment','Aerospace / Defence']
+const CUSTOMER_TYPES = ['End Users','OEMs (Original Equipment Manufacturers)','EPC Contractors','Consultants / Specifiers','Panel Builders / System Integrators','Channel Partners / Distributors','Dealers / Retailers','Government / PSU']
+
 const CHALLENGES = STAGES.map(s => ({ value: s.name, label: `Step ${s.n}: ${s.name}` }))
 
 function DealsInner() {
@@ -24,6 +27,9 @@ function DealsInner() {
   const [expandedDeal, setExpandedDeal] = useState<string|null>(null)
   const [newDeal, setNewDeal] = useState({ name:'', company:'', industry:'', customer_type:'', deal_value:'', stage:1 })
   const [saving, setSaving] = useState(false)
+  const [createError, setCreateError] = useState('')
+  const [showOtherIndustry, setShowOtherIndustry] = useState(false)
+  const [showOtherCustomer, setShowOtherCustomer] = useState(false)
 
   const searchParams = useSearchParams()
 
@@ -47,14 +53,22 @@ function DealsInner() {
   }
 
   async function createDeal() {
-    if (!newDeal.name.trim()) return
-    setSaving(true)
-    await fetch('/api/deals', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: user.id, ...newDeal, deal_value: newDeal.deal_value ? parseFloat(newDeal.deal_value) : null })
-    })
-    setShowNew(false); setNewDeal({ name:'', company:'', industry:'', customer_type:'', deal_value:'', stage:1 })
-    await loadDeals(user.id); setSaving(false)
+    if (!newDeal.name.trim()) { setCreateError('Deal name is required'); return }
+    setSaving(true); setCreateError('')
+    try {
+      const res = await fetch('/api/deals', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id, ...newDeal, deal_value: newDeal.deal_value ? parseFloat(newDeal.deal_value) : 0, status: 'active' })
+      })
+      const data = await res.json()
+      if (!res.ok) { setCreateError(data.error || 'Failed to create deal. Please try again.'); setSaving(false); return }
+      setShowNew(false); setNewDeal({ name:'', company:'', industry:'', customer_type:'', deal_value:'', stage:1 })
+      setShowOtherIndustry(false); setShowOtherCustomer(false)
+      await loadDeals(user.id)
+    } catch (err) {
+      setCreateError('Network error. Please check your connection and try again.')
+    }
+    setSaving(false)
   }
 
   async function updateStage(dealId: string, stage: number) {
@@ -92,11 +106,32 @@ function DealsInner() {
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:12}}>
               <div><label style={{fontSize:12,fontWeight:600}}>Deal Name *</label><input value={newDeal.name} onChange={e=>setNewDeal({...newDeal,name:e.target.value})} placeholder="e.g. Mahindra Servo Drives" style={{width:'100%',padding:'10px 12px',border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}} /></div>
               <div><label style={{fontSize:12,fontWeight:600}}>Company</label><input value={newDeal.company} onChange={e=>setNewDeal({...newDeal,company:e.target.value})} placeholder="e.g. Mahindra Forgings" style={{width:'100%',padding:'10px 12px',border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}} /></div>
-              <div><label style={{fontSize:12,fontWeight:600}}>Industry</label><input value={newDeal.industry} onChange={e=>setNewDeal({...newDeal,industry:e.target.value})} placeholder="e.g. Automotive" style={{width:'100%',padding:'10px 12px',border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}} /></div>
-              <div><label style={{fontSize:12,fontWeight:600}}>Customer Type</label><input value={newDeal.customer_type} onChange={e=>setNewDeal({...newDeal,customer_type:e.target.value})} placeholder="e.g. OEM, End User" style={{width:'100%',padding:'10px 12px',border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}} /></div>
-              <div><label style={{fontSize:12,fontWeight:600}}>Deal Value (₹)</label><input type="number" value={newDeal.deal_value} onChange={e=>setNewDeal({...newDeal,deal_value:e.target.value})} placeholder="e.g. 5000000" style={{width:'100%',padding:'10px 12px',border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}} /></div>
+              <div>
+                <label style={{fontSize:12,fontWeight:600}}>Industry</label>
+                <select value={showOtherIndustry ? '__other__' : newDeal.industry} onChange={e => { if (e.target.value === '__other__') { setShowOtherIndustry(true); setNewDeal({...newDeal, industry: ''}) } else { setShowOtherIndustry(false); setNewDeal({...newDeal, industry: e.target.value}) } }} style={{width:'100%',padding:'10px 12px',border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}}>
+                  <option value="">Select Industry</option>
+                  {INDUSTRIES.map(i => <option key={i} value={i}>{i}</option>)}
+                  <option value="__other__">Other (type below)</option>
+                </select>
+                {showOtherIndustry && <input value={newDeal.industry} onChange={e=>setNewDeal({...newDeal,industry:e.target.value})} placeholder="Type your industry..." style={{width:'100%',padding:'10px 12px',border:'1px solid #C8943E',borderRadius:8,fontSize:13,marginTop:6}} />}
+              </div>
+              <div>
+                <label style={{fontSize:12,fontWeight:600}}>Customer Type</label>
+                <select value={showOtherCustomer ? '__other__' : newDeal.customer_type} onChange={e => { if (e.target.value === '__other__') { setShowOtherCustomer(true); setNewDeal({...newDeal, customer_type: ''}) } else { setShowOtherCustomer(false); setNewDeal({...newDeal, customer_type: e.target.value}) } }} style={{width:'100%',padding:'10px 12px',border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}}>
+                  <option value="">Select Customer Type</option>
+                  {CUSTOMER_TYPES.map(c => <option key={c} value={c}>{c}</option>)}
+                  <option value="__other__">Other (type below)</option>
+                </select>
+                {showOtherCustomer && <input value={newDeal.customer_type} onChange={e=>setNewDeal({...newDeal,customer_type:e.target.value})} placeholder="Type customer type..." style={{width:'100%',padding:'10px 12px',border:'1px solid #C8943E',borderRadius:8,fontSize:13,marginTop:6}} />}
+              </div>
+              <div>
+                <label style={{fontSize:12,fontWeight:600}}>Deal Value (₹)</label>
+                <input type="number" value={newDeal.deal_value} onChange={e=>setNewDeal({...newDeal,deal_value:e.target.value})} placeholder="e.g. 5000000" style={{width:'100%',padding:'10px 12px',border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}} />
+                {newDeal.deal_value && parseFloat(newDeal.deal_value) > 0 && <p style={{fontSize:11,color:'#C8943E',marginTop:3,fontWeight:600}}>{parseFloat(newDeal.deal_value)>=10000000?'₹'+(parseFloat(newDeal.deal_value)/10000000).toFixed(1)+' Cr':parseFloat(newDeal.deal_value)>=100000?'₹'+(parseFloat(newDeal.deal_value)/100000).toFixed(1)+' L':'₹'+parseFloat(newDeal.deal_value).toLocaleString()}</p>}
+              </div>
               <div><label style={{fontSize:12,fontWeight:600}}>Current Stage</label><select value={newDeal.stage} onChange={e=>setNewDeal({...newDeal,stage:parseInt(e.target.value)})} style={{width:'100%',padding:'10px 12px',border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}}>{STAGES.map(s=><option key={s.n} value={s.n}>Step {s.n}: {s.name}</option>)}</select></div>
             </div>
+            {createError && <p style={{color:'#dc2626',fontSize:12,marginBottom:12,padding:'8px 12px',background:'#fef2f2',borderRadius:6}}>{createError}</p>}
             <div style={{display:'flex',gap:8}}>
               <button onClick={createDeal} disabled={saving} style={{padding:'10px 24px',background:'#C8943E',color:'#fff',border:'none',borderRadius:8,fontSize:14,fontWeight:600,cursor:'pointer'}}>{saving?'Creating...':'Create Deal'}</button>
               <button onClick={()=>setShowNew(false)} style={{padding:'10px 24px',background:'#f3f4f6',border:'none',borderRadius:8,fontSize:14,cursor:'pointer'}}>Cancel</button>
