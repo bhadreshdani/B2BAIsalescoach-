@@ -60,13 +60,15 @@ function DealsInner() {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: user.id, ...newDeal, deal_value: newDeal.deal_value ? parseFloat(newDeal.deal_value) : 0, status: 'active' })
       })
-      const data = await res.json()
-      if (!res.ok) { setCreateError(data.error || 'Failed to create deal. Please try again.'); setSaving(false); return }
+      const text = await res.text()
+      let data: any = {}
+      try { data = JSON.parse(text) } catch(e) { data = { error: text } }
+      if (!res.ok) { setCreateError('Error: ' + (data.error || text || 'Unknown error. Status: ' + res.status)); setSaving(false); return }
       setShowNew(false); setNewDeal({ name:'', company:'', industry:'', customer_type:'', deal_value:'', stage:1 })
       setShowOtherIndustry(false); setShowOtherCustomer(false)
       await loadDeals(user.id)
-    } catch (err) {
-      setCreateError('Network error. Please check your connection and try again.')
+    } catch (err: any) {
+      setCreateError('Error: ' + (err?.message || 'Request failed. Please try again.'))
     }
     setSaving(false)
   }
