@@ -191,8 +191,10 @@ export default function DashboardPage() {
 
         {/* Footer Actions */}
         <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginTop:24,paddingTop:16,borderTop:'1px solid #ddd'}}>
-          <Link href="/admin/prompts" style={{fontSize:12,color:'#888'}}>Admin Panel</Link>
-          <button onClick={handleLogout} style={{fontSize:12,color:'#888',background:'none',border:'none',cursor:'pointer'}}>Log Out</button>
+          {authUser?.email === 'bhadreshdani69@gmail.com' && <Link href="/admin/prompts" style={{fontSize:12,color:'#888'}}>Admin Panel</Link>}
+          <div style={{marginLeft:'auto'}}>
+            <button onClick={handleLogout} style={{fontSize:14,color:'#fff',background:'#dc2626',border:'none',cursor:'pointer',padding:'10px 24px',borderRadius:8,fontWeight:600}}>Log Out</button>
+          </div>
         </div>
       </div>
 

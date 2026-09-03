@@ -1,6 +1,8 @@
 export const maxDuration = 60
 
 import { NextRequest, NextResponse } from 'next/server'
+
+const ADMIN_EMAIL = 'bhadreshdani69@gmail.com'
 import { testCoachingWithDebug } from '@/lib/anthropic'
 
 export async function POST(request: NextRequest) {

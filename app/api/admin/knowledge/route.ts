@@ -1,6 +1,8 @@
 export const maxDuration = 60
 export const dynamic = 'force-dynamic'
 import { NextRequest, NextResponse } from 'next/server'
+
+const ADMIN_EMAIL = 'bhadreshdani69@gmail.com'
 import { supabaseAdmin } from '@/lib/supabase'
 
 export async function GET() {
