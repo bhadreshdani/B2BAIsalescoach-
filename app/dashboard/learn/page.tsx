@@ -140,33 +140,37 @@ export default function LearnPage() {
               <p style={{fontSize:12,color:'#16a34a',marginTop:4}}>{completed.size} of 11 steps completed</p>
             </div>
 
-            {/* Visual Staircase — ascending left to right */}
-            <div style={{position:'relative',marginBottom:32,paddingBottom:20}}>
-              <div style={{display:'flex',alignItems:'flex-end',gap:3,height:360,overflowX:'auto',paddingBottom:4}}>
-                {STEPS.map((s, i) => {
+            {/* Visual Staircase — bottom to top */}
+            <div style={{marginBottom:24}}>
+              <div style={{display:'flex',flexDirection:'column',gap:4}}>
+                {[...STEPS].reverse().map((s, i) => {
                   const isComplete = completed.has(s.n)
-                  const height = 80 + i * 25
+                  const stepColor = ({1:'#3b82f6',2:'#2563eb',3:'#7c3aed',4:'#9333ea',5:'#c026d3',6:'#db2777',7:'#e11d48',8:'#ea580c',9:'#d97706',10:'#65a30d',11:'#16a34a'} as Record<number,string>)[s.n] || '#888'
+                  const width = 50 + (s.n * 4.5)
                   return (
                     <button key={s.n} onClick={() => setSelectedStep(s.n)}
                       style={{
-                        minWidth:62,flex:'1',height:height,
-                        borderRadius:'8px 8px 0 0',border:'none',cursor:'pointer',
-                        display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'flex-end',
-                        padding:'8px 4px 10px',
-                        background:isComplete?'#16a34a':'#fff',color:isComplete?'#fff':'#1B2A4A',
-                        boxShadow:'0 1px 4px rgba(0,0,0,0.08)',transition:'transform 0.15s',
+                        width:`${width}%`,marginLeft:'auto',padding:'10px 16px',borderRadius:8,border:'none',cursor:'pointer',
+                        display:'flex',alignItems:'center',justifyContent:'space-between',
+                        background:isComplete?'#16a34a':stepColor,color:'#fff',
+                        boxShadow:'0 2px 6px rgba(0,0,0,0.15)',transition:'transform 0.15s,opacity 0.15s',
+                        opacity:isComplete?0.85:1,
                       }}>
-                      <span style={{fontSize:16,marginBottom:4}}>{isComplete ? '✅' : s.icon}</span>
-                      <span style={{fontSize:10,fontWeight:700,textAlign:'center',lineHeight:1.2}}>Step {s.n}</span>
-                      <span style={{fontSize:8,textAlign:'center',marginTop:2,color:isComplete?'rgba(255,255,255,0.8)':'#888',lineHeight:1.2}}>{s.name}</span>
+                      <div style={{display:'flex',alignItems:'center',gap:10}}>
+                        <span style={{fontSize:20}}>{isComplete ? '✅' : s.icon}</span>
+                        <div>
+                          <span style={{fontSize:14,fontWeight:700}}>Step {s.n}: {s.name}</span>
+                          <div style={{fontSize:10,color:'rgba(255,255,255,0.7)',marginTop:1}}>{s.frameworks.join(' · ')}</div>
+                        </div>
+                      </div>
+                      <span style={{fontSize:14,opacity:0.7}}>→</span>
                     </button>
                   )
                 })}
               </div>
-              <div style={{position:'absolute',bottom:0,left:0,right:0,height:4,background:'#0D1B2A',borderRadius:2}} />
-              <div style={{display:'flex',justifyContent:'space-between',marginTop:8}}>
-                <span style={{fontSize:10,color:'#888'}}>Start Here →</span>
-                <span style={{fontSize:10,color:'#C8943E',fontWeight:600}}>→ Master Level 🏆</span>
+              <div style={{display:'flex',justifyContent:'space-between',marginTop:8,padding:'0 4px'}}>
+                <span style={{fontSize:11,color:'#16a34a',fontWeight:600}}>🏆 Master Level</span>
+                <span style={{fontSize:11,color:'#888'}}>Start Here ↓</span>
               </div>
             </div>
 
@@ -255,11 +259,7 @@ export default function LearnPage() {
           </div>
         )}
       </div>
-      <div style={{position:'fixed',bottom:24,left:24,zIndex:9999}}>
-        <button onClick={() => window.history.back()} style={{display:'flex',alignItems:'center',gap:6,padding:'12px 20px',background:'#0D1B2A',color:'#fff',borderRadius:40,boxShadow:'0 4px 16px rgba(0,0,0,0.25)',border:'none',cursor:'pointer',fontSize:13,fontWeight:600}}>← Back</button>
-      </div>
-
-      <CalendlyButton />
+<CalendlyButton />
     </div>
   )
 }

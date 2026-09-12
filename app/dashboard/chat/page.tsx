@@ -187,6 +187,7 @@ function ChatInner() {
                   {msg.content}
                   {msg.role==='assistant' && msg.content && !streaming && i===messages.length-1 && (
                     <DownloadButtons title="B2BsalesBUDDY Coaching Session" content={msg.content} filename="coaching-session" />
+                    <p style={{fontSize:9,color:'#aaa',marginTop:6,fontStyle:'italic'}}>AI can make mistakes. Please verify coaching content before execution.</p>
                   )}
                 </div>
               </div>
@@ -210,11 +211,7 @@ function ChatInner() {
       </div>
 
       {/* Bottom Back Arrow */}
-      <div style={{position:'fixed',bottom:24,left:24,zIndex:9999}}>
-        <button onClick={() => window.history.back()} style={{display:'flex',alignItems:'center',gap:6,padding:'12px 20px',background:'#0D1B2A',color:'#fff',borderRadius:40,boxShadow:'0 4px 16px rgba(0,0,0,0.25)',border:'none',cursor:'pointer',fontSize:13,fontWeight:600}}>← Back</button>
-      </div>
-
-      {/* Connect Bar */}
+{/* Connect Bar */}
       <CalendlyButton />
 
     </div>

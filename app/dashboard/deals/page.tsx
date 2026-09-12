@@ -13,7 +13,7 @@ function formatCurrency(val: number): string {
 }
 
 const STAGES = [{n:1,name:'Prospecting'},{n:2,name:'Qualification'},{n:3,name:'Planning'},{n:4,name:'Preparation'},{n:5,name:'Rapport'},{n:6,name:'Discovery'},{n:7,name:'Value Proposition'},{n:8,name:'Proposal'},{n:9,name:'Objection Handling'},{n:10,name:'Negotiation & Closing'},{n:11,name:'Post-Sales'}]
-const INDUSTRIES = ['Manufacturing — Plastics, Metals, Machine Tools','Chemical / Pharmaceutical','E-Mobility / EV / New Technology','Material Handling / Printing & Packaging','SaaS / Software / IT Services','Agriculture / Agri-Tech','Food & Beverage / FMCG Manufacturing','Oil & Gas / Energy / Petrochemical','Construction / Real Estate / Infrastructure','Healthcare / Medical Devices','Textiles / Apparel','Automotive / Auto Components','Logistics / Warehousing / Supply Chain','Education / EdTech','Renewable Energy / Solar / Wind','BFSI','Hospitality / Hotels / Facility Management','HVAC / Refrigeration / Cold Chain','Water Treatment / Environment','Aerospace / Defence']
+const INDUSTRIES = ['Manufacturing — Plastics, Metals, Machine Tools','Chemical / Pharmaceutical','E-Mobility / EV / New Technology','Material Handling / Printing & Packaging','SaaS / Software / IT Services','Agriculture / Agri-Tech','Food & Beverage / FMCG Manufacturing','Oil & Gas / Energy / Petrochemical','Construction / Real Estate / Infrastructure','Healthcare / Medical Devices','Textiles / Apparel','Automotive / Auto Components','Logistics / Warehousing / Supply Chain','Education / EdTech','Renewable Energy / Solar / Wind','BFSI','Hospitality / Hotels / Facility Management','HVAC / Refrigeration / Cold Chain','Water Treatment / Environment','Aerospace / Defence','Semiconductor / Chip Manufacturing']
 const CUSTOMER_TYPES = ['End Users','OEMs (Original Equipment Manufacturers)','EPC Contractors','Consultants / Specifiers','Panel Builders / System Integrators','Channel Partners / Distributors','Dealers / Retailers','Government / PSU']
 
 const CHALLENGES = STAGES.map(s => ({ value: s.name, label: `Step ${s.n}: ${s.name}` }))
@@ -207,11 +207,7 @@ function DealsInner() {
           </div>
         )}
       </div>
-      <div style={{position:'fixed',bottom:24,left:24,zIndex:9999}}>
-        <button onClick={() => window.history.back()} style={{display:'flex',alignItems:'center',gap:6,padding:'12px 20px',background:'#0D1B2A',color:'#fff',borderRadius:40,boxShadow:'0 4px 16px rgba(0,0,0,0.25)',border:'none',cursor:'pointer',fontSize:13,fontWeight:600}}>← Back</button>
-      </div>
-
-      <CalendlyButton />
+<CalendlyButton />
     </div>
   )
 }

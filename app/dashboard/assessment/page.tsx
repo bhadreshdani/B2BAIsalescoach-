@@ -86,7 +86,7 @@ export default function AssessmentPage() {
             else router.back()
           }} style={{display:'flex',alignItems:'center',gap:4,color:'#C8943E',fontSize:13,background:'rgba(200,148,62,0.15)',border:'none',cursor:'pointer',padding:'6px 12px',borderRadius:6,fontWeight:600}}>🏠 Home</button>
           <span style={{color:'#444'}}>|</span>
-          <h1 style={{fontSize:16,fontWeight:'bold'}}>🔥 ASK™ Competency Assessment</h1>
+          <h1 style={{fontSize:16,fontWeight:'bold'}}>🔥 ASK™ Assessment</h1>
         </div>
       </header>
 
@@ -94,7 +94,7 @@ export default function AssessmentPage() {
         {phase === 'intro' && (
           <div style={{background:'#fff',borderRadius:12,padding:32,textAlign:'center'}}>
             <p style={{fontSize:48,marginBottom:16}}>🔥</p>
-            <h2 style={{fontSize:22,fontWeight:'bold',marginBottom:8}}>ASK™ Competency Assessment</h2>
+            <h2 style={{fontSize:22,fontWeight:'bold',marginBottom:8}}>ASK™ Assessment</h2>
             <p style={{fontSize:14,color:'#888',marginBottom:24}}>Assess your sales competency across 3 pillars: Attitude (35%), Skill (35%), Knowledge (30%). Total: 31 questions.</p>
             <div style={{display:'flex',justifyContent:'center',gap:16,marginBottom:24}}>
               {PILLARS.map(p => (
@@ -176,7 +176,7 @@ export default function AssessmentPage() {
             <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
               <Link href={`/dashboard/chat?prompt=${encodeURIComponent(`Based on my ASK competency assessment, my weakest areas are: ${results.gaps.join(', ')}. Help me create a 3-month development plan.`)}`} style={{padding:'10px 20px',background:'#C8943E',color:'#fff',borderRadius:8,fontSize:13,fontWeight:600,textDecoration:'none'}}>💬 Get Development Plan</Link>
               <button onClick={() => {
-                const txt = `ASK™ Competency Assessment\nOverall: ${results.overall.toFixed(1)}/10 — ${results.band.label}\nAttitude: ${results.aAvg.toFixed(1)} | Skill: ${results.sAvg.toFixed(1)} | Knowledge: ${results.kAvg.toFixed(1)}\n\nStrengths: ${results.strengths.join(', ')}\nDevelopment: ${results.gaps.join(', ')}`
+                const txt = `ASK™ Assessment\nOverall: ${results.overall.toFixed(1)}/10 — ${results.band.label}\nAttitude: ${results.aAvg.toFixed(1)} | Skill: ${results.sAvg.toFixed(1)} | Knowledge: ${results.kAvg.toFixed(1)}\n\nStrengths: ${results.strengths.join(', ')}\nDevelopment: ${results.gaps.join(', ')}`
                 try{navigator.clipboard.writeText(txt)}catch(e){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta)}
                 alert('Copied!')
               }} style={{padding:'10px 20px',background:'#f3f4f6',borderRadius:8,fontSize:13,fontWeight:600,border:'none',cursor:'pointer'}}>📋 Copy</button>
@@ -187,11 +187,7 @@ export default function AssessmentPage() {
           </div>
         )}
       </div>
-      <div style={{position:'fixed',bottom:24,left:24,zIndex:9999}}>
-        <button onClick={() => window.history.back()} style={{display:'flex',alignItems:'center',gap:6,padding:'12px 20px',background:'#0D1B2A',color:'#fff',borderRadius:40,boxShadow:'0 4px 16px rgba(0,0,0,0.25)',border:'none',cursor:'pointer',fontSize:13,fontWeight:600}}>← Back</button>
-      </div>
-
-      <CalendlyButton />
+<CalendlyButton />
     </div>
   )
 }

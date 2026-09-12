@@ -115,3 +115,18 @@
   /* Stack deals horizontally scrollable */
   [style*="overflowX"] { -webkit-overflow-scrolling: touch; }
 }
+
+/* Fix: Prevent mouse scroll from changing number inputs */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* Hide button text on mobile to prevent overlap */
+@media (max-width: 480px) {
+  .hide-mobile { display: none !important; }
+}

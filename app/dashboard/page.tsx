@@ -80,8 +80,9 @@ export default function DashboardPage() {
             <h1 style={{fontSize:18,fontWeight:'bold'}}>B2BsalesBUDDY</h1>
             <p style={{fontSize:11,color:'#C8943E'}}>Your Personal AI Sales Coach</p>
           </div>
-          <div style={{textAlign:'right'}}>
-            <p style={{fontSize:14}}>{greeting}, {firstName}!</p>
+          <div style={{display:'flex',alignItems:'center',gap:16}}>
+            <div style={{textAlign:'right'}}>
+              <p style={{fontSize:14}}>{greeting}, {firstName}!</p>
             {profile?.rotis_hourly ? (
               <p style={{fontSize:12,color:'#C8943E'}}>ROTIS™: ₹{Math.round(profile.rotis_hourly).toLocaleString()}/hr</p>
             ) : (
@@ -138,7 +139,7 @@ export default function DashboardPage() {
           <div style={{display:'flex',flexDirection:'column',gap:8}}>
             {[
               { icon: '🚀', title: 'My Sales Velocity Engine', desc: 'Calculate daily activity targets & ROTIS™', href: '/dashboard/velocity' },
-              { icon: '🔥', title: 'My Competency Assessment (ASK™)', desc: 'Assess Attitude, Skill, Knowledge gaps', href: '/dashboard/assessment' },
+              { icon: '🔥', title: 'My ASK™ Assessment', desc: 'Assess your Attitude, Skill & Knowledge', href: '/dashboard/assessment' },
               { icon: '⚖️', title: 'My Work-Life Balance', desc: 'Wheel of Life assessment & action plan', href: '/dashboard/balance' },
             ].map((tool) => (
               <Link key={tool.title} href={tool.href} style={{display:'flex',alignItems:'center',gap:16,background:'#fff',borderRadius:10,padding:'14px 20px',textDecoration:'none',color:'#1B2A4A',boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}>
@@ -190,11 +191,8 @@ export default function DashboardPage() {
         </div>
 
         {/* Footer Actions */}
-        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginTop:24,paddingTop:16,borderTop:'1px solid #ddd'}}>
+        <div style={{display:'flex',justifyContent:'center',alignItems:'center',marginTop:24,paddingTop:16,borderTop:'1px solid #ddd'}}>
           {authUser?.email === 'bhadreshdani69@gmail.com' && <Link href="/admin/prompts" style={{fontSize:12,color:'#888'}}>Admin Panel</Link>}
-          <div style={{marginLeft:'auto'}}>
-            <button onClick={handleLogout} style={{fontSize:14,color:'#fff',background:'#dc2626',border:'none',cursor:'pointer',padding:'10px 24px',borderRadius:8,fontWeight:600}}>Log Out</button>
-          </div>
         </div>
       </div>
 
