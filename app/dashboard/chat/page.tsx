@@ -188,11 +188,11 @@ function ChatInner() {
                   {msg.role==='assistant' && msg.content && !streaming && i===messages.length-1 && (
                     <div>
                       <DownloadButtons 
-                        title={dealLabel || "B2BsalesBUDDY Coaching Session"} 
+                        title={dealLabel || messages.find((m: Message) => m.role==='user')?.content?.substring(0,40) || 'Coaching Session'} 
                         content={msg.content} 
                         fullSession={messages.filter((m: Message) => m.role==='assistant').map((m: Message) => m.content).join('\n\n---\n\n')}
                         userName={user?.user_metadata?.name}
-                        customerName={dealLabel}
+                        customerName={dealLabel || undefined}
                       />
                       <p style={{fontSize:9,color:'#aaa',marginTop:6,fontStyle:'italic'}}>AI can make mistakes. Please verify coaching content before execution.</p>
                     </div>

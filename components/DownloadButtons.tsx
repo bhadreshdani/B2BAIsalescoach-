@@ -15,7 +15,8 @@ export default function DownloadButtons({ title, content, filename, fullSession,
   const [generating, setGenerating] = useState('')
   const [showOptions, setShowOptions] = useState(false)
   const date = new Date().toLocaleDateString('en-IN', { year:'numeric', month:'short', day:'numeric' }).replace(/ /g,'-')
-  const coachingType = title.replace(/[^a-zA-Z0-9]/g, '-').substring(0, 30)
+  const cleanTitle = title.replace('B2BsalesBUDDY ', '').replace('Coaching Session', 'Session').trim()
+  const coachingType = cleanTitle.replace(/[^a-zA-Z0-9 ]/g, '').replace(/ +/g, '-').substring(0, 30)
   const uName = (userName || 'User').replace(/[^a-zA-Z0-9]/g, '-')
   const fname = `B2BsalesBUDDY_${coachingType}_${uName}_${date}`
 
