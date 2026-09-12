@@ -26,6 +26,7 @@ function ChatInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [user, setUser] = useState<any>(null)
+  const [userProfile, setUserProfile] = useState<any>(null)
   const [messages, setMessages] = useState<Message[]>([])
   const [messageCount, setMessageCount] = useState(0)
   const [showRating, setShowRating] = useState(false)
@@ -44,6 +45,11 @@ function ChatInner() {
       const { data: { user: u } } = await supabase.auth.getUser()
       if (!u) { router.push('/auth/login'); return }
       setUser(u)
+
+      // Load profile for org name
+      const supabaseClient = createClient()
+      const { data: prof } = await supabaseClient.from('profiles').select('name,organisation').eq('id', u.id).single()
+      if (prof) setUserProfile(prof)
 
       const mode = searchParams.get('mode')
       const prompt = searchParams.get('prompt')
@@ -191,7 +197,8 @@ function ChatInner() {
                         title={dealLabel || messages.find((m: Message) => m.role==='user')?.content?.substring(0,40) || 'Coaching Session'} 
                         content={msg.content} 
                         fullSession={messages.filter((m: Message) => m.role==='assistant').map((m: Message) => m.content).join('\n\n---\n\n')}
-                        userName={user?.user_metadata?.name}
+                        userName={userProfile?.name || user?.user_metadata?.name}
+                        orgName={userProfile?.organisation}
                         customerName={dealLabel || undefined}
                       />
                       <p style={{fontSize:9,color:'#aaa',marginTop:6,fontStyle:'italic'}}>AI can make mistakes. Please verify coaching content before execution.</p>
