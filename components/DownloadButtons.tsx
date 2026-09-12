@@ -109,7 +109,7 @@ function buildHTML(title: string, content: string, userName?: string, orgName?: 
   const date = new Date().toLocaleDateString('en-IN', { year:'numeric', month:'long', day:'numeric' })
   const userLine = [userName, orgName].filter(Boolean).join(' | ')
   const custLine = customerName ? 'Customer: ' + customerName : ''
-  return `<!DOCTYPE html><html><head><title>${title}</title>
+  return `<!DOCTYPE html><html><head><title>B2BsalesBUDDY_${coachingType}_${uName}_${date}</title>
 <style>
   @media print { body { margin: 20mm; } .no-print { display: none; } }
   body { font-family: Arial, sans-serif; color: #1B2A4A; line-height: 1.8; font-size: 13px; max-width: 700px; margin: 0 auto; padding: 40px; }
@@ -140,7 +140,7 @@ function buildWordHTML(title: string, content: string, userName?: string, orgNam
   const userLine = [userName, orgName].filter(Boolean).join(' | ')
   const custLine = customerName ? 'Customer: ' + customerName : ''
   return `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word">
-<head><meta charset="utf-8"><title>${title}</title>
+<head><meta charset="utf-8"><title>B2BsalesBUDDY_${coachingType}_${uName}_${date}</title>
 <style>
   body { font-family: Calibri, Arial, sans-serif; color: #1B2A4A; line-height: 1.8; font-size: 12pt; margin: 2cm; }
   h1 { color: #0D1B2A; border-bottom: 3px solid #C8943E; padding-bottom: 8px; font-size: 18pt; }
