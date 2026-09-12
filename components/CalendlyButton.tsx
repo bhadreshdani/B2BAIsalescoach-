@@ -2,6 +2,12 @@
 export default function CalendlyButton() {
   return (
     <>
+      {/* Back Button — bottom LEFT top */}
+      <button onClick={() => window.history.back()}
+        style={{position:'fixed',bottom:76,left:24,zIndex:9999,display:'flex',alignItems:'center',gap:6,padding:'10px 18px',background:'#1B2A4A',color:'#fff',borderRadius:40,boxShadow:'0 4px 16px rgba(0,0,0,0.2)',border:'none',cursor:'pointer',fontSize:12,fontWeight:600}}>
+        ← Back
+      </button>
+
       {/* WhatsApp Community — bottom LEFT */}
       <a href="https://chat.whatsapp.com/FPBo1Vj2P6jG8Siztvlbrf" target="_blank" rel="noopener noreferrer"
         style={{position:'fixed',bottom:24,left:24,zIndex:9999,display:'flex',alignItems:'center',gap:8,padding:'10px 16px',background:'#25D366',color:'#fff',borderRadius:40,boxShadow:'0 4px 16px rgba(0,0,0,0.2)',textDecoration:'none',fontSize:12,fontWeight:600}}>

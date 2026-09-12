@@ -175,7 +175,7 @@ export default function LearnPage() {
             <h3 style={{fontSize:14,fontWeight:700,color:'#888',marginBottom:8}}>CROSS-STEP MODULES</h3>
             {CROSS_STEPS_DATA.map(c => (
               <button key={c.name} onClick={() => setSelectedStep(c.n)}
-                style={{width:'100%',background:'#fef3e2',borderRadius:8,padding:14,marginBottom:8,display:'flex',alignItems:'center',gap:12,border:'none',cursor:'pointer',textAlign:'left'}}>
+                style={{width:'100%',background:c.n===12?'#dbeafe':'#f3e8ff',borderRadius:8,padding:14,marginBottom:8,display:'flex',alignItems:'center',gap:12,border:c.n===12?'2px solid #3b82f6':'2px solid #9333ea',cursor:'pointer',textAlign:'left'}}>
                 <span style={{fontSize:24}}>{c.icon}</span>
                 <div style={{flex:1}}><div style={{fontSize:14,fontWeight:600}}>{c.name}</div><div style={{fontSize:12,color:'#888'}}>{c.frameworks.join(' · ')}</div></div>
                 <span style={{fontSize:14,color:'#C8943E'}}>→</span>
