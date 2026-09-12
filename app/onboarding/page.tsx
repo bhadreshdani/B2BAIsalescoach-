@@ -7,12 +7,16 @@ const INDUSTRIES = ['Manufacturing — Plastics, Metals, Machine Tools','Chemica
 const PRODUCTS = ['Plastic Machinery','Machine Tools (CNC)','Textile Machinery','Food Processing Equipment','Electrical Panels / Switchgear','Motors / Drives / Servo / Automation','Pumps / Valves','Wires / Cables / Electrical','SaaS / Cloud Software','IT Infrastructure','IoT / Industry 4.0','ERP / CRM Software','Consulting / Professional Services','Chemicals / Polymers','Metals / Steel / Aluminium','HVAC / Refrigeration','Solar / Renewable Energy','Medical Devices','Material Handling Equipment','Earth Moving / Construction Equipment','Logistics Services']
 const CUSTOMER_TYPES = ['End Users','OEMs (Original Equipment Manufacturers)','EPC Contractors','Consultants / Specifiers','Panel Builders / System Integrators','Channel Partners / Distributors','Dealers / Retailers','Government / PSU']
 const CHALLENGES = ['High energy costs','Labour shortage','Price pressure','FX fluctuation','Regulatory compliance','Quality consistency','Machine downtime','Supply chain disruption','Capacity expansion','Digital transformation','Environmental compliance','Safety / hazards','Working capital constraints','Talent retention','Technology obsolescence']
+const COUNTRIES = ['India','United States','United Kingdom','United Arab Emirates','Saudi Arabia','Singapore','Germany','Australia','Canada','Japan','South Korea','Malaysia','Thailand','Indonesia','Vietnam','South Africa','Nigeria','Kenya','Brazil','Mexico','Netherlands','France','Italy','Spain','Switzerland','Sweden','Turkey','Egypt','Bangladesh','Sri Lanka','Nepal','Other']
+const CITIES_INDIA = ['Mumbai','Delhi','Bengaluru','Chennai','Hyderabad','Pune','Ahmedabad','Kolkata','Jaipur','Lucknow','Surat','Vadodara','Nagpur','Indore','Coimbatore','Visakhapatnam','Chandigarh','Ludhiana','Rajkot','Nashik','Faridabad','Ghaziabad','Noida','Gurugram','Thane','Navi Mumbai','Other']
+const CURRENCIES = ['INR (₹)','USD ($)','EUR (€)','GBP (£)','AED (د.إ)','SGD (S$)','Other']
+const BIGGEST_CHALLENGES = ['Closing deals faster','Handling price objections','Building value before quoting','Prospecting and lead generation','Managing key accounts','Negotiation skills','Follow-up discipline','Team sales performance','Work-life balance','Pipeline management','Competitor differentiation','Customer retention']
 const BUYING_CRITERIA = ['Price / TCO','Quality / Reliability','Faster delivery','After-sales service','Machine uptime / MTBF','Energy efficiency','Technical superiority','Brand reputation','Customisation','Local service presence','Financing / payment terms','Training / commissioning','Warranty coverage','Certifications','Long-term partnership']
 const DESIGNATIONS = ['Sales Executive / Sales Officer','Senior SE / Key Account Manager','Area / Regional Sales Manager','Zonal / National Sales Manager','Sales Head / VP Sales / Director','CRO / Chief Business Officer','BD Manager / BD Head','SME Owner / Founder / CEO / MD']
 const EXP_OPTIONS = ['0-2','3-5','6-10','11-15','16-20','21-25','25+']
 const SALES_EXP = ['0-1','2-3','4-5','6-10','11-15','16-20','20+']
 
-interface Question { id: string; text: string; type: 'text'|'select'|'multi'|'competitors'; options?: string[]; optional?: boolean }
+interface Question { id: string; text: string; type: 'text'|'select'|'multi'|'competitors'|'privacy'; options?: string[]; optional?: boolean }
 const QUESTIONS: Question[] = [
   { id: 'organisation', text: "Which organisation do you work with?", type: 'text' },
   { id: 'designation', text: "What is your designation or area of responsibility?", type: 'select', options: DESIGNATIONS },
@@ -20,13 +24,17 @@ const QUESTIONS: Question[] = [
   { id: 'years_total', text: "How many years of total professional experience do you have?", type: 'select', options: EXP_OPTIONS },
   { id: 'years_sales', text: "How many of those years have been in sales or business development?", type: 'select', options: SALES_EXP },
   { id: 'linkedin_url', text: "Would you like to share your LinkedIn profile URL? (Optional — you can skip)", type: 'text', optional: true },
-  { id: 'country', text: "Which country are you based in?", type: 'text' },
-  { id: 'industries', text: "Which industries do your customers belong to? (Select all that apply)", type: 'multi', options: INDUSTRIES },
-  { id: 'product_category', text: "What product or service do you sell? (Select all that apply)", type: 'multi', options: PRODUCTS },
-  { id: 'customer_types', text: "What type of customers do you typically sell to? (Select all that apply)", type: 'multi', options: CUSTOMER_TYPES },
+  { id: 'country', text: "Which country are you based in?", type: 'select', options: COUNTRIES },
+  { id: 'city', text: "Which city are you based in?", type: 'select', options: CITIES_INDIA },
+  { id: 'default_currency', text: "What is your default selling currency?", type: 'select', options: CURRENCIES },
+  { id: 'industries', text: "Which industries do your customers belong to? (Select all that apply — choose Other to add your own)", type: 'multi', options: [...INDUSTRIES, 'Other'] },
+  { id: 'product_category', text: "What product or service do you sell? (Select all that apply)", type: 'multi', options: [...PRODUCTS, 'Other'] },
+  { id: 'customer_types', text: "What type of customers do you typically sell to? (Select all that apply)", type: 'multi', options: [...CUSTOMER_TYPES, 'Other'] },
   { id: 'competitors', text: "Who are your top 2-3 closest competitors?", type: 'competitors' },
-  { id: 'industry_challenges', text: "What typical challenges do your customers face? (Select all that apply)", type: 'multi', options: CHALLENGES },
-  { id: 'buying_criteria', text: "What criteria matter most when customers choose you vs competitors? (Select top 5)", type: 'multi', options: BUYING_CRITERIA },
+  { id: 'industry_challenges', text: "What typical challenges do your customers face? (Select all that apply)", type: 'multi', options: [...CHALLENGES, 'Other'] },
+  { id: 'buying_criteria', text: "What criteria matter most when customers choose you vs competitors? (Select top 5)", type: 'multi', options: [...BUYING_CRITERIA, 'Other'] },
+  { id: 'biggest_challenge', text: "What is your BIGGEST challenge in B2B sales right now? (This helps me personalise your coaching from Day 1)", type: 'select', options: BIGGEST_CHALLENGES },
+  { id: 'privacy_agreed', text: "Privacy & Terms of Use", type: 'privacy' },
 ]
 
 export default function OnboardingPage() {
@@ -37,6 +45,8 @@ export default function OnboardingPage() {
   const [currentInput, setCurrentInput] = useState('')
   const [selectedMulti, setSelectedMulti] = useState<string[]>([])
   const [competitors, setCompetitors] = useState(['','',''])
+  const [otherText, setOtherText] = useState('')
+  const [privacyAgreed, setPrivacyAgreed] = useState(false)
   const [saving, setSaving] = useState(false)
   const [showWelcome, setShowWelcome] = useState(true)
 
@@ -55,6 +65,10 @@ export default function OnboardingPage() {
   const q = QUESTIONS[step]
 
   function shouldSkipQuestion(questionId: string): boolean {
+    if (questionId === 'city') {
+      const country = answers['country'] || ''
+      return country !== 'India'
+    }
     if (questionId === 'sales_time_percentage') {
       const designation = answers['designation'] || ''
       const isOwner = designation.includes('Owner') || designation.includes('CEO') || designation.includes('MD') || designation.includes('Founder')
@@ -64,10 +78,17 @@ export default function OnboardingPage() {
   }
 
   function handleNext() {
-    if (q.type === 'multi') {
+    if (q.type === 'privacy') {
+      if (!privacyAgreed) return
+      setAnswers({ ...answers, [q.id]: true })
+    } else if (q.type === 'multi') {
       if (selectedMulti.length === 0 && !q.optional) return
-      setAnswers({ ...answers, [q.id]: selectedMulti })
+      const finalMulti = selectedMulti.includes('Other') && otherText.trim() 
+        ? [...selectedMulti.filter(s => s !== 'Other'), otherText.trim()] 
+        : selectedMulti.filter(s => s !== 'Other')
+      setAnswers({ ...answers, [q.id]: finalMulti })
       setSelectedMulti([])
+      setOtherText('')
     } else if (q.type === 'competitors') {
       setAnswers({ ...answers, [q.id]: competitors.filter((c: string) => c.trim()) })
     } else {
@@ -144,7 +165,8 @@ export default function OnboardingPage() {
             I'll use all of this to give you coaching that's specific to YOUR reality — not generic advice.
           </p>
         </div>
-        <p style={{fontSize:14,color:'#666',marginBottom:24}}>I recommend we start with your <strong>Sales Velocity Engine</strong> — it takes 10 minutes and tells you exactly how many visits per day you need to hit your target.</p>
+        {finalData.biggest_challenge && <p style={{fontSize:14,color:'#C8943E',fontWeight:600,marginBottom:12}}>Your #1 Challenge: {finalData.biggest_challenge}</p>}
+        <p style={{fontSize:14,color:'#666',marginBottom:24}}>Based on your challenge, I recommend we start with {finalData.biggest_challenge === 'Closing deals faster' || finalData.biggest_challenge === 'Negotiation skills' ? 'coaching on the NEGOTIATE™ framework' : finalData.biggest_challenge === 'Handling price objections' ? 'the A-L-S-P-E-C-C™ objection handling method' : finalData.biggest_challenge === 'Building value before quoting' ? 'the VALUE™ framework with CPV Elevation' : finalData.biggest_challenge === 'Prospecting and lead generation' ? 'the Golden Hour prospecting system' : 'your Sales Velocity Engine'} — or explore the full platform below.</p>
         <div style={{display:'flex',gap:12,justifyContent:'center'}}>
           <button onClick={() => router.push('/dashboard/chat?mode=velocity')}
             style={{padding:'14px 28px',background:'#C8943E',color:'#fff',border:'none',borderRadius:8,fontSize:15,fontWeight:700,cursor:'pointer'}}>
@@ -217,13 +239,40 @@ export default function OnboardingPage() {
           )}
 
           {q.type === 'multi' && (
-            <div style={{display:'flex',flexWrap:'wrap',gap:8,maxHeight:300,overflowY:'auto'}}>
-              {q.options?.map(opt => (
-                <button key={opt} onClick={() => toggleMulti(opt)}
-                  style={{padding:'8px 14px',border:selectedMulti.includes(opt)?'2px solid #C8943E':'1px solid #ddd',borderRadius:20,fontSize:13,background:selectedMulti.includes(opt)?'#fef3e2':'#fff',cursor:'pointer'}}>
-                  {selectedMulti.includes(opt) ? '✓ ' : ''}{opt}
-                </button>
-              ))}
+            <div>
+              <div style={{display:'flex',flexWrap:'wrap',gap:8,maxHeight:260,overflowY:'auto'}}>
+                {q.options?.map(opt => (
+                  <button key={opt} onClick={() => toggleMulti(opt)}
+                    style={{padding:'8px 14px',border:selectedMulti.includes(opt)?'2px solid #C8943E':'1px solid #ddd',borderRadius:20,fontSize:13,background:selectedMulti.includes(opt)?'#fef3e2':'#fff',cursor:'pointer'}}>
+                    {selectedMulti.includes(opt) ? '✓ ' : ''}{opt}
+                  </button>
+                ))}
+              </div>
+              {selectedMulti.includes('Other') && (
+                <input type="text" value={otherText} onChange={e => setOtherText(e.target.value)}
+                  placeholder="Type your own option..."
+                  style={{width:'100%',padding:'10px 14px',border:'2px solid #C8943E',borderRadius:8,fontSize:13,marginTop:10}} />
+              )}
+              {selectedMulti.length === 0 && <p style={{fontSize:12,color:'#f97316',marginTop:8}}>Please select at least one option or choose Other</p>}
+            </div>
+          )}
+
+          {q.type === 'privacy' && (
+            <div style={{background:'#fff',borderRadius:8,padding:16,border:'1px solid #eee'}}>
+              <div style={{maxHeight:200,overflowY:'auto',fontSize:12,color:'#666',lineHeight:1.8,marginBottom:16,padding:12,background:'#f9fafb',borderRadius:8}}>
+                <p style={{fontWeight:700,marginBottom:8}}>Terms of Use & Privacy Policy</p>
+                <p>By using B2BsalesBUDDY, you agree to the following:</p>
+                <p>1. <strong>Data Privacy:</strong> Your personal and business data is stored securely on encrypted servers. We do not share, sell, or distribute your data to third parties.</p>
+                <p>2. <strong>AI Coaching:</strong> B2BsalesBUDDY provides AI-powered sales coaching based on proprietary frameworks. AI can make mistakes — always verify coaching content before execution.</p>
+                <p>3. <strong>Confidentiality:</strong> All coaching sessions, scores, and deal data are confidential and accessible only to you.</p>
+                <p>4. <strong>Intellectual Property:</strong> The 24 proprietary frameworks are owned by Bhadresh Dani. Reproduction or distribution without permission is prohibited.</p>
+                <p>5. <strong>Usage:</strong> This platform is for professional B2B sales coaching purposes only.</p>
+              </div>
+              <label style={{display:'flex',alignItems:'center',gap:10,cursor:'pointer'}}>
+                <input type="checkbox" checked={privacyAgreed} onChange={e => setPrivacyAgreed(e.target.checked)}
+                  style={{width:20,height:20,accentColor:'#C8943E'}} />
+                <span style={{fontSize:14}}>I agree to the Terms of Use and Privacy Policy</span>
+              </label>
             </div>
           )}
 
