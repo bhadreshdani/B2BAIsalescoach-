@@ -5,6 +5,9 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import CalendlyButton from '@/components/CalendlyButton'
 
+const DEAL_COUNTRIES = ['India','United States','United Kingdom','United Arab Emirates','Saudi Arabia','Singapore','Germany','Australia','Canada','Japan','South Korea','Malaysia','Thailand','Vietnam','South Africa','Nigeria','Brazil','Mexico','Netherlands','France','Other']
+const DEAL_CURRENCIES = [{code:'INR',symbol:'₹',label:'INR (₹)'},{code:'USD',symbol:'$',label:'USD ($)'},{code:'EUR',symbol:'€',label:'EUR (€)'},{code:'GBP',symbol:'£',label:'GBP (£)'},{code:'AED',symbol:'د.إ',label:'AED (د.إ)'},{code:'SGD',symbol:'S$',label:'SGD (S$)'}]
+
 function formatCurrency(val: number): string {
   if (val >= 10000000) return (val / 10000000).toFixed(1) + ' Cr'
   if (val >= 100000) return (val / 100000).toFixed(1) + ' L'
@@ -25,7 +28,7 @@ function DealsInner() {
   const [loading, setLoading] = useState(true)
   const [showNew, setShowNew] = useState(false)
   const [expandedDeal, setExpandedDeal] = useState<string|null>(null)
-  const [newDeal, setNewDeal] = useState({ name:'', company:'', industry:'', customer_type:'', deal_value:'', stage:1 })
+  const [newDeal, setNewDeal] = useState({ name:'', company:'', industry:'', customer_type:'', deal_value:'', stage:1, deal_type:'local', export_country:'', currency:'INR', internal_stakeholders:'', external_stakeholders:'', closing_cycle:'' })
   const [saving, setSaving] = useState(false)
   const [createError, setCreateError] = useState('')
   const [showOtherIndustry, setShowOtherIndustry] = useState(false)
@@ -64,7 +67,7 @@ function DealsInner() {
       let data: any = {}
       try { data = JSON.parse(text) } catch(e) { data = { error: text } }
       if (!res.ok) { setCreateError('Error: ' + (data.error || text || 'Unknown error. Status: ' + res.status)); setSaving(false); return }
-      setShowNew(false); setNewDeal({ name:'', company:'', industry:'', customer_type:'', deal_value:'', stage:1 })
+      setShowNew(false); setNewDeal({ name:'', company:'', industry:'', customer_type:'', deal_value:'', stage:1, deal_type:'local', export_country:'', currency:'INR', internal_stakeholders:'', external_stakeholders:'', closing_cycle:'' })
       setShowOtherIndustry(false); setShowOtherCustomer(false)
       await loadDeals(user.id)
     } catch (err: any) {
@@ -127,11 +130,60 @@ function DealsInner() {
                 {showOtherCustomer && <input value={newDeal.customer_type} onChange={e=>setNewDeal({...newDeal,customer_type:e.target.value})} placeholder="Type customer type..." style={{width:'100%',padding:'10px 12px',border:'1px solid #C8943E',borderRadius:8,fontSize:13,marginTop:6}} />}
               </div>
               <div>
-                <label style={{fontSize:12,fontWeight:600}}>Deal Value (₹)</label>
+                <label style={{fontSize:12,fontWeight:600}}>Local Sale or Export?</label>
+                <select value={newDeal.deal_type} onChange={e=>setNewDeal({...newDeal, deal_type:e.target.value, currency:e.target.value==='local'?'INR':newDeal.currency})} style={{width:'100%',padding:'10px 12px',border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}}>
+                  <option value="local">Local Sale (India)</option>
+                  <option value="export">Export Deal</option>
+                </select>
+              </div>
+              {newDeal.deal_type === 'export' && (
+                <div>
+                  <label style={{fontSize:12,fontWeight:600}}>Export Country</label>
+                  <select value={newDeal.export_country} onChange={e=>setNewDeal({...newDeal,export_country:e.target.value})} style={{width:'100%',padding:'10px 12px',border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}}>
+                    <option value="">Select Country</option>
+                    {DEAL_COUNTRIES.filter(c=>c!=='India').map(c=><option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
+              )}
+              <div>
+                <label style={{fontSize:12,fontWeight:600}}>Deal Currency</label>
+                <select value={newDeal.currency} onChange={e=>setNewDeal({...newDeal,currency:e.target.value})} style={{width:'100%',padding:'10px 12px',border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}}>
+                  {DEAL_CURRENCIES.map(c=><option key={c.code} value={c.code}>{c.label}</option>)}
+                </select>
+                {newDeal.deal_type === 'export' && <p style={{fontSize:10,color:'#f97316',marginTop:3}}>For export deals, select the deal currency. Culture of the country will also play a role in coaching.</p>}
+              </div>
+              <div>
+                <label style={{fontSize:12,fontWeight:600}}>Deal Value ({DEAL_CURRENCIES.find(c=>c.code===newDeal.currency)?.symbol||'₹'})</label>
                 <input type="number" value={newDeal.deal_value} onChange={e=>setNewDeal({...newDeal,deal_value:e.target.value})} placeholder="e.g. 5000000" style={{width:'100%',padding:'10px 12px',border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}} />
-                {newDeal.deal_value && parseFloat(newDeal.deal_value) > 0 && <p style={{fontSize:11,color:'#C8943E',marginTop:3,fontWeight:600}}>{parseFloat(newDeal.deal_value)>=10000000?'₹'+(parseFloat(newDeal.deal_value)/10000000).toFixed(1)+' Cr':parseFloat(newDeal.deal_value)>=100000?'₹'+(parseFloat(newDeal.deal_value)/100000).toFixed(1)+' L':'₹'+parseFloat(newDeal.deal_value).toLocaleString()}</p>}
+                {newDeal.deal_value && parseFloat(newDeal.deal_value) > 0 && newDeal.currency==='INR' && <p style={{fontSize:11,color:'#C8943E',marginTop:3,fontWeight:600}}>{parseFloat(newDeal.deal_value)>=10000000?'₹'+(parseFloat(newDeal.deal_value)/10000000).toFixed(1)+' Cr':parseFloat(newDeal.deal_value)>=100000?'₹'+(parseFloat(newDeal.deal_value)/100000).toFixed(1)+' L':'₹'+parseFloat(newDeal.deal_value).toLocaleString()}</p>}
+                {newDeal.deal_value && parseFloat(newDeal.deal_value) > 0 && newDeal.currency!=='INR' && <p style={{fontSize:11,color:'#C8943E',marginTop:3,fontWeight:600}}>{DEAL_CURRENCIES.find(c=>c.code===newDeal.currency)?.symbol}{parseFloat(newDeal.deal_value).toLocaleString()}</p>}
               </div>
               <div><label style={{fontSize:12,fontWeight:600}}>Current Stage</label><select value={newDeal.stage} onChange={e=>setNewDeal({...newDeal,stage:parseInt(e.target.value)})} style={{width:'100%',padding:'10px 12px',border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}}>{STAGES.map(s=><option key={s.n} value={s.n}>Step {s.n}: {s.name}</option>)}</select></div>
+              <div>
+                <label style={{fontSize:12,fontWeight:600}}>Expected Closing Time (if known)</label>
+                <select value={newDeal.closing_cycle} onChange={e=>setNewDeal({...newDeal,closing_cycle:e.target.value})} style={{width:'100%',padding:'10px 12px',border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}}>
+                  <option value="">Not sure yet</option>
+                  <option value="1-2 weeks">1-2 weeks</option>
+                  <option value="1 month">1 month</option>
+                  <option value="2-3 months">2-3 months</option>
+                  <option value="3-6 months">3-6 months</option>
+                  <option value="6-12 months">6-12 months</option>
+                  <option value="12+ months">12+ months</option>
+                </select>
+              </div>
+            </div>
+            {/* Stakeholders */}
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:12}}>
+              <div>
+                <label style={{fontSize:12,fontWeight:600}}>Internal Stakeholders</label>
+                <textarea value={newDeal.internal_stakeholders} onChange={e=>setNewDeal({...newDeal,internal_stakeholders:e.target.value})} placeholder="e.g. Rajesh (Sales Head), Priya (Technical), Amit (Finance)" rows={2} style={{width:'100%',padding:'10px 12px',border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4,resize:'none',fontFamily:'Arial,sans-serif'}} />
+                <p style={{fontSize:10,color:'#888',marginTop:2}}>Your team members involved in this deal</p>
+              </div>
+              <div>
+                <label style={{fontSize:12,fontWeight:600}}>External Stakeholders (Customer Side)</label>
+                <textarea value={newDeal.external_stakeholders} onChange={e=>setNewDeal({...newDeal,external_stakeholders:e.target.value})} placeholder="e.g. Mr. Shah (MD), Suresh (Purchase), Ketan (Technical Head)" rows={2} style={{width:'100%',padding:'10px 12px',border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4,resize:'none',fontFamily:'Arial,sans-serif'}} />
+                <p style={{fontSize:10,color:'#888',marginTop:2}}>Customer-side decision makers and influencers</p>
+              </div>
             </div>
             {createError && <p style={{color:'#dc2626',fontSize:12,marginBottom:12,padding:'8px 12px',background:'#fef2f2',borderRadius:6}}>{createError}</p>}
             <div style={{display:'flex',gap:8}}>
