@@ -83,11 +83,13 @@ export default function DashboardPage() {
           <div style={{display:'flex',alignItems:'center',gap:16}}>
             <div style={{textAlign:'right'}}>
               <p style={{fontSize:14}}>{greeting}, {firstName}!</p>
-            {profile?.rotis_hourly ? (
-              <p style={{fontSize:12,color:'#C8943E'}}>ROTIS™: ₹{Math.round(profile.rotis_hourly).toLocaleString()}/hr</p>
-            ) : (
-              <Link href="/dashboard/chat" style={{fontSize:11,color:'#888',textDecoration:'underline'}}>Calculate your ROTIS™ →</Link>
-            )}
+              {profile?.rotis_hourly ? (
+                <p style={{fontSize:12,color:'#C8943E'}}>ROTIS™: ₹{Math.round(profile.rotis_hourly).toLocaleString()}/hr</p>
+              ) : (
+                <Link href="/dashboard/velocity" style={{fontSize:11,color:'#888',textDecoration:'underline'}}>Calculate your ROTIS™ →</Link>
+              )}
+            </div>
+            <button onClick={handleLogout} style={{fontSize:12,color:'#fff',background:'#dc2626',border:'none',cursor:'pointer',padding:'8px 16px',borderRadius:8,fontWeight:600,whiteSpace:'nowrap'}}>Log Out</button>
           </div>
         </div>
       </header>
