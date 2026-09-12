@@ -108,7 +108,7 @@ export default function DownloadButtons({ title, content, filename, fullSession,
 function buildHTML(title: string, content: string, userName?: string, orgName?: string, customerName?: string): string {
   const date = new Date().toLocaleDateString('en-IN', { year:'numeric', month:'long', day:'numeric' })
   const userLine = [userName, orgName].filter(Boolean).join(' | ')
-  const custLine = customerName ? 'Customer: ' + customerName : ''
+  const custLine = 'Customer: ' + (customerName || '_______________')
   return `<!DOCTYPE html><html><head><title>B2BsalesBUDDY_${coachingType}_${uName}_${date}</title>
 <style>
   @media print { body { margin: 20mm; } .no-print { display: none; } }
@@ -138,7 +138,7 @@ ${custLine ? '<p style="font-size:11pt;color:#666">' + custLine + '</p>' : ''}
 function buildWordHTML(title: string, content: string, userName?: string, orgName?: string, customerName?: string): string {
   const date = new Date().toLocaleDateString('en-IN', { year:'numeric', month:'long', day:'numeric' })
   const userLine = [userName, orgName].filter(Boolean).join(' | ')
-  const custLine = customerName ? 'Customer: ' + customerName : ''
+  const custLine = 'Customer: ' + (customerName || '_______________')
   return `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word">
 <head><meta charset="utf-8"><title>B2BsalesBUDDY_${coachingType}_${uName}_${date}</title>
 <style>
