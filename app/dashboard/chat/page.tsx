@@ -186,8 +186,10 @@ function ChatInner() {
                 <div style={{maxWidth:'80%',padding:'12px 16px',borderRadius:msg.role==='user'?'16px 16px 4px 16px':'4px 16px 16px 16px',background:msg.role==='user'?'#0D1B2A':'#fff',color:msg.role==='user'?'#fff':'#1B2A4A',fontSize:14,lineHeight:1.7,whiteSpace:'pre-wrap',boxShadow:'0 1px 3px rgba(0,0,0,0.06)'}}>
                   {msg.content}
                   {msg.role==='assistant' && msg.content && !streaming && i===messages.length-1 && (
-                    <DownloadButtons title="B2BsalesBUDDY Coaching Session" content={msg.content} filename="coaching-session" />
-                    <p style={{fontSize:9,color:'#aaa',marginTop:6,fontStyle:'italic'}}>AI can make mistakes. Please verify coaching content before execution.</p>
+                    <div>
+                      <DownloadButtons title="B2BsalesBUDDY Coaching Session" content={msg.content} filename="coaching-session" />
+                      <p style={{fontSize:9,color:'#aaa',marginTop:6,fontStyle:'italic'}}>AI can make mistakes. Please verify coaching content before execution.</p>
+                    </div>
                   )}
                 </div>
               </div>
