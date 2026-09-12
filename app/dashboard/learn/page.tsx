@@ -156,12 +156,9 @@ export default function LearnPage() {
                         boxShadow:'0 2px 6px rgba(0,0,0,0.15)',transition:'transform 0.15s,opacity 0.15s',
                         opacity:isComplete?0.85:1,
                       }}>
-                      <div style={{display:'flex',alignItems:'center',gap:10}}>
-                        <span style={{fontSize:20}}>{isComplete ? '✅' : s.icon}</span>
-                        <div>
-                          <span style={{fontSize:14,fontWeight:700}}>Step {s.n}: {s.name}</span>
-                          <div style={{fontSize:10,color:'rgba(255,255,255,0.7)',marginTop:1}}>{s.frameworks.join(' · ')}</div>
-                        </div>
+                      <div style={{display:'flex',alignItems:'center',gap:12}}>
+                        <span style={{fontSize:22}}>{isComplete ? '✅' : s.icon}</span>
+                        <span style={{fontSize:16,fontWeight:700}}>Step {s.n}: {s.name}</span>
                       </div>
                       <span style={{fontSize:14,opacity:0.7}}>→</span>
                     </button>

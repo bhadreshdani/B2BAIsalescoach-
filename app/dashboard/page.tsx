@@ -139,7 +139,7 @@ export default function DashboardPage() {
           <div style={{display:'flex',flexDirection:'column',gap:8}}>
             {[
               { icon: '🚀', title: 'My Sales Velocity Engine', desc: 'Calculate daily activity targets & ROTIS™', href: '/dashboard/velocity' },
-              { icon: '🔥', title: 'My ASK™ Assessment', desc: 'Assess your Attitude, Skill & Knowledge', href: '/dashboard/assessment' },
+              { icon: '🔥', title: 'My ASK™ Competency Assessment', desc: 'Assess Attitude, Skill, Knowledge gaps', href: '/dashboard/assessment' },
               { icon: '⚖️', title: 'My Work-Life Balance', desc: 'Wheel of Life assessment & action plan', href: '/dashboard/balance' },
             ].map((tool) => (
               <Link key={tool.title} href={tool.href} style={{display:'flex',alignItems:'center',gap:16,background:'#fff',borderRadius:10,padding:'14px 20px',textDecoration:'none',color:'#1B2A4A',boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}>
