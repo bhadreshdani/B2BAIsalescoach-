@@ -40,6 +40,7 @@ function DealsInner() {
   const [selectedExternal, setSelectedExternal] = useState<string[]>([])
   const [otherInternal, setOtherInternal] = useState('')
   const [otherExternal, setOtherExternal] = useState('')
+  const [otherCountry, setOtherCountry] = useState('')
 
   const searchParams = useSearchParams()
 
@@ -82,7 +83,7 @@ function DealsInner() {
       if (!res.ok) { setCreateError('Error: ' + (data.error || text || 'Unknown error. Status: ' + res.status)); setSaving(false); return }
       setShowNew(false); setNewDeal({ name:'', company:'', industry:'', customer_type:'', deal_value:'', stage:1, deal_type:'local', export_country:'', currency:'INR', internal_stakeholders:'', external_stakeholders:'', closing_cycle:'' })
       setShowOtherIndustry(false); setShowOtherCustomer(false)
-      setSelectedInternal([]); setSelectedExternal([]); setOtherInternal(''); setOtherExternal('')
+      setSelectedInternal([]); setSelectedExternal([]); setOtherInternal(''); setOtherExternal(''); setOtherCountry('')
       await loadDeals(user.id)
     } catch (err: any) {
       setCreateError('Error: ' + (err?.message || 'Request failed. Please try again.'))
@@ -153,10 +154,12 @@ function DealsInner() {
               {newDeal.deal_type === 'export' && (
                 <div>
                   <label style={{fontSize:12,fontWeight:600}}>Export Country</label>
-                  <select value={newDeal.export_country} onChange={e=>setNewDeal({...newDeal,export_country:e.target.value})} style={{width:'100%',padding:'10px 12px',border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}}>
+                  <select value={otherCountry ? '__other__' : newDeal.export_country} onChange={e => { if (e.target.value === '__other__') { setOtherCountry(' '); setNewDeal({...newDeal, export_country: ''}) } else { setOtherCountry(''); setNewDeal({...newDeal, export_country: e.target.value}) } }} style={{width:'100%',padding:'10px 12px',border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}}>
                     <option value="">Select Country</option>
-                    {DEAL_COUNTRIES.filter(c=>c!=='India').map(c=><option key={c} value={c}>{c}</option>)}
+                    {DEAL_COUNTRIES.filter(c=>c!=='India' && c!=='Other').map(c=><option key={c} value={c}>{c}</option>)}
+                    <option value="__other__">Other (type below)</option>
                   </select>
+                  {otherCountry && <input type="text" value={newDeal.export_country} onChange={e=>setNewDeal({...newDeal,export_country:e.target.value})} placeholder="Type country name..." style={{width:'100%',padding:'10px 12px',border:'2px solid #C8943E',borderRadius:8,fontSize:13,marginTop:6}} />}
                 </div>
               )}
               <div>
@@ -164,7 +167,7 @@ function DealsInner() {
                 <select value={newDeal.currency} onChange={e=>setNewDeal({...newDeal,currency:e.target.value})} style={{width:'100%',padding:'10px 12px',border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}}>
                   {DEAL_CURRENCIES.map(c=><option key={c.code} value={c.code}>{c.label}</option>)}
                 </select>
-                {newDeal.deal_type === 'export' && <p style={{fontSize:10,color:'#f97316',marginTop:3}}>For export deals, select the deal currency. Culture of the country will also play a role in coaching.</p>}
+                {newDeal.deal_type === 'export' && newDeal.currency === 'INR' && <p style={{fontSize:10,color:'#888',marginTop:3}}>Tip: Select the appropriate currency for this export deal.</p>}
               </div>
               <div>
                 <label style={{fontSize:12,fontWeight:600}}>Deal Value ({DEAL_CURRENCIES.find(c=>c.code===newDeal.currency)?.symbol||'₹'})</label>
