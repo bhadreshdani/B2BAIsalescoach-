@@ -8,6 +8,9 @@ import CalendlyButton from '@/components/CalendlyButton'
 const DEAL_COUNTRIES = ['India','United States','United Kingdom','United Arab Emirates','Saudi Arabia','Singapore','Germany','Australia','Canada','Japan','South Korea','Malaysia','Thailand','Vietnam','South Africa','Nigeria','Brazil','Mexico','Netherlands','France','Other']
 const DEAL_CURRENCIES = [{code:'INR',symbol:'₹',label:'INR (₹)'},{code:'USD',symbol:'$',label:'USD ($)'},{code:'EUR',symbol:'€',label:'EUR (€)'},{code:'GBP',symbol:'£',label:'GBP (£)'},{code:'AED',symbol:'د.إ',label:'AED (د.إ)'},{code:'SGD',symbol:'S$',label:'SGD (S$)'}]
 
+const INTERNAL_STAKEHOLDERS = ['CEO / MD / Director','VP / General Manager','Plant Head / Factory Head','Purchase Head / Procurement Manager','Technical Head / CTO','Production Manager','Maintenance Manager','Quality Head','Finance / CFO','Project Manager','R&D Head','Supply Chain Head','Other']
+const EXTERNAL_STAKEHOLDERS = ['Consultant / Specifier','Panel Builder / System Integrator','EPC Contractor','Architect / Designer','End User / Operator','Channel Partner / Distributor','Government Body / Inspector','Financing Partner / Bank','Logistics Partner','Other']
+
 function formatCurrency(val: number): string {
   if (val >= 10000000) return (val / 10000000).toFixed(1) + ' Cr'
   if (val >= 100000) return (val / 100000).toFixed(1) + ' L'
@@ -33,6 +36,10 @@ function DealsInner() {
   const [createError, setCreateError] = useState('')
   const [showOtherIndustry, setShowOtherIndustry] = useState(false)
   const [showOtherCustomer, setShowOtherCustomer] = useState(false)
+  const [selectedInternal, setSelectedInternal] = useState<string[]>([])
+  const [selectedExternal, setSelectedExternal] = useState<string[]>([])
+  const [otherInternal, setOtherInternal] = useState('')
+  const [otherExternal, setOtherExternal] = useState('')
 
   const searchParams = useSearchParams()
 
@@ -61,7 +68,13 @@ function DealsInner() {
     try {
       const res = await fetch('/api/deals', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user.id, ...newDeal, deal_value: newDeal.deal_value ? parseFloat(newDeal.deal_value) : 0, status: 'active' })
+        body: JSON.stringify({ 
+          userId: user.id, ...newDeal, 
+          deal_value: newDeal.deal_value ? parseFloat(newDeal.deal_value) : 0, 
+          status: 'active',
+          internal_stakeholders: [...selectedInternal.filter(s=>s!=='Other'), ...(otherInternal.trim()?[otherInternal.trim()]:[])].join(', '),
+          external_stakeholders: [...selectedExternal.filter(s=>s!=='Other'), ...(otherExternal.trim()?[otherExternal.trim()]:[])].join(', '),
+        })
       })
       const text = await res.text()
       let data: any = {}
@@ -69,6 +82,7 @@ function DealsInner() {
       if (!res.ok) { setCreateError('Error: ' + (data.error || text || 'Unknown error. Status: ' + res.status)); setSaving(false); return }
       setShowNew(false); setNewDeal({ name:'', company:'', industry:'', customer_type:'', deal_value:'', stage:1, deal_type:'local', export_country:'', currency:'INR', internal_stakeholders:'', external_stakeholders:'', closing_cycle:'' })
       setShowOtherIndustry(false); setShowOtherCustomer(false)
+      setSelectedInternal([]); setSelectedExternal([]); setOtherInternal(''); setOtherExternal('')
       await loadDeals(user.id)
     } catch (err: any) {
       setCreateError('Error: ' + (err?.message || 'Request failed. Please try again.'))
@@ -173,17 +187,33 @@ function DealsInner() {
               </div>
             </div>
             {/* Stakeholders */}
-            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:12}}>
-              <div>
-                <label style={{fontSize:12,fontWeight:600}}>Internal Stakeholders</label>
-                <textarea value={newDeal.internal_stakeholders} onChange={e=>setNewDeal({...newDeal,internal_stakeholders:e.target.value})} placeholder="e.g. Rajesh (Sales Head), Priya (Technical), Amit (Finance)" rows={2} style={{width:'100%',padding:'10px 12px',border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4,resize:'none',fontFamily:'Arial,sans-serif'}} />
-                <p style={{fontSize:10,color:'#888',marginTop:2}}>Your team members involved in this deal</p>
+            <div style={{marginBottom:12}}>
+              <label style={{fontSize:12,fontWeight:600,marginBottom:6,display:'block'}}>Customer Internal Stakeholders (who is involved in the buying decision?)</label>
+              <div style={{display:'flex',flexWrap:'wrap',gap:6,marginBottom:6}}>
+                {INTERNAL_STAKEHOLDERS.map(s => (
+                  <button key={s} type="button" onClick={() => setSelectedInternal(prev => prev.includes(s) ? prev.filter(x=>x!==s) : [...prev, s])}
+                    style={{padding:'6px 12px',border:selectedInternal.includes(s)?'2px solid #C8943E':'1px solid #ddd',borderRadius:20,fontSize:11,background:selectedInternal.includes(s)?'#fef3e2':'#fff',cursor:'pointer'}}>
+                    {selectedInternal.includes(s) ? '✓ ' : ''}{s}
+                  </button>
+                ))}
               </div>
-              <div>
-                <label style={{fontSize:12,fontWeight:600}}>External Stakeholders (Customer Side)</label>
-                <textarea value={newDeal.external_stakeholders} onChange={e=>setNewDeal({...newDeal,external_stakeholders:e.target.value})} placeholder="e.g. Mr. Shah (MD), Suresh (Purchase), Ketan (Technical Head)" rows={2} style={{width:'100%',padding:'10px 12px',border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4,resize:'none',fontFamily:'Arial,sans-serif'}} />
-                <p style={{fontSize:10,color:'#888',marginTop:2}}>Customer-side decision makers and influencers</p>
+              {selectedInternal.includes('Other') && (
+                <input type="text" value={otherInternal} onChange={e=>setOtherInternal(e.target.value)} placeholder="Type other stakeholder role..." style={{width:'100%',padding:'8px 12px',border:'2px solid #C8943E',borderRadius:8,fontSize:12,marginTop:4}} />
+              )}
+            </div>
+            <div style={{marginBottom:12}}>
+              <label style={{fontSize:12,fontWeight:600,marginBottom:6,display:'block'}}>External Stakeholders (outside the customer company)</label>
+              <div style={{display:'flex',flexWrap:'wrap',gap:6,marginBottom:6}}>
+                {EXTERNAL_STAKEHOLDERS.map(s => (
+                  <button key={s} type="button" onClick={() => setSelectedExternal(prev => prev.includes(s) ? prev.filter(x=>x!==s) : [...prev, s])}
+                    style={{padding:'6px 12px',border:selectedExternal.includes(s)?'2px solid #C8943E':'1px solid #ddd',borderRadius:20,fontSize:11,background:selectedExternal.includes(s)?'#fef3e2':'#fff',cursor:'pointer'}}>
+                    {selectedExternal.includes(s) ? '✓ ' : ''}{s}
+                  </button>
+                ))}
               </div>
+              {selectedExternal.includes('Other') && (
+                <input type="text" value={otherExternal} onChange={e=>setOtherExternal(e.target.value)} placeholder="Type other external stakeholder..." style={{width:'100%',padding:'8px 12px',border:'2px solid #C8943E',borderRadius:8,fontSize:12,marginTop:4}} />
+              )}
             </div>
             {createError && <p style={{color:'#dc2626',fontSize:12,marginBottom:12,padding:'8px 12px',background:'#fef2f2',borderRadius:6}}>{createError}</p>}
             <div style={{display:'flex',gap:8}}>
