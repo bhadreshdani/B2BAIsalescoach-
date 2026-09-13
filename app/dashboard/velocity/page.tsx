@@ -33,7 +33,7 @@ const Q_SPLITS = [
 
 const CURR: Record<string,string> = {'INR':'₹','USD':'$','EUR':'€','GBP':'£','AED':'د.إ','SGD':'S$'}
 
-function InputN({ label, val, set, ph }: { label: string, val: string, set: (v: string) => void, ph?: string }) {
+function InputN({ label, val, set, ph, hint }: { label: string, val: string, set: (v: string) => void, ph?: string, hint?: string }) {
   return (
     <div style={{ marginBottom: 10 }}>
       <label style={{ fontSize: 12, fontWeight: 600 }}>{label}</label>
@@ -42,6 +42,7 @@ function InputN({ label, val, set, ph }: { label: string, val: string, set: (v: 
         onWheel={e => (e.target as HTMLElement).blur()}
         placeholder={ph}
         style={{ width: '100%', padding: 8, border: '1px solid #ddd', borderRadius: 8, fontSize: 13, marginTop: 4 }} />
+      {hint && <p style={{ fontSize: 10, color: '#C8943E', marginTop: 2 }}>{hint}</p>}
     </div>
   )
 }
@@ -274,7 +275,7 @@ export default function VelocityPage() {
         {phase === 2 && <div style={{ background: '#fff', borderRadius: 12, padding: 24 }}>
           <h2 style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 4 }}>Phase 2: ROTIS™</h2>
           <div style={{ marginBottom: 14 }}><label style={{ fontSize: 13, fontWeight: 600 }}>Currency</label><select value={curr} onChange={e => setCurr(e.target.value)} style={{ width: '100%', padding: 10, border: '1px solid #ddd', borderRadius: 8, fontSize: 13, marginTop: 4 }}>{Object.entries(CURR).map(([c, s]) => <option key={c} value={c}>{c} ({s})</option>)}</select></div>
-          <InputN label={`Annual Sales Target (${sym})`} val={target} set={setTarget} ph="e.g. 50000000" />
+          <InputN label={`Annual Sales Target (${sym})`} val={target} set={setTarget} ph="e.g. 50000000" hint={fi(target)} />
           <div style={{ marginBottom: 16 }}><label style={{ fontSize: 13, fontWeight: 600 }}>% Time on Sales: {salesPct}%</label><input type="range" min="10" max="100" step="5" value={salesPct} onChange={e => setSalesPct(parseInt(e.target.value))} style={{ width: '100%', accentColor: '#C8943E' }} />{salesPct < 100 && <p style={{ fontSize: 12, color: '#f97316', fontWeight: 600 }}>With {salesPct}% time, your per-hour value goes UP — every hour counts!</p>}</div>
           {target && <div style={{ background: '#0D1B2A', borderRadius: 10, padding: 20, color: '#fff', textAlign: 'center', marginBottom: 16 }}><p style={{ fontSize: 12, color: '#888' }}>Your ROTIS™</p><p style={{ fontSize: 36, fontWeight: 'bold', color: '#C8943E' }}>{sym}{Math.round(rotis()).toLocaleString()}/hr</p><p style={{ fontSize: 12, color: '#f97316', marginTop: 8 }}>Every wasted hour = {sym}{Math.round(rotis()).toLocaleString()} lost</p></div>}
           <div style={{ display: 'flex', gap: 8 }}><button onClick={() => setPhase(1)} style={{ padding: 14, background: '#f3f4f6', border: 'none', borderRadius: 8, cursor: 'pointer' }}>← Back</button><button onClick={() => setPhase(3)} disabled={!target} style={{ flex: 1, padding: 14, background: target ? '#C8943E' : '#ccc', color: '#fff', border: 'none', borderRadius: 8, fontSize: 15, fontWeight: 700, cursor: target ? 'pointer' : 'default' }}>Next: Velocity →</button></div>
@@ -286,14 +287,14 @@ export default function VelocityPage() {
           <p style={{ fontSize: 13, color: '#888', marginBottom: 16 }}>Enter numbers to calculate <b>weekly</b> targets</p>
 
           <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>📊 Year-to-Date</h3>
-          <InputN label={`Total Order Booking (${sym})`} val={orderBooking} set={setOrderBooking} />
-          <InputN label={`Billing Done (${sym})`} val={billing} set={setBilling} />
+          <InputN label={`Total Order Booking (${sym})`} val={orderBooking} set={setOrderBooking} hint={fi(orderBooking)} />
+          <InputN label={`Billing Done (${sym})`} val={billing} set={setBilling} hint={fi(billing)} />
           <div style={{marginBottom:10}}>
             <label style={{fontSize:12,fontWeight:600}}>Unexecuted Open Orders ({sym}) <span style={{fontSize:10,color:'#888',fontWeight:400}}>— auto-calculated</span></label>
             <input type="text" value={openOrders} readOnly style={{width:'100%',padding:8,border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4,background:'#f9fafb',color:'#666'}} />
             {openOrders && parseFloat(openOrders) > 0 && <p style={{fontSize:10,color:'#C8943E'}}>{fi(openOrders)}</p>}
           </div>
-          <InputN label={`Retainer / Repeat Expected (${sym})`} val={retainer} set={setRetainer} />
+          <InputN label={`Retainer / Repeat Expected (${sym})`} val={retainer} set={setRetainer} hint={fi(retainer)} />
 
           {(billing || openOrders) && <div style={{ background: '#f0fdf4', borderRadius: 8, padding: 12, marginBottom: 14, border: '1px solid #86efac' }}>
             <p style={{ fontSize: 12, color: '#16a34a', fontWeight: 600 }}>Secured: {f((parseFloat(billing) || 0) + (parseFloat(openOrders) || 0) + (parseFloat(retainer) || 0))}</p>
@@ -305,8 +306,8 @@ export default function VelocityPage() {
           <div style={{ background: '#fffbeb', borderRadius: 8, padding: 10, marginBottom: 8 }}><label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}><input type="checkbox" checked={showProduct} onChange={e => setShowProduct(e.target.checked)} style={{ width: 18, height: 18, accentColor: '#C8943E' }} /><span style={{ fontSize: 13, fontWeight: 700, color: '#C8943E' }}>📦 Product Sale (Regular / OEM / Channel)</span></label></div>
           {showProduct && <div style={{ border: '1px solid #C8943E', borderRadius: 8, padding: 14, marginBottom: 14 }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 10 }}>
-              <InputN label={`Pipeline (${sym})`} val={pPipe} set={setPPipe} />
-              <InputN label={`Avg Deal (${sym})`} val={pDeal} set={setPDeal} />
+              <InputN label={`Pipeline (${sym})`} val={pPipe} set={setPPipe} hint={fi(pPipe)} />
+              <InputN label={`Avg Deal (${sym})`} val={pDeal} set={setPDeal} hint={fi(pDeal)} />
               <InputN label="Cycle (weeks)" val={pCycle} set={setPCycle} />
             </div>
             <h4 style={{ fontSize: 12, fontWeight: 700, color: '#C8943E', marginBottom: 6 }}>Conversion Metrics</h4>
@@ -323,8 +324,8 @@ export default function VelocityPage() {
           <div style={{ background: '#faf5ff', borderRadius: 8, padding: 10, marginBottom: 8 }}><label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}><input type="checkbox" checked={showProject} onChange={e => setShowProject(e.target.checked)} style={{ width: 18, height: 18, accentColor: '#9333ea' }} /><span style={{ fontSize: 13, fontWeight: 700, color: '#9333ea' }}>🏗️ Large Project Sale</span></label></div>
           {showProject && <div style={{ border: '1px solid #9333ea', borderRadius: 8, padding: 14, marginBottom: 14 }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 10 }}>
-              <InputN label={`Pipeline (${sym})`} val={jPipe} set={setJPipe} />
-              <InputN label={`Avg Deal (${sym})`} val={jDeal} set={setJDeal} />
+              <InputN label={`Pipeline (${sym})`} val={jPipe} set={setJPipe} hint={fi(jPipe)} />
+              <InputN label={`Avg Deal (${sym})`} val={jDeal} set={setJDeal} hint={fi(jDeal)} />
               <InputN label="Cycle (weeks)" val={jCycle} set={setJCycle} />
             </div>
             <h4 style={{ fontSize: 12, fontWeight: 700, color: '#9333ea', marginBottom: 6 }}>Conversion Metrics</h4>
