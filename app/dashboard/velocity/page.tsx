@@ -200,7 +200,7 @@ export default function VelocityPage() {
   const InputN = ({ label, val, set, ph }: { label: string, val: string, set: (v: string) => void, ph?: string }) => (
     <div style={{ marginBottom: 10 }}>
       <label style={{ fontSize: 12, fontWeight: 600 }}>{label}</label>
-      <input type="text" inputMode="numeric" value={val} onChange={e => { const v = e.target.value.replace(/[^0-9.]/g,''); set(v) }} placeholder={ph}
+      <input type="number" value={val} onChange={e => set(e.target.value)} placeholder={ph}
         style={{ width: '100%', padding: 8, border: '1px solid #ddd', borderRadius: 8, fontSize: 13, marginTop: 4 }} />
       {val && parseFloat(val) > 0 && <p style={{ fontSize: 10, color: '#C8943E' }}>{fi(val)}</p>}
     </div>
