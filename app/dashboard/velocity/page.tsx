@@ -202,9 +202,9 @@ export default function VelocityPage() {
       vpm: (vpw * 4.3).toFixed(0), eqm: ((totEnq / (remW || 1)) * 4.3).toFixed(0),
       levers, sHr: startHr, eHr: endHr, dpw,
       // Values for display
-      eqVal: Math.round((totEnq / (remW||1)) * wAvgDeal),
-      ofVal: Math.round((totOff / (remW||1)) * wAvgDeal),
-      opVal: Math.round((totOrd / (remW||1)) * wAvgDeal),
+      eqVal: Math.round((pEnq / (remW||1)) * pd + (jEnq / (remW||1)) * jd),
+      ofVal: Math.round((pOff / (remW||1)) * pd + (jOff / (remW||1)) * jd),
+      opVal: Math.round((pOrd / (remW||1)) * pd + (jOrd / (remW||1)) * jd),
       pOfVal: Math.round((pOff / (remW||1)) * pd),
       pOpVal: Math.round((pOrd / (remW||1)) * pd),
       jOfVal: Math.round((jOff / (remW||1)) * jd),
