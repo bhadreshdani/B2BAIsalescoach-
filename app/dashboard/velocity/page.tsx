@@ -200,7 +200,7 @@ export default function VelocityPage() {
       jOfw: (jOff / (remW || 1)).toFixed(1), jOpw: (jOrd / (remW || 1)).toFixed(1),
       hasProj: showProject, ok: hpw <= avail, cov: cov.toFixed(1), pctA: pctA.toFixed(0),
       cod: Math.round(short / (remW || 1)), remD, remW, r: rotis(), qT, mT: t / 12, avail: avail.toFixed(0),
-      vpm: (vpw * 4.3).toFixed(0), eqm: ((totEnq / (remW || 1)) * 4.3).toFixed(0),
+      vpm: Math.ceil(vpw) * 4, eqm: Math.ceil(totEnq / (remW||1)) * 4, ofm: Math.round((pOff/(remW||1)*pd + jOff/(remW||1)*jd) * 4), opm: Math.round((pOrd/(remW||1)*pd + jOrd/(remW||1)*jd) * 4),
       levers, sHr: startHr, eHr: endHr, dpw,
       // Values for display
       eqVal: Math.round((pEnq / (remW||1)) * pd + (jEnq / (remW||1)) * jd),
