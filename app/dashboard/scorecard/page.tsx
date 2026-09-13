@@ -312,6 +312,8 @@ function ScorecardInner() {
           </div>
         )}
       </div>
+
+<p style={{textAlign:"center",fontSize:11,color:"#000",fontStyle:"italic",padding:"12px 0"}}>AI can make mistakes. Please verify coaching content before you execute.</p>
 <CalendlyButton />
     </div>
   )
