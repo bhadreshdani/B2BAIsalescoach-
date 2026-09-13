@@ -84,6 +84,13 @@ export default function VelocityPage() {
   const [results, setResults] = useState<any>(null)
 
   useEffect(() => {
+    if (orderBooking && billing) {
+      const oo = Math.max(0, (parseFloat(orderBooking) || 0) - (parseFloat(billing) || 0))
+      setOpenOrders(String(oo))
+    }
+  }, [orderBooking, billing])
+
+  useEffect(() => {
     (async () => {
       const sb = createClient()
       const { data: { user: u } } = await sb.auth.getUser()
@@ -193,7 +200,7 @@ export default function VelocityPage() {
   const InputN = ({ label, val, set, ph }: { label: string, val: string, set: (v: string) => void, ph?: string }) => (
     <div style={{ marginBottom: 10 }}>
       <label style={{ fontSize: 12, fontWeight: 600 }}>{label}</label>
-      <input type="number" value={val} onChange={e => set(e.target.value)} placeholder={ph}
+      <input type="text" inputMode="numeric" value={val} onChange={e => { const v = e.target.value.replace(/[^0-9.]/g,''); set(v) }} placeholder={ph}
         style={{ width: '100%', padding: 8, border: '1px solid #ddd', borderRadius: 8, fontSize: 13, marginTop: 4 }} />
       {val && parseFloat(val) > 0 && <p style={{ fontSize: 10, color: '#C8943E' }}>{fi(val)}</p>}
     </div>
@@ -275,7 +282,11 @@ export default function VelocityPage() {
           <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>📊 Year-to-Date</h3>
           <InputN label={`Total Order Booking (${sym})`} val={orderBooking} set={setOrderBooking} />
           <InputN label={`Billing Done (${sym})`} val={billing} set={setBilling} />
-          <InputN label={`Unexecuted Open Orders (${sym})`} val={openOrders} set={setOpenOrders} />
+          <div style={{marginBottom:10}}>
+            <label style={{fontSize:12,fontWeight:600}}>Unexecuted Open Orders ({sym}) <span style={{fontSize:10,color:'#888',fontWeight:400}}>— auto-calculated</span></label>
+            <input type="text" value={openOrders} readOnly style={{width:'100%',padding:8,border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4,background:'#f9fafb',color:'#666'}} />
+            {openOrders && parseFloat(openOrders) > 0 && <p style={{fontSize:10,color:'#C8943E'}}>{fi(openOrders)}</p>}
+          </div>
           <InputN label={`Retainer / Repeat Expected (${sym})`} val={retainer} set={setRetainer} />
 
           {(billing || openOrders) && <div style={{ background: '#f0fdf4', borderRadius: 8, padding: 12, marginBottom: 14, border: '1px solid #86efac' }}>
