@@ -201,7 +201,7 @@ function ChatInner() {
                         orgName={userProfile?.organisation}
                         customerName={dealLabel || undefined}
                       />
-                      <p style={{fontSize:9,color:'#aaa',marginTop:6,fontStyle:'italic'}}>AI can make mistakes. Please verify coaching content before execution.</p>
+                      <p style={{fontSize:11,color:'#000',marginTop:6,fontStyle:'italic'}}>AI can make mistakes. Please verify coaching content before execution.</p>
                     </div>
                   )}
                 </div>
@@ -229,7 +229,7 @@ function ChatInner() {
 {/* Connect Bar */}
 
       {/* AI Disclaimer */}
-      <p style={{textAlign:'center',fontSize:9,color:'#bbb',fontStyle:'italic',padding:'8px 0',marginTop:12}}>AI can make mistakes. Please verify coaching content before you execute.</p>
+      <p style={{textAlign:'center',fontSize:11,color:'#000',fontStyle:'italic',padding:'12px 0',marginTop:16}}>AI can make mistakes. Please verify coaching content before you execute.</p>
       <CalendlyButton />
 
     </div>
