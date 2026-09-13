@@ -447,7 +447,13 @@ export default function VelocityPage() {
             </div>
           </div>}
 
-          <div style={{ background: '#fff', borderRadius: 10, padding: 16, marginBottom: 16 }}><h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>📊 Monthly</h3><div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}><div><span style={{ fontSize: 11, color: '#888' }}>Visits</span><p style={{ fontSize: 18, fontWeight: 700 }}>{results.vpm}</p></div><div><span style={{ fontSize: 11, color: '#888' }}>Enquiries</span><p style={{ fontSize: 18, fontWeight: 700 }}>{results.eqm}</p></div><div><span style={{ fontSize: 11, color: '#888' }}>Revenue</span><p style={{ fontSize: 18, fontWeight: 700 }}>{f(results.mT)}</p></div></div></div>
+          <div style={{ background: '#fff', borderRadius: 10, padding: 16, marginBottom: 16 }}><h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>📊 Monthly Targets</h3><div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 10 }}>
+            <div style={{ background: '#f0f9ff', borderRadius: 8, padding: 10, textAlign: 'center' }}><span style={{ fontSize: 11, color: '#888' }}>Visits / Month</span><p style={{ fontSize: 22, fontWeight: 700, color: '#2563eb' }}>{results.vpm}</p></div>
+            <div style={{ background: '#f0fdf4', borderRadius: 8, padding: 10, textAlign: 'center' }}><span style={{ fontSize: 11, color: '#888' }}>Enquiries / Month</span><p style={{ fontSize: 22, fontWeight: 700, color: '#16a34a' }}>{results.eqm}</p></div>
+            <div style={{ background: '#faf5ff', borderRadius: 8, padding: 10, textAlign: 'center' }}><span style={{ fontSize: 11, color: '#888' }}>Offers / Month</span><p style={{ fontSize: 18, fontWeight: 700, color: '#9333ea' }}>{f(results.ofm)}</p></div>
+            <div style={{ background: '#fffbeb', borderRadius: 8, padding: 10, textAlign: 'center' }}><span style={{ fontSize: 11, color: '#888' }}>Orders / Month</span><p style={{ fontSize: 18, fontWeight: 700, color: '#C8943E' }}>{f(results.opm)}</p></div>
+            <div style={{ gridColumn: 'span 2', background: '#f5f0e8', borderRadius: 8, padding: 10, textAlign: 'center' }}><span style={{ fontSize: 11, color: '#888' }}>Monthly Revenue Target</span><p style={{ fontSize: 22, fontWeight: 700, color: '#0D1B2A' }}>{f(results.mT)}</p></div>
+          </div></div>
 
           <div style={{ background: '#fff', borderRadius: 10, padding: 16, marginBottom: 16 }}><h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>📈 Quarterly</h3><div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8 }}>{results.qT.map((t: number, i: number) => <div key={i} style={{ textAlign: 'center', background: '#f5f0e8', borderRadius: 8, padding: 10 }}><p style={{ fontSize: 12, color: '#888' }}>Q{i + 1} ({Q_SPLITS[qIdx].v[i]}%)</p><p style={{ fontSize: 16, fontWeight: 700, color: '#C8943E' }}>{f(t)}</p></div>)}</div></div>
 
