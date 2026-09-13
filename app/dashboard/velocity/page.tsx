@@ -197,14 +197,18 @@ export default function VelocityPage() {
 
   if (!user) return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><p>Loading...</p></div>
 
-  const InputN = ({ label, val, set, ph }: { label: string, val: string, set: (v: string) => void, ph?: string }) => (
-    <div style={{ marginBottom: 10 }}>
-      <label style={{ fontSize: 12, fontWeight: 600 }}>{label}</label>
-      <input type="number" value={val} onChange={e => set(e.target.value)} placeholder={ph}
-        style={{ width: '100%', padding: 8, border: '1px solid #ddd', borderRadius: 8, fontSize: 13, marginTop: 4 }} />
-      {val && parseFloat(val) > 0 && <p style={{ fontSize: 10, color: '#C8943E' }}>{fi(val)}</p>}
-    </div>
-  )
+  function InputN({ label, val, set, ph }: { label: string, val: string, set: (v: string) => void, ph?: string }) {
+    return (
+      <div style={{ marginBottom: 10 }}>
+        <label style={{ fontSize: 12, fontWeight: 600 }}>{label}</label>
+        <input type="number" value={val}
+          onChange={e => set(e.target.value)}
+          onWheel={e => (e.target as HTMLElement).blur()}
+          placeholder={ph}
+          style={{ width: '100%', padding: 8, border: '1px solid #ddd', borderRadius: 8, fontSize: 13, marginTop: 4 }} />
+      </div>
+    )
+  }
 
   return (
     <div style={{ minHeight: '100vh', background: '#f5f0e8', fontFamily: 'Arial,sans-serif' }}>
