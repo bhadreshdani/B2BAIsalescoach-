@@ -42,6 +42,8 @@ export default function VelocityPage() {
   const [workEndHr, setWorkEndHr] = useState(18)
   const [annualTarget, setAnnualTarget] = useState('')
   const [salesTimePct, setSalesTimePct] = useState(100)
+  const [currency, setCurrency] = useState('INR')
+  const currencies: Record<string,string> = {'INR':'₹','USD':'$','EUR':'€','GBP':'£','AED':'د.إ','SGD':'S$'}
   const [billingDone, setBillingDone] = useState('')
   const [openOrders, setOpenOrders] = useState('')
   const [retainerBusiness, setRetainerBusiness] = useState('')
@@ -52,6 +54,11 @@ export default function VelocityPage() {
   const [projectPipeline, setProjectPipeline] = useState('')
   const [projectAvgDeal, setProjectAvgDeal] = useState('')
   const [projectCycleWeeks, setProjectCycleWeeks] = useState('')
+  const [projVisitsPerEnq, setProjVisitsPerEnq] = useState('')
+  const [projEnqToOffer, setProjEnqToOffer] = useState('')
+  const [projOfferToOrder, setProjOfferToOrder] = useState('')
+  const [projHrsPerVisit, setProjHrsPerVisit] = useState('')
+  const [projDeliveryWeeks, setProjDeliveryWeeks] = useState('')
   const [visitsPerEnquiry, setVisitsPerEnquiry] = useState('')
   const [enquiryToOffer, setEnquiryToOffer] = useState('')
   const [offerToOrder, setOfferToOrder] = useState('')
@@ -87,10 +94,26 @@ export default function VelocityPage() {
     const rp=parseFloat(regularPipeline)||0; const rd=parseFloat(regularAvgDeal)||1; const rc=parseFloat(regularCycleWeeks)||8
     const pp=hasProjectBiz?(parseFloat(projectPipeline)||0):0; const pd=hasProjectBiz?(parseFloat(projectAvgDeal)||1):0
     const totalPipe=rp+pp; const wAvgDeal=totalPipe>0?(rp*rd+pp*pd)/(rp+pp||1):rd
-    const eto=parseFloat(enquiryToOffer)||50; const oto=parseFloat(offerToOrder)||30
-    const vpe=parseFloat(visitsPerEnquiry)||3; const hpv=parseFloat(hrsPerVisit)||2
-    const ordN=shortfall/wAvgDeal; const offN=ordN/(oto/100); const enqN=offN/(eto/100); const visN=enqN*vpe
-    const vpw=remWeeks>0?visN/remWeeks:0; const hpw=vpw*hpv
+    // Regular business metrics
+    const rEto=parseFloat(enquiryToOffer)||50; const rOto=parseFloat(offerToOrder)||30
+    const rVpe=parseFloat(visitsPerEnquiry)||3; const rHpv=parseFloat(hrsPerVisit)||2
+    // Project business metrics (separate)
+    const pEto=hasProjectBiz?(parseFloat(projEnqToOffer)||40):rEto
+    const pOto=hasProjectBiz?(parseFloat(projOfferToOrder)||25):rOto
+    const pVpe=hasProjectBiz?(parseFloat(projVisitsPerEnq)||8):rVpe
+    const pHpv=hasProjectBiz?(parseFloat(projHrsPerVisit)||3):rHpv
+    const pDeliv=hasProjectBiz?(parseFloat(projDeliveryWeeks)||16):parseFloat(deliveryWeeks)||8
+    // Split shortfall proportionally
+    const regShare=totalPipe>0?rp/totalPipe:1; const projShare=totalPipe>0?pp/totalPipe:0
+    const regShortfall=shortfall*regShare; const projShortfall=shortfall*projShare
+    // Regular velocity
+    const rOrdN=rd>0?regShortfall/rd:0; const rOffN=rOrdN/(rOto/100); const rEnqN=rOffN/(rEto/100); const rVisN=rEnqN*rVpe
+    // Project velocity
+    const pOrdN=pd>0?projShortfall/pd:0; const pOffN=pOrdN/(pOto/100); const pEnqN=pOffN/(pEto/100); const pVisN=pEnqN*pVpe
+    // Combined
+    const ordN=rOrdN+pOrdN; const offN=rOffN+pOffN; const enqN=rEnqN+pEnqN; const visN=rVisN+pVisN
+    const vpw=remWeeks>0?visN/remWeeks:0
+    const hpw=remWeeks>0?((rVisN*rHpv+pVisN*pHpv)/remWeeks):0
     const availWkHrs=prodHrs*daysPerWk*(salesTimePct/100)
     const cov=shortfall>0?totalPipe/shortfall:0; const pctA=t>0?((bill+oo)/t)*100:0
     const qv=Q_SPLIT[qSplit].values; const qT=qv.map((p: number)=>t*p/100)
@@ -99,6 +122,11 @@ export default function VelocityPage() {
       {name:'More Visits/Prospects',gain:baseRev*0.04},{name:'Shorter Sales Cycle',gain:baseRev*0.03}
     ].sort((a,b)=>b.gain-a.gain)
     return { shortfall,secured,totalPipe,wAvgDeal,ordN:Math.ceil(ordN),offN:Math.ceil(offN),enqN:Math.ceil(enqN),visN:Math.ceil(visN),
+      // Regular split
+      rVpw:remWeeks>0?(rVisN/remWeeks).toFixed(1):'0',rEqw:remWeeks>0?(rEnqN/remWeeks).toFixed(1):'0',rOfw:remWeeks>0?(rOffN/remWeeks).toFixed(1):'0',rOpw:remWeeks>0?(rOrdN/remWeeks).toFixed(1):'0',
+      // Project split
+      pVpw:remWeeks>0?(pVisN/remWeeks).toFixed(1):'0',pEqw:remWeeks>0?(pEnqN/remWeeks).toFixed(1):'0',pOfw:remWeeks>0?(pOffN/remWeeks).toFixed(1):'0',pOpw:remWeeks>0?(pOrdN/remWeeks).toFixed(1):'0',
+      hasProj:hasProjectBiz,
       vpw:vpw.toFixed(1),hpw:hpw.toFixed(1),opw:(ordN/(remWeeks||1)).toFixed(1),ofw:(offN/(remWeeks||1)).toFixed(1),eqw:(enqN/(remWeeks||1)).toFixed(1),
       feasible:hpw<=availWkHrs,cov:cov.toFixed(1),pctA:pctA.toFixed(0),cod:Math.round(shortfall/(remWeeks||1)),remDays,remWeeks,
       levers,rotis:calcROTIS(),qT,mT:t/12,availWkHrs:availWkHrs.toFixed(0),
@@ -113,7 +141,8 @@ export default function VelocityPage() {
     setSaving(false); setPhase(4)
   }
 
-  function fmt(v:number){if(v>=10000000)return'\u20B9'+(v/10000000).toFixed(1)+' Cr';if(v>=100000)return'\u20B9'+(v/100000).toFixed(1)+' L';return'\u20B9'+Math.round(v).toLocaleString()}
+  function fmt(v:number){const s=currencies[currency]||'\u20B9';if(currency==='INR'){if(v>=10000000)return s+(v/10000000).toFixed(1)+' Cr';if(v>=100000)return s+(v/100000).toFixed(1)+' L'};return s+Math.round(v).toLocaleString()}
+  function fmtInput(v:string){const n=parseFloat(v);if(!n||n<=0)return'';const s=currencies[currency]||'\u20B9';if(currency==='INR'){if(n>=10000000)return s+(n/10000000).toFixed(2)+' Cr';if(n>=100000)return s+(n/100000).toFixed(2)+' L'};return s+n.toLocaleString()}
 
   if(!user) return <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center'}}><p>Loading...</p></div>
 
@@ -180,9 +209,10 @@ export default function VelocityPage() {
         {phase===2&&(<div style={{background:'#fff',borderRadius:12,padding:24}}>
           <h2 style={{fontSize:18,fontWeight:'bold',marginBottom:4}}>Phase 2: ROTIS™ Calculator</h2>
           <p style={{fontSize:13,color:'#888',marginBottom:16}}>Return on Time Investment in Sales — your hourly value</p>
-          <div style={{marginBottom:16}}><label style={{fontSize:14,fontWeight:600}}>Annual Sales Target (₹)</label><input type="number" value={annualTarget} onChange={e=>setAnnualTarget(e.target.value)} placeholder="e.g. 50000000" style={{width:'100%',padding:12,border:'1px solid #ddd',borderRadius:8,fontSize:15,marginTop:6}}/>{annualTarget&&<p style={{fontSize:12,color:'#C8943E',marginTop:4}}>{fmt(parseFloat(annualTarget))}</p>}</div>
+          <div style={{marginBottom:14}}><label style={{fontSize:14,fontWeight:600}}>Selling Currency</label><select value={currency} onChange={e=>setCurrency(e.target.value)} style={{width:'100%',padding:10,border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}}>{Object.entries(currencies).map(([c,s])=><option key={c} value={c}>{c} ({s})</option>)}</select></div>
+          <div style={{marginBottom:16}}><label style={{fontSize:14,fontWeight:600}}>Annual Sales Target ({currencies[currency]})</label><input type="number" value={annualTarget} onChange={e=>setAnnualTarget(e.target.value)} placeholder="e.g. 50000000" style={{width:'100%',padding:12,border:'1px solid #ddd',borderRadius:8,fontSize:15,marginTop:6}}/>{annualTarget&&<p style={{fontSize:12,color:'#C8943E',marginTop:4}}>{fmt(parseFloat(annualTarget))}</p>}</div>
           <div style={{marginBottom:16}}><label style={{fontSize:14,fontWeight:600}}>% Time on Sales: {salesTimePct}%</label><input type="range" min="10" max="100" step="5" value={salesTimePct} onChange={e=>setSalesTimePct(parseInt(e.target.value))} style={{width:'100%',accentColor:'#C8943E'}}/><p style={{fontSize:12,color:'#888'}}>100% for full-time sales. Lower for owners/leaders with other responsibilities.</p>{salesTimePct<100&&<p style={{fontSize:12,color:'#f97316',fontWeight:600,marginTop:4}}>With only {salesTimePct}% time on sales, your per-hour value goes UP — every sales hour must count!</p>}</div>
-          {annualTarget&&(<div style={{background:'#0D1B2A',borderRadius:10,padding:20,color:'#fff',textAlign:'center',marginBottom:16}}><p style={{fontSize:12,color:'#888'}}>Your ROTIS™</p><p style={{fontSize:36,fontWeight:'bold',color:'#C8943E'}}>₹{Math.round(calcROTIS()).toLocaleString()}/hr</p><p style={{fontSize:12,color:'#f97316',marginTop:8}}>Every hour you waste costs you ₹{Math.round(calcROTIS()).toLocaleString()}</p></div>)}
+          {annualTarget&&(<div style={{background:'#0D1B2A',borderRadius:10,padding:20,color:'#fff',textAlign:'center',marginBottom:16}}><p style={{fontSize:12,color:'#888'}}>Your ROTIS™</p><p style={{fontSize:36,fontWeight:'bold',color:'#C8943E'}}>{currencies[currency]}{Math.round(calcROTIS()).toLocaleString()}/hr</p><p style={{fontSize:12,color:'#f97316',marginTop:8}}>Every hour you waste costs you ₹{Math.round(calcROTIS()).toLocaleString()}</p></div>)}
           <div style={{display:'flex',gap:8}}><button onClick={()=>setPhase(1)} style={{padding:14,background:'#f3f4f6',border:'none',borderRadius:8,fontSize:14,cursor:'pointer'}}>← Back</button><button onClick={()=>setPhase(3)} disabled={!annualTarget} style={{flex:1,padding:14,background:annualTarget?'#C8943E':'#ccc',color:'#fff',border:'none',borderRadius:8,fontSize:15,fontWeight:700,cursor:annualTarget?'pointer':'default'}}>Next: Velocity Engine →</button></div>
         </div>)}
 
@@ -191,15 +221,30 @@ export default function VelocityPage() {
           <h2 style={{fontSize:18,fontWeight:'bold',marginBottom:4}}>Phase 3: Sales Velocity Engine</h2>
           <p style={{fontSize:13,color:'#888',marginBottom:16}}>Enter your numbers — we calculate your <strong>weekly</strong> activity targets</p>
           <h3 style={{fontSize:14,fontWeight:700,marginBottom:8}}>📊 Year-to-Date</h3>
-          {[{l:'Billing Done (₹)',v:billingDone,s:setBillingDone},{l:'Unexecuted Open Orders (₹)',v:openOrders,s:setOpenOrders},{l:'Retainer/Repeat Expected (₹)',v:retainerBusiness,s:setRetainerBusiness}].map(f=>(<div key={f.l} style={{marginBottom:10}}><label style={{fontSize:13,fontWeight:600}}>{f.l}</label><input type="number" value={f.v} onChange={e=>f.s(e.target.value)} style={{width:'100%',padding:10,border:'1px solid #ddd',borderRadius:8,fontSize:14,marginTop:4}}/>{f.v&&parseFloat(f.v)>0&&<p style={{fontSize:11,color:'#C8943E'}}>{fmt(parseFloat(f.v))}</p>}</div>))}
+          {[{l:'Billing Done ('+currencies[currency]+')',v:billingDone,s:setBillingDone},{l:'Unexecuted Open Orders ('+currencies[currency]+')',v:openOrders,s:setOpenOrders},{l:'Retainer/Repeat Expected ('+currencies[currency]+')',v:retainerBusiness,s:setRetainerBusiness}].map(f=>(<div key={f.l} style={{marginBottom:10}}><label style={{fontSize:13,fontWeight:600}}>{f.l}</label><input type="number" value={f.v} onChange={e=>f.s(e.target.value)} style={{width:'100%',padding:10,border:'1px solid #ddd',borderRadius:8,fontSize:14,marginTop:4}}/>{f.v&&parseFloat(f.v)>0&&<p style={{fontSize:11,color:'#C8943E'}}>{fmtInput(f.v)}</p>}</div>))}
           <h3 style={{fontSize:14,fontWeight:700,marginTop:14,marginBottom:8}}>📦 Regular / OEM / Channel Business</h3>
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:10,marginBottom:12}}>
-            <div><label style={{fontSize:12,fontWeight:600}}>Pipeline (₹)</label><input type="number" value={regularPipeline} onChange={e=>setRegularPipeline(e.target.value)} style={{width:'100%',padding:8,border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}}/></div>
-            <div><label style={{fontSize:12,fontWeight:600}}>Avg Deal (₹)</label><input type="number" value={regularAvgDeal} onChange={e=>setRegularAvgDeal(e.target.value)} style={{width:'100%',padding:8,border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}}/></div>
+            <div><label style={{fontSize:12,fontWeight:600}}>Pipeline ({currencies[currency]})</label><input type="number" value={regularPipeline} onChange={e=>setRegularPipeline(e.target.value)} style={{width:'100%',padding:8,border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}}/>{regularPipeline&&<p style={{fontSize:10,color:'#C8943E'}}>{fmtInput(regularPipeline)}</p>}</div>
+            <div><label style={{fontSize:12,fontWeight:600}}>Avg Deal ({currencies[currency]})</label><input type="number" value={regularAvgDeal} onChange={e=>setRegularAvgDeal(e.target.value)} style={{width:'100%',padding:8,border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}}/>{regularAvgDeal&&<p style={{fontSize:10,color:'#C8943E'}}>{fmtInput(regularAvgDeal)}</p>}</div>
             <div><label style={{fontSize:12,fontWeight:600}}>Cycle (weeks)</label><input type="number" value={regularCycleWeeks} onChange={e=>setRegularCycleWeeks(e.target.value)} style={{width:'100%',padding:8,border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}}/></div>
           </div>
           <div style={{background:'#fef3e2',borderRadius:8,padding:10,marginBottom:14}}><label style={{display:'flex',alignItems:'center',gap:10,cursor:'pointer'}}><input type="checkbox" checked={hasProjectBiz} onChange={e=>setHasProjectBiz(e.target.checked)} style={{width:18,height:18,accentColor:'#C8943E'}}/><span style={{fontSize:13,fontWeight:600}}>I also have Large Project Business</span></label></div>
-          {hasProjectBiz&&(<div style={{marginBottom:14}}><h3 style={{fontSize:14,fontWeight:700,color:'#9333ea',marginBottom:8}}>🏗️ Project Business</h3><div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:10}}><div><label style={{fontSize:12,fontWeight:600}}>Pipeline (₹)</label><input type="number" value={projectPipeline} onChange={e=>setProjectPipeline(e.target.value)} style={{width:'100%',padding:8,border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}}/></div><div><label style={{fontSize:12,fontWeight:600}}>Avg Deal (₹)</label><input type="number" value={projectAvgDeal} onChange={e=>setProjectAvgDeal(e.target.value)} style={{width:'100%',padding:8,border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}}/></div><div><label style={{fontSize:12,fontWeight:600}}>Cycle (weeks)</label><input type="number" value={projectCycleWeeks} onChange={e=>setProjectCycleWeeks(e.target.value)} style={{width:'100%',padding:8,border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}}/></div></div></div>)}
+          {hasProjectBiz&&(<div style={{marginBottom:14,background:'#faf5ff',borderRadius:8,padding:14,border:'1px solid #e9d5ff'}}>
+            <h3 style={{fontSize:14,fontWeight:700,color:'#9333ea',marginBottom:10}}>🏗️ Large Project Business</h3>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:10,marginBottom:10}}>
+              <div><label style={{fontSize:11,fontWeight:600}}>Pipeline ({currencies[currency]})</label><input type="number" value={projectPipeline} onChange={e=>setProjectPipeline(e.target.value)} style={{width:'100%',padding:8,border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}}/>{projectPipeline&&<p style={{fontSize:10,color:'#9333ea'}}>{fmtInput(projectPipeline)}</p>}</div>
+              <div><label style={{fontSize:11,fontWeight:600}}>Avg Deal ({currencies[currency]})</label><input type="number" value={projectAvgDeal} onChange={e=>setProjectAvgDeal(e.target.value)} style={{width:'100%',padding:8,border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}}/>{projectAvgDeal&&<p style={{fontSize:10,color:'#9333ea'}}>{fmtInput(projectAvgDeal)}</p>}</div>
+              <div><label style={{fontSize:11,fontWeight:600}}>Cycle (weeks)</label><input type="number" value={projectCycleWeeks} onChange={e=>setProjectCycleWeeks(e.target.value)} style={{width:'100%',padding:8,border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}}/></div>
+            </div>
+            <h4 style={{fontSize:12,fontWeight:700,color:'#9333ea',marginBottom:8}}>Project Conversion Metrics</h4>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
+              <div><label style={{fontSize:11,fontWeight:600}}>Visits per Project Enquiry</label><input type="number" value={projVisitsPerEnq} onChange={e=>setProjVisitsPerEnq(e.target.value)} placeholder="e.g. 8 (incl. consultants, EPC)" style={{width:'100%',padding:8,border:'1px solid #ddd',borderRadius:8,fontSize:12,marginTop:4}}/></div>
+              <div><label style={{fontSize:11,fontWeight:600}}>Enquiry to Offer (%)</label><input type="number" value={projEnqToOffer} onChange={e=>setProjEnqToOffer(e.target.value)} placeholder="e.g. 40" style={{width:'100%',padding:8,border:'1px solid #ddd',borderRadius:8,fontSize:12,marginTop:4}}/></div>
+              <div><label style={{fontSize:11,fontWeight:600}}>Offer to Order (%)</label><input type="number" value={projOfferToOrder} onChange={e=>setProjOfferToOrder(e.target.value)} placeholder="e.g. 25" style={{width:'100%',padding:8,border:'1px solid #ddd',borderRadius:8,fontSize:12,marginTop:4}}/></div>
+              <div><label style={{fontSize:11,fontWeight:600}}>Hours per Project Visit</label><input type="number" value={projHrsPerVisit} onChange={e=>setProjHrsPerVisit(e.target.value)} placeholder="e.g. 3" style={{width:'100%',padding:8,border:'1px solid #ddd',borderRadius:8,fontSize:12,marginTop:4}}/></div>
+              <div><label style={{fontSize:11,fontWeight:600}}>Delivery Period (weeks)</label><input type="number" value={projDeliveryWeeks} onChange={e=>setProjDeliveryWeeks(e.target.value)} placeholder="e.g. 16" style={{width:'100%',padding:8,border:'1px solid #ddd',borderRadius:8,fontSize:12,marginTop:4}}/></div>
+            </div>
+          </div>)}
           <h3 style={{fontSize:14,fontWeight:700,marginTop:14,marginBottom:8}}>🔄 Conversion Metrics</h3>
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginBottom:14}}>
             {[{l:'Visits per Enquiry',v:visitsPerEnquiry,s:setVisitsPerEnquiry},{l:'Enquiry to Offer (%)',v:enquiryToOffer,s:setEnquiryToOffer},{l:'Offer to Order (%)',v:offerToOrder,s:setOfferToOrder},{l:'Hours per Visit',v:hrsPerVisit,s:setHrsPerVisit},{l:'Delivery (weeks)',v:deliveryWeeks,s:setDeliveryWeeks}].map(f=>(<div key={f.l}><label style={{fontSize:12,fontWeight:600}}>{f.l}</label><input type="number" value={f.v} onChange={e=>f.s(e.target.value)} style={{width:'100%',padding:8,border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}}/></div>))}
@@ -210,9 +255,29 @@ export default function VelocityPage() {
 
         {/* PHASE 4: Results */}
         {phase===4&&results&&(<div>
-          <div style={{background:'#0D1B2A',borderRadius:12,padding:24,color:'#fff',textAlign:'center',marginBottom:16}}><h2 style={{fontSize:20,fontWeight:'bold',marginBottom:4}}>Your Sales Velocity Dashboard</h2><p style={{fontSize:36,fontWeight:'bold',color:'#C8943E'}}>₹{Math.round(results.rotis).toLocaleString()}/hr</p><p style={{fontSize:13,color:'#888'}}>ROTIS™ — Make every hour count</p><p style={{fontSize:12,color:'#86efac',marginTop:8}}>Secured: {fmt(results.secured)} | New Orders: {fmt(results.shortfall)}</p></div>
-          <h3 style={{fontSize:14,fontWeight:700,marginBottom:8}}>📅 Weekly Activity Targets</h3>
+          <div style={{background:'#0D1B2A',borderRadius:12,padding:24,color:'#fff',textAlign:'center',marginBottom:16}}><h2 style={{fontSize:20,fontWeight:'bold',marginBottom:4}}>Your Sales Velocity Dashboard</h2><p style={{fontSize:36,fontWeight:'bold',color:'#C8943E'}}>{currencies[currency]}{Math.round(results.rotis).toLocaleString()}/hr</p><p style={{fontSize:13,color:'#888'}}>ROTIS™ — Make every hour count</p><p style={{fontSize:12,color:'#86efac',marginTop:8}}>Secured: {fmt(results.secured)} | New Orders: {fmt(results.shortfall)}</p></div>
+          <h3 style={{fontSize:14,fontWeight:700,marginBottom:8}}>📅 Combined Weekly Targets</h3>
           <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:12,marginBottom:16}}>{[{l:'Visits/Week',v:results.vpw,c:'#2563eb'},{l:'Enquiries/Week',v:results.eqw,c:'#16a34a'},{l:'Offers/Week',v:results.ofw,c:'#9333ea'},{l:'Orders/Week',v:results.opw,c:'#C8943E'}].map(m=>(<div key={m.l} style={{background:'#fff',borderRadius:10,padding:16,textAlign:'center'}}><p style={{fontSize:12,color:'#888'}}>{m.l}</p><p style={{fontSize:28,fontWeight:'bold',color:m.c}}>{m.v}</p></div>))}</div>
+          {results.hasProj&&(<div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:16}}>
+            <div style={{background:'#fff',borderRadius:10,padding:14,border:'1px solid #C8943E'}}>
+              <h4 style={{fontSize:12,fontWeight:700,color:'#C8943E',marginBottom:8}}>📦 Regular Business/Week</h4>
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:6}}>
+                <div><span style={{fontSize:10,color:'#888'}}>Visits</span><p style={{fontSize:16,fontWeight:700}}>{results.rVpw}</p></div>
+                <div><span style={{fontSize:10,color:'#888'}}>Enquiries</span><p style={{fontSize:16,fontWeight:700}}>{results.rEqw}</p></div>
+                <div><span style={{fontSize:10,color:'#888'}}>Offers</span><p style={{fontSize:16,fontWeight:700}}>{results.rOfw}</p></div>
+                <div><span style={{fontSize:10,color:'#888'}}>Orders</span><p style={{fontSize:16,fontWeight:700}}>{results.rOpw}</p></div>
+              </div>
+            </div>
+            <div style={{background:'#faf5ff',borderRadius:10,padding:14,border:'1px solid #9333ea'}}>
+              <h4 style={{fontSize:12,fontWeight:700,color:'#9333ea',marginBottom:8}}>🏗️ Project Business/Week</h4>
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:6}}>
+                <div><span style={{fontSize:10,color:'#888'}}>Visits</span><p style={{fontSize:16,fontWeight:700}}>{results.pVpw}</p></div>
+                <div><span style={{fontSize:10,color:'#888'}}>Enquiries</span><p style={{fontSize:16,fontWeight:700}}>{results.pEqw}</p></div>
+                <div><span style={{fontSize:10,color:'#888'}}>Offers</span><p style={{fontSize:16,fontWeight:700}}>{results.pOfw}</p></div>
+                <div><span style={{fontSize:10,color:'#888'}}>Orders</span><p style={{fontSize:16,fontWeight:700}}>{results.pOpw}</p></div>
+              </div>
+            </div>
+          </div>)}
           <div style={{background:'#fff',borderRadius:10,padding:16,marginBottom:16}}><h3 style={{fontSize:14,fontWeight:700,marginBottom:8}}>📊 Monthly Targets</h3><div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:8}}><div><span style={{fontSize:11,color:'#888'}}>Visits/Month</span><p style={{fontSize:18,fontWeight:700}}>{results.vpm}</p></div><div><span style={{fontSize:11,color:'#888'}}>Enquiries/Month</span><p style={{fontSize:18,fontWeight:700}}>{results.eqm}</p></div><div><span style={{fontSize:11,color:'#888'}}>Revenue/Month</span><p style={{fontSize:18,fontWeight:700}}>{fmt(results.mT)}</p></div></div></div>
           <div style={{background:'#fff',borderRadius:10,padding:16,marginBottom:16}}><h3 style={{fontSize:14,fontWeight:700,marginBottom:8}}>📈 Quarterly Targets</h3><div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:8}}>{results.qT.map((t:number,i:number)=>(<div key={i} style={{textAlign:'center',background:'#f5f0e8',borderRadius:8,padding:10}}><p style={{fontSize:12,color:'#888'}}>Q{i+1} ({Q_SPLIT[qSplit].values[i]}%)</p><p style={{fontSize:16,fontWeight:700,color:'#C8943E'}}>{fmt(t)}</p></div>))}</div></div>
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:16}}>
