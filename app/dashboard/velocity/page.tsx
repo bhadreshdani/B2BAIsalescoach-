@@ -44,6 +44,7 @@ export default function VelocityPage() {
   const [salesTimePct, setSalesTimePct] = useState(100)
   const [currency, setCurrency] = useState('INR')
   const currencies: Record<string,string> = {'INR':'₹','USD':'$','EUR':'€','GBP':'£','AED':'د.إ','SGD':'S$'}
+  const [achieved, setAchieved] = useState('')
   const [billingDone, setBillingDone] = useState('')
   const [openOrders, setOpenOrders] = useState('')
   const [retainerBusiness, setRetainerBusiness] = useState('')
@@ -220,13 +221,27 @@ export default function VelocityPage() {
         {phase===3&&(<div style={{background:'#fff',borderRadius:12,padding:24}}>
           <h2 style={{fontSize:18,fontWeight:'bold',marginBottom:4}}>Phase 3: Sales Velocity Engine</h2>
           <p style={{fontSize:13,color:'#888',marginBottom:16}}>Enter your numbers — we calculate your <strong>weekly</strong> activity targets</p>
-          <h3 style={{fontSize:14,fontWeight:700,marginBottom:8}}>📊 Year-to-Date</h3>
+          <h3 style={{fontSize:14,fontWeight:700,marginBottom:8}}>📊 Year-to-Date Performance</h3>
+          <div style={{marginBottom:10}}><label style={{fontSize:13,fontWeight:600}}>Total Order Booking Done ({currencies[currency]})</label><input type="number" value={achieved} onChange={e=>setAchieved(e.target.value)} style={{width:'100%',padding:10,border:'1px solid #ddd',borderRadius:8,fontSize:14,marginTop:4}}/>{achieved&&parseFloat(achieved)>0&&<p style={{fontSize:11,color:'#C8943E'}}>{fmtInput(achieved)}</p>}</div>
           {[{l:'Billing Done ('+currencies[currency]+')',v:billingDone,s:setBillingDone},{l:'Unexecuted Open Orders ('+currencies[currency]+')',v:openOrders,s:setOpenOrders},{l:'Retainer/Repeat Expected ('+currencies[currency]+')',v:retainerBusiness,s:setRetainerBusiness}].map(f=>(<div key={f.l} style={{marginBottom:10}}><label style={{fontSize:13,fontWeight:600}}>{f.l}</label><input type="number" value={f.v} onChange={e=>f.s(e.target.value)} style={{width:'100%',padding:10,border:'1px solid #ddd',borderRadius:8,fontSize:14,marginTop:4}}/>{f.v&&parseFloat(f.v)>0&&<p style={{fontSize:11,color:'#C8943E'}}>{fmtInput(f.v)}</p>}</div>))}
+          {(billingDone||openOrders)&&(<div style={{background:'#f0fdf4',borderRadius:8,padding:12,marginBottom:10,border:'1px solid #86efac'}}>
+            <p style={{fontSize:12,color:'#16a34a',fontWeight:600}}>Secured: {fmt((parseFloat(billingDone)||0)+(parseFloat(openOrders)||0)+(parseFloat(retainerBusiness)||0))}</p>
+            <p style={{fontSize:12,color:'#C8943E',fontWeight:600}}>Balance orders needed for target: {fmt(Math.max(0,(parseFloat(annualTarget)||0)-(parseFloat(billingDone)||0)-(parseFloat(openOrders)||0)-(parseFloat(retainerBusiness)||0)))}</p>
+            {achieved&&billingDone&&<p style={{fontSize:11,color:'#888'}}>Balance orders pending for billing: {fmt(Math.max(0,(parseFloat(achieved)||0)-(parseFloat(billingDone)||0)))}</p>}
+          </div>)}
           <h3 style={{fontSize:14,fontWeight:700,marginTop:14,marginBottom:8}}>📦 Regular / OEM / Channel Business</h3>
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:10,marginBottom:12}}>
             <div><label style={{fontSize:12,fontWeight:600}}>Pipeline ({currencies[currency]})</label><input type="number" value={regularPipeline} onChange={e=>setRegularPipeline(e.target.value)} style={{width:'100%',padding:8,border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}}/>{regularPipeline&&<p style={{fontSize:10,color:'#C8943E'}}>{fmtInput(regularPipeline)}</p>}</div>
             <div><label style={{fontSize:12,fontWeight:600}}>Avg Deal ({currencies[currency]})</label><input type="number" value={regularAvgDeal} onChange={e=>setRegularAvgDeal(e.target.value)} style={{width:'100%',padding:8,border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}}/>{regularAvgDeal&&<p style={{fontSize:10,color:'#C8943E'}}>{fmtInput(regularAvgDeal)}</p>}</div>
             <div><label style={{fontSize:12,fontWeight:600}}>Cycle (weeks)</label><input type="number" value={regularCycleWeeks} onChange={e=>setRegularCycleWeeks(e.target.value)} style={{width:'100%',padding:8,border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}}/></div>
+          </div>
+          <h4 style={{fontSize:12,fontWeight:700,color:'#C8943E',marginTop:10,marginBottom:8}}>Regular Business — Conversion Metrics</h4>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginBottom:14}}>
+            <div><label style={{fontSize:11,fontWeight:600}}>Visits per Enquiry</label><input type="number" value={visitsPerEnquiry} onChange={e=>setVisitsPerEnquiry(e.target.value)} placeholder="e.g. 3" style={{width:'100%',padding:8,border:'1px solid #ddd',borderRadius:8,fontSize:12,marginTop:4}}/></div>
+            <div><label style={{fontSize:11,fontWeight:600}}>Enquiry to Offer (%)</label><input type="number" value={enquiryToOffer} onChange={e=>setEnquiryToOffer(e.target.value)} placeholder="e.g. 50" style={{width:'100%',padding:8,border:'1px solid #ddd',borderRadius:8,fontSize:12,marginTop:4}}/></div>
+            <div><label style={{fontSize:11,fontWeight:600}}>Offer to Order (%)</label><input type="number" value={offerToOrder} onChange={e=>setOfferToOrder(e.target.value)} placeholder="e.g. 30" style={{width:'100%',padding:8,border:'1px solid #ddd',borderRadius:8,fontSize:12,marginTop:4}}/></div>
+            <div><label style={{fontSize:11,fontWeight:600}}>Hours per Visit</label><input type="number" value={hrsPerVisit} onChange={e=>setHrsPerVisit(e.target.value)} placeholder="incl. travel" style={{width:'100%',padding:8,border:'1px solid #ddd',borderRadius:8,fontSize:12,marginTop:4}}/></div>
+            <div><label style={{fontSize:11,fontWeight:600}}>Delivery Period (weeks)</label><input type="number" value={deliveryWeeks} onChange={e=>setDeliveryWeeks(e.target.value)} placeholder="order to billing" style={{width:'100%',padding:8,border:'1px solid #ddd',borderRadius:8,fontSize:12,marginTop:4}}/></div>
           </div>
           <div style={{background:'#fef3e2',borderRadius:8,padding:10,marginBottom:14}}><label style={{display:'flex',alignItems:'center',gap:10,cursor:'pointer'}}><input type="checkbox" checked={hasProjectBiz} onChange={e=>setHasProjectBiz(e.target.checked)} style={{width:18,height:18,accentColor:'#C8943E'}}/><span style={{fontSize:13,fontWeight:600}}>I also have Large Project Business</span></label></div>
           {hasProjectBiz&&(<div style={{marginBottom:14,background:'#faf5ff',borderRadius:8,padding:14,border:'1px solid #e9d5ff'}}>
@@ -245,10 +260,7 @@ export default function VelocityPage() {
               <div><label style={{fontSize:11,fontWeight:600}}>Delivery Period (weeks)</label><input type="number" value={projDeliveryWeeks} onChange={e=>setProjDeliveryWeeks(e.target.value)} placeholder="e.g. 16" style={{width:'100%',padding:8,border:'1px solid #ddd',borderRadius:8,fontSize:12,marginTop:4}}/></div>
             </div>
           </div>)}
-          <h3 style={{fontSize:14,fontWeight:700,marginTop:14,marginBottom:8}}>🔄 Conversion Metrics</h3>
-          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginBottom:14}}>
-            {[{l:'Visits per Enquiry',v:visitsPerEnquiry,s:setVisitsPerEnquiry},{l:'Enquiry to Offer (%)',v:enquiryToOffer,s:setEnquiryToOffer},{l:'Offer to Order (%)',v:offerToOrder,s:setOfferToOrder},{l:'Hours per Visit',v:hrsPerVisit,s:setHrsPerVisit},{l:'Delivery (weeks)',v:deliveryWeeks,s:setDeliveryWeeks}].map(f=>(<div key={f.l}><label style={{fontSize:12,fontWeight:600}}>{f.l}</label><input type="number" value={f.v} onChange={e=>f.s(e.target.value)} style={{width:'100%',padding:8,border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}}/></div>))}
-          </div>
+          
           <div style={{marginBottom:14}}><label style={{fontSize:13,fontWeight:600}}>Quarterly Target Split</label><select value={qSplit} onChange={e=>setQSplit(parseInt(e.target.value))} style={{width:'100%',padding:10,border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}}>{Q_SPLIT.map((q,i)=><option key={i} value={i}>{q.label}: Q1={q.values[0]}% Q2={q.values[1]}% Q3={q.values[2]}% Q4={q.values[3]}%</option>)}</select></div>
           <div style={{display:'flex',gap:8}}><button onClick={()=>setPhase(2)} style={{padding:14,background:'#f3f4f6',border:'none',borderRadius:8,fontSize:14,cursor:'pointer'}}>← Back</button><button onClick={handleFinish} disabled={saving} style={{flex:1,padding:14,background:saving?'#d4a855':'#C8943E',color:'#fff',border:'none',borderRadius:8,fontSize:15,fontWeight:700,cursor:saving?'wait':'pointer'}}>{saving?'Calculating...':'Calculate My Weekly Velocity →'}</button></div>
         </div>)}
