@@ -229,7 +229,7 @@ function ChatInner() {
 {/* Connect Bar */}
 
       {/* AI Disclaimer */}
-      <p style={{textAlign:'center',fontSize:9,color:'#aaa',fontStyle:'italic',padding:'12px 0',marginTop:16}}>AI can make mistakes. Please verify coaching content before you execute.</p>
+      <p style={{textAlign:'center',fontSize:9,color:'#bbb',fontStyle:'italic',padding:'8px 0',marginTop:12}}>AI can make mistakes. Please verify coaching content before you execute.</p>
       <CalendlyButton />
 
     </div>

@@ -43,6 +43,8 @@ function DealsInner() {
   const [otherExternal, setOtherExternal] = useState('')
   const [otherCountry, setOtherCountry] = useState('')
   const [showOtherProduct, setShowOtherProduct] = useState(false)
+  const [selectedProducts, setSelectedProducts] = useState<string[]>([])
+  const [otherProduct, setOtherProduct] = useState('')
 
   const searchParams = useSearchParams()
 
@@ -75,6 +77,7 @@ function DealsInner() {
           userId: user.id, ...newDeal, 
           deal_value: newDeal.deal_value ? parseFloat(newDeal.deal_value) : 0, 
           status: 'active',
+          product: [...selectedProducts.filter(s=>s!=='Other'), ...(otherProduct.trim()?[otherProduct.trim()]:[])].join(', '),
           internal_stakeholders: [...selectedInternal.filter(s=>s!=='Other'), ...(otherInternal.trim()?[otherInternal.trim()]:[])].join(', '),
           external_stakeholders: [...selectedExternal.filter(s=>s!=='Other'), ...(otherExternal.trim()?[otherExternal.trim()]:[])].join(', '),
         })
@@ -85,7 +88,7 @@ function DealsInner() {
       if (!res.ok) { setCreateError('Error: ' + (data.error || text || 'Unknown error. Status: ' + res.status)); setSaving(false); return }
       setShowNew(false); setNewDeal({ name:'', company:'', industry:'', customer_type:'', deal_value:'', stage:1, deal_type:'local', export_country:'', currency:'INR', internal_stakeholders:'', external_stakeholders:'', closing_cycle:'', product:'', closing_date:'', knows_closing:false })
       setShowOtherIndustry(false); setShowOtherCustomer(false)
-      setSelectedInternal([]); setSelectedExternal([]); setOtherInternal(''); setOtherExternal(''); setOtherCountry(''); setShowOtherProduct(false)
+      setSelectedInternal([]); setSelectedExternal([]); setOtherInternal(''); setOtherExternal(''); setOtherCountry(''); setShowOtherProduct(false); setSelectedProducts([]); setOtherProduct('')
       await loadDeals(user.id)
     } catch (err: any) {
       setCreateError('Error: ' + (err?.message || 'Request failed. Please try again.'))
@@ -146,13 +149,19 @@ function DealsInner() {
                 </select>
                 {showOtherCustomer && <input value={newDeal.customer_type} onChange={e=>setNewDeal({...newDeal,customer_type:e.target.value})} placeholder="Type customer type..." style={{width:'100%',padding:'10px 12px',border:'1px solid #C8943E',borderRadius:8,fontSize:13,marginTop:6}} />}
               </div>
-              <div>
-                <label style={{fontSize:12,fontWeight:600}}>Product / Service</label>
-                <select value={showOtherProduct ? '__other__' : newDeal.product} onChange={e => { if (e.target.value === '__other__') { setShowOtherProduct(true); setNewDeal({...newDeal, product: ''}) } else { setShowOtherProduct(false); setNewDeal({...newDeal, product: e.target.value}) } }} style={{width:'100%',padding:'10px 12px',border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}}>
-                  <option value="">Select Product</option>
-                  {DEAL_PRODUCTS.map(p => <option key={p} value={p}>{p}</option>)}
-                </select>
-                {showOtherProduct && <input value={newDeal.product} onChange={e=>setNewDeal({...newDeal,product:e.target.value})} placeholder="Type your product/service..." style={{width:'100%',padding:'10px 12px',border:'1px solid #C8943E',borderRadius:8,fontSize:13,marginTop:6}} />}
+              <div style={{gridColumn:'span 2'}}>
+                <label style={{fontSize:12,fontWeight:600}}>Product / Service <span style={{fontSize:10,color:'#888',fontWeight:400}}>(you can select multiple products)</span></label>
+                <div style={{display:'flex',flexWrap:'wrap',gap:6,maxHeight:120,overflowY:'auto',marginTop:6,padding:4,border:'1px solid #eee',borderRadius:8}}>
+                  {DEAL_PRODUCTS.map(p => (
+                    <button key={p} type="button" onClick={() => setSelectedProducts(prev => prev.includes(p) ? prev.filter(x=>x!==p) : [...prev, p])}
+                      style={{padding:'5px 10px',border:selectedProducts.includes(p)?'2px solid #C8943E':'1px solid #ddd',borderRadius:16,fontSize:11,background:selectedProducts.includes(p)?'#fef3e2':'#fff',cursor:'pointer',whiteSpace:'nowrap'}}>
+                      {selectedProducts.includes(p) ? '✓ ' : ''}{p}
+                    </button>
+                  ))}
+                </div>
+                {selectedProducts.includes('Other') && (
+                  <input type="text" value={otherProduct} onChange={e=>setOtherProduct(e.target.value)} placeholder="Type your product/service..." style={{width:'100%',padding:'8px 12px',border:'2px solid #C8943E',borderRadius:8,fontSize:12,marginTop:6}} />
+                )}
               </div>
               <div>
                 <label style={{fontSize:12,fontWeight:600}}>Local Sale or Export?</label>
