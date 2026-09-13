@@ -199,7 +199,7 @@ export default function VelocityPage() {
       hasProj: showProject, ok: hpw <= avail, cov: cov.toFixed(1), pctA: pctA.toFixed(0),
       cod: Math.round(short / (remW || 1)), remD, remW, r: rotis(), qT, mT: t / 12, avail: avail.toFixed(0),
       vpm: (vpw * 4.3).toFixed(0), eqm: ((totEnq / (remW || 1)) * 4.3).toFixed(0),
-      levers,
+      levers, sHr: startHr, eHr: endHr, dpw,
     }
   }
 
@@ -381,6 +381,113 @@ export default function VelocityPage() {
           </div>
 
           <div style={{ background: '#fff', borderRadius: 10, padding: 16, marginBottom: 16 }}><h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>🔥 #1 Growth Lever</h3><p style={{ fontSize: 16, fontWeight: 700, color: '#C8943E' }}>{results.levers[0]?.n}</p><p style={{ fontSize: 13, color: '#666' }}>5% improvement adds {f(Math.round(results.levers[0]?.g || 0))}</p></div>
+
+          {/* WEEKLY PLANNER */}
+          <div style={{ background: '#fff', borderRadius: 10, padding: 16, marginBottom: 16 }}>
+            <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>📅 Weekly Activity Planner</h3>
+            <p style={{ fontSize: 11, color: '#888', marginBottom: 12 }}>Suggested time allocation based on your velocity targets. Adapt to your schedule.</p>
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
+                <thead>
+                  <tr style={{ background: '#0D1B2A', color: '#fff' }}>
+                    <th style={{ padding: '8px 6px', textAlign: 'left', whiteSpace: 'nowrap' }}>Time</th>
+                    {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', ...(results.dpw === 6 ? ['Sat'] : [])].map(d => (
+                      <th key={d} style={{ padding: '8px 6px', textAlign: 'center' }}>{d}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {Array.from({ length: results.eHr - results.sHr }, (_, i) => {
+                    const hr = results.sHr + i
+                    const label = `${hr > 12 ? hr - 12 : hr}${hr >= 12 ? 'PM' : 'AM'}`
+                    const pVisW = parseFloat(results.pVpw) || 0
+                    const jVisW = parseFloat(results.jVpw) || 0
+                    const days = results.dpw
+                    const pVisDay = pVisW / days
+                    const jVisDay = jVisW / days
+
+                    // Time allocation logic
+                    let activity = ''
+                    let bg = '#fff'
+                    let color = '#333'
+
+                    if (i === 0) {
+                      activity = '📋 Plan & Prep'
+                      bg = '#f0f9ff'
+                      color = '#0369a1'
+                    } else if (i === 1 || i === 2) {
+                      activity = '📦 Product Visits'
+                      bg = '#fffbeb'
+                      color = '#92400e'
+                    } else if (i === 3) {
+                      activity = '📞 Follow-ups & Calls'
+                      bg = '#f0fdf4'
+                      color = '#166534'
+                    } else if (i === 4 && results.hasProj) {
+                      activity = '🏗️ Project Visits'
+                      bg = '#faf5ff'
+                      color = '#6b21a8'
+                    } else if (i === 4 && !results.hasProj) {
+                      activity = '📦 Product Visits'
+                      bg = '#fffbeb'
+                      color = '#92400e'
+                    } else if (i === 5) {
+                      activity = results.hasProj ? '🏗️ Project Follow-up' : '📝 Proposals & Offers'
+                      bg = results.hasProj ? '#faf5ff' : '#fef3e2'
+                      color = results.hasProj ? '#6b21a8' : '#C8943E'
+                    } else if (i === 6) {
+                      activity = '📝 Proposals & Offers'
+                      bg = '#fef3e2'
+                      color = '#C8943E'
+                    } else if (i === 7) {
+                      activity = '📊 CRM & Reporting'
+                      bg = '#f3f4f6'
+                      color = '#374151'
+                    } else if (i >= 8) {
+                      activity = '📧 Email & Admin'
+                      bg = '#f9fafb'
+                      color = '#6b7280'
+                    }
+
+                    // Vary activities by day
+                    const dayVariations: Record<number, Record<number, { act: string, bg: string, cl: string }>> = {
+                      2: { // Wed
+                        1: { act: '🤝 Key Account Review', bg: '#fef3e2', cl: '#C8943E' },
+                      },
+                      4: { // Fri
+                        1: { act: '📊 Pipeline Review', bg: '#f0f9ff', cl: '#0369a1' },
+                        2: { act: '📝 Proposal Work', bg: '#fef3e2', cl: '#C8943E' },
+                      }
+                    }
+
+                    return (
+                      <tr key={hr} style={{ borderBottom: '1px solid #eee' }}>
+                        <td style={{ padding: '6px', fontWeight: 600, whiteSpace: 'nowrap', fontSize: 10, color: '#888' }}>{label}</td>
+                        {Array.from({ length: days }, (_, dayIdx) => {
+                          const variant = dayVariations[dayIdx]?.[i]
+                          const cellAct = variant?.act || activity
+                          const cellBg = variant?.bg || bg
+                          const cellCl = variant?.cl || color
+                          return (
+                            <td key={dayIdx} style={{ padding: '4px 3px', textAlign: 'center', background: cellBg, fontSize: 9, color: cellCl, fontWeight: 500 }}>
+                              {cellAct}
+                            </td>
+                          )
+                        })}
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 12, fontSize: 10 }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 12, height: 12, background: '#fffbeb', borderRadius: 2, display: 'inline-block' }}></span> Product Sale</span>
+              {results.hasProj && <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 12, height: 12, background: '#faf5ff', borderRadius: 2, display: 'inline-block' }}></span> Project Sale</span>}
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 12, height: 12, background: '#f0fdf4', borderRadius: 2, display: 'inline-block' }}></span> Follow-ups</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 12, height: 12, background: '#fef3e2', borderRadius: 2, display: 'inline-block' }}></span> Proposals</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 12, height: 12, background: '#f3f4f6', borderRadius: 2, display: 'inline-block' }}></span> Admin</span>
+            </div>
+          </div>
 
           <div style={{ display: 'flex', gap: 8 }}><button onClick={() => setPhase(3)} style={{ padding: '10px 16px', background: '#fff', border: '1px solid #ddd', borderRadius: 8, cursor: 'pointer' }}>← Edit</button><Link href="/dashboard" style={{ padding: '10px 16px', background: '#0D1B2A', color: '#fff', borderRadius: 8, fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>← Dashboard</Link></div>
         </div>}
