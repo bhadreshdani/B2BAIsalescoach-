@@ -6,6 +6,7 @@ import Link from 'next/link'
 import CalendlyButton from '@/components/CalendlyButton'
 
 const DEAL_COUNTRIES = ['India','United States','United Kingdom','United Arab Emirates','Saudi Arabia','Singapore','Germany','Australia','Canada','Japan','South Korea','Malaysia','Thailand','Vietnam','South Africa','Nigeria','Brazil','Mexico','Netherlands','France','Other']
+const DEAL_PRODUCTS = ['Servo Drives / Motion Control','Variable Frequency Drives (VFDs)','PLCs / Automation Controllers','HMI / SCADA Systems','Industrial Robots / Cobots','Sensors / Instrumentation','Power Supplies / UPS','Switchgear / Circuit Breakers','Motors / Generators','Bearings / Mechanical Components','Pumps / Valves / Compressors','CNC Machines / Machine Tools','Material Handling Equipment','Process Control Equipment','Testing & Measurement Instruments','Industrial Software / IoT','Chemicals / Raw Materials','Packaging Machines','Earth Moving / Construction Equipment','Logistics Services','Education & Curriculum Services','Other']
 const DEAL_CURRENCIES = [{code:'INR',symbol:'₹',label:'INR (₹)'},{code:'USD',symbol:'$',label:'USD ($)'},{code:'EUR',symbol:'€',label:'EUR (€)'},{code:'GBP',symbol:'£',label:'GBP (£)'},{code:'AED',symbol:'د.إ',label:'AED (د.إ)'},{code:'SGD',symbol:'S$',label:'SGD (S$)'}]
 
 const INTERNAL_STAKEHOLDERS = ['CEO / MD / Director','VP / General Manager','Plant Head / Factory Head','Purchase Head / Procurement Manager','Technical Head / CTO','Production Manager','Maintenance Manager','Quality Head','Finance / CFO','Project Manager','R&D Head','Supply Chain Head','Other']
@@ -31,7 +32,7 @@ function DealsInner() {
   const [loading, setLoading] = useState(true)
   const [showNew, setShowNew] = useState(false)
   const [expandedDeal, setExpandedDeal] = useState<string|null>(null)
-  const [newDeal, setNewDeal] = useState({ name:'', company:'', industry:'', customer_type:'', deal_value:'', stage:1, deal_type:'local', export_country:'', currency:'INR', internal_stakeholders:'', external_stakeholders:'', closing_cycle:'' })
+  const [newDeal, setNewDeal] = useState({ name:'', company:'', industry:'', customer_type:'', deal_value:'', stage:1, deal_type:'local', export_country:'', currency:'INR', internal_stakeholders:'', external_stakeholders:'', closing_cycle:'', product:'', closing_date:'', knows_closing:false })
   const [saving, setSaving] = useState(false)
   const [createError, setCreateError] = useState('')
   const [showOtherIndustry, setShowOtherIndustry] = useState(false)
@@ -41,6 +42,7 @@ function DealsInner() {
   const [otherInternal, setOtherInternal] = useState('')
   const [otherExternal, setOtherExternal] = useState('')
   const [otherCountry, setOtherCountry] = useState('')
+  const [showOtherProduct, setShowOtherProduct] = useState(false)
 
   const searchParams = useSearchParams()
 
@@ -81,9 +83,9 @@ function DealsInner() {
       let data: any = {}
       try { data = JSON.parse(text) } catch(e) { data = { error: text } }
       if (!res.ok) { setCreateError('Error: ' + (data.error || text || 'Unknown error. Status: ' + res.status)); setSaving(false); return }
-      setShowNew(false); setNewDeal({ name:'', company:'', industry:'', customer_type:'', deal_value:'', stage:1, deal_type:'local', export_country:'', currency:'INR', internal_stakeholders:'', external_stakeholders:'', closing_cycle:'' })
+      setShowNew(false); setNewDeal({ name:'', company:'', industry:'', customer_type:'', deal_value:'', stage:1, deal_type:'local', export_country:'', currency:'INR', internal_stakeholders:'', external_stakeholders:'', closing_cycle:'', product:'', closing_date:'', knows_closing:false })
       setShowOtherIndustry(false); setShowOtherCustomer(false)
-      setSelectedInternal([]); setSelectedExternal([]); setOtherInternal(''); setOtherExternal(''); setOtherCountry('')
+      setSelectedInternal([]); setSelectedExternal([]); setOtherInternal(''); setOtherExternal(''); setOtherCountry(''); setShowOtherProduct(false)
       await loadDeals(user.id)
     } catch (err: any) {
       setCreateError('Error: ' + (err?.message || 'Request failed. Please try again.'))
@@ -145,6 +147,14 @@ function DealsInner() {
                 {showOtherCustomer && <input value={newDeal.customer_type} onChange={e=>setNewDeal({...newDeal,customer_type:e.target.value})} placeholder="Type customer type..." style={{width:'100%',padding:'10px 12px',border:'1px solid #C8943E',borderRadius:8,fontSize:13,marginTop:6}} />}
               </div>
               <div>
+                <label style={{fontSize:12,fontWeight:600}}>Product / Service</label>
+                <select value={showOtherProduct ? '__other__' : newDeal.product} onChange={e => { if (e.target.value === '__other__') { setShowOtherProduct(true); setNewDeal({...newDeal, product: ''}) } else { setShowOtherProduct(false); setNewDeal({...newDeal, product: e.target.value}) } }} style={{width:'100%',padding:'10px 12px',border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}}>
+                  <option value="">Select Product</option>
+                  {DEAL_PRODUCTS.map(p => <option key={p} value={p}>{p}</option>)}
+                </select>
+                {showOtherProduct && <input value={newDeal.product} onChange={e=>setNewDeal({...newDeal,product:e.target.value})} placeholder="Type your product/service..." style={{width:'100%',padding:'10px 12px',border:'1px solid #C8943E',borderRadius:8,fontSize:13,marginTop:6}} />}
+              </div>
+              <div>
                 <label style={{fontSize:12,fontWeight:600}}>Local Sale or Export?</label>
                 <select value={newDeal.deal_type} onChange={e=>setNewDeal({...newDeal, deal_type:e.target.value, currency:e.target.value==='local'?'INR':newDeal.currency})} style={{width:'100%',padding:'10px 12px',border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}}>
                   <option value="local">Local Sale (India)</option>
@@ -177,16 +187,22 @@ function DealsInner() {
               </div>
               <div><label style={{fontSize:12,fontWeight:600}}>Current Stage</label><select value={newDeal.stage} onChange={e=>setNewDeal({...newDeal,stage:parseInt(e.target.value)})} style={{width:'100%',padding:'10px 12px',border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}}>{STAGES.map(s=><option key={s.n} value={s.n}>Step {s.n}: {s.name}</option>)}</select></div>
               <div>
-                <label style={{fontSize:12,fontWeight:600}}>Expected Closing Time (if known)</label>
-                <select value={newDeal.closing_cycle} onChange={e=>setNewDeal({...newDeal,closing_cycle:e.target.value})} style={{width:'100%',padding:'10px 12px',border:'1px solid #ddd',borderRadius:8,fontSize:13,marginTop:4}}>
-                  <option value="">Not sure yet</option>
-                  <option value="1-2 weeks">1-2 weeks</option>
-                  <option value="1 month">1 month</option>
-                  <option value="2-3 months">2-3 months</option>
-                  <option value="3-6 months">3-6 months</option>
-                  <option value="6-12 months">6-12 months</option>
-                  <option value="12+ months">12+ months</option>
-                </select>
+                <label style={{fontSize:12,fontWeight:600}}>Expected Closing Date</label>
+                <div style={{display:'flex',gap:8,marginTop:4}}>
+                  <button type="button" onClick={() => setNewDeal({...newDeal, knows_closing:false, closing_date:''})}
+                    style={{padding:'8px 14px',border:!newDeal.knows_closing?'2px solid #C8943E':'1px solid #ddd',borderRadius:8,fontSize:12,background:!newDeal.knows_closing?'#fef3e2':'#fff',cursor:'pointer',fontWeight:600}}>
+                    I don't know yet
+                  </button>
+                  <button type="button" onClick={() => setNewDeal({...newDeal, knows_closing:true})}
+                    style={{padding:'8px 14px',border:newDeal.knows_closing?'2px solid #C8943E':'1px solid #ddd',borderRadius:8,fontSize:12,background:newDeal.knows_closing?'#fef3e2':'#fff',cursor:'pointer',fontWeight:600}}>
+                    I know (approx)
+                  </button>
+                </div>
+                {newDeal.knows_closing && (
+                  <input type="date" value={newDeal.closing_date} onChange={e=>setNewDeal({...newDeal,closing_date:e.target.value})}
+                    min={new Date().toISOString().split('T')[0]}
+                    style={{width:'100%',padding:'10px 12px',border:'1px solid #C8943E',borderRadius:8,fontSize:13,marginTop:8}} />
+                )}
               </div>
             </div>
             {/* Stakeholders */}

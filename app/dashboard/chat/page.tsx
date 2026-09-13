@@ -227,6 +227,9 @@ function ChatInner() {
 
       {/* Bottom Back Arrow */}
 {/* Connect Bar */}
+
+      {/* AI Disclaimer */}
+      <p style={{textAlign:'center',fontSize:9,color:'#aaa',fontStyle:'italic',padding:'12px 0',marginTop:16}}>AI can make mistakes. Please verify coaching content before you execute.</p>
       <CalendlyButton />
 
     </div>

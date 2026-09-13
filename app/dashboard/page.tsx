@@ -74,7 +74,7 @@ export default function DashboardPage() {
   return (
     <div style={{minHeight:'100vh',background:'#f5f0e8',fontFamily:'Arial,sans-serif'}}>
       {/* Header */}
-      <header style={{background:'#0D1B2A',color:'#fff',padding:'16px 24px'}}>
+      <header data-sticky='true' style={{background:'#0D1B2A',color:'#fff',padding:'16px 24px'}}>
         <div style={{maxWidth:960,margin:'0 auto',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
           <div>
             <h1 style={{fontSize:18,fontWeight:'bold'}}>B2BsalesBUDDY</h1>
@@ -199,6 +199,9 @@ export default function DashboardPage() {
       </div>
 
       {/* Calendly Floating Button */}
+
+      {/* AI Disclaimer */}
+      <p style={{textAlign:'center',fontSize:9,color:'#aaa',fontStyle:'italic',padding:'12px 0',marginTop:16}}>AI can make mistakes. Please verify coaching content before you execute.</p>
       <CalendlyButton />
 
       {/* Star Rating Modal */}

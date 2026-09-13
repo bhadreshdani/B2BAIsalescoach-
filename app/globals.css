@@ -130,3 +130,10 @@ input[type="number"] {
 @media (max-width: 480px) {
   .hide-mobile { display: none !important; }
 }
+
+/* Sticky header on all pages */
+header, [data-sticky="true"] {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 100 !important;
+}
