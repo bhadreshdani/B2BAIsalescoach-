@@ -96,6 +96,7 @@ export default function VelocityPage() {
 
   const [qIdx, setQIdx] = useState(0)
   const [results, setResults] = useState<any>(null)
+  const [showPlan, setShowPlan] = useState(false)
 
   useEffect(() => {
     if (orderBooking && billing) {
@@ -200,7 +201,72 @@ export default function VelocityPage() {
       cod: Math.round(short / (remW || 1)), remD, remW, r: rotis(), qT, mT: t / 12, avail: avail.toFixed(0),
       vpm: (vpw * 4.3).toFixed(0), eqm: ((totEnq / (remW || 1)) * 4.3).toFixed(0),
       levers, sHr: startHr, eHr: endHr, dpw,
+      // Values for display
+      eqVal: Math.round((totEnq / (remW||1)) * wAvgDeal),
+      ofVal: Math.round((totOff / (remW||1)) * wAvgDeal),
+      opVal: Math.round((totOrd / (remW||1)) * wAvgDeal),
+      pOfVal: Math.round((pOff / (remW||1)) * pd),
+      pOpVal: Math.round((pOrd / (remW||1)) * pd),
+      jOfVal: Math.round((jOff / (remW||1)) * jd),
+      jOpVal: Math.round((jOrd / (remW||1)) * jd),
+      pEqVal: Math.round((pEnq / (remW||1)) * pd),
+      jEqVal: Math.round((jEnq / (remW||1)) * jd),
     }
+  }
+
+  function getReportText(scope: string) {
+    if (!results) return ''
+    const r = results
+    let text = 'B2BsalesBUDDY — Sales Velocity Report\n'
+    text += '================================\n\n'
+    text += 'ROTIS: ' + sym + Math.round(r.r).toLocaleString() + '/hr\n'
+    text += 'Secured: ' + f(r.sec) + ' | Balance Needed: ' + f(r.short) + '\n\n'
+    text += 'WEEKLY TARGETS\n'
+    text += 'Visits/Week: ' + Math.ceil(parseFloat(r.vpw)) + '\n'
+    text += 'Enquiries/Week: ' + Math.ceil(parseFloat(r.eqw)) + ' (Worth ' + f(r.eqVal) + ')\n'
+    text += 'Offers/Week: ' + f(r.ofVal) + ' (' + Math.ceil(parseFloat(r.ofw)) + ' offers)\n'
+    text += 'Orders/Week: ' + f(r.opVal) + ' (' + Math.ceil(parseFloat(r.opw)) + ' orders)\n\n'
+    if (r.hasProj) {
+      text += 'PRODUCT SALE: Visits ' + Math.ceil(parseFloat(r.pVpw)) + ' | Enquiries ' + Math.ceil(parseFloat(r.pEqw)) + ' | Offers ' + f(r.pOfVal) + ' | Orders ' + f(r.pOpVal) + '\n'
+      text += 'PROJECT SALE: Visits ' + Math.ceil(parseFloat(r.jVpw)) + ' | Enquiries ' + Math.ceil(parseFloat(r.jEqw)) + ' | Offers ' + f(r.jOfVal) + ' | Orders ' + f(r.jOpVal) + '\n\n'
+    }
+    text += 'MONTHLY: Revenue ' + f(r.mT) + '\n'
+    text += 'QUARTERLY: Q1 ' + f(r.qT[0]) + ' | Q2 ' + f(r.qT[1]) + ' | Q3 ' + f(r.qT[2]) + ' | Q4 ' + f(r.qT[3]) + '\n\n'
+    text += 'Coverage: ' + r.cov + 'x | Achieved: ' + r.pctA + '% | ' + (r.ok ? 'FEASIBLE' : 'STRETCH') + '\n'
+    text += 'Cost of Delay: ' + f(r.cod) + '/week\n'
+    text += '#1 Growth Lever: ' + r.levers[0]?.n + '\n'
+    if (scope === 'full') {
+      text += '\n================================\nWEEKLY PLAN\n================================\n'
+      text += 'Office: ' + r.sHr + ':00 to ' + r.eHr + ':00 | ' + r.dpw + ' days/week\n\n'
+      text += r.sHr + ':00 — Plan the day\n'
+      text += r.sHr + ':30-' + (r.sHr+2) + ':00 — Prospecting (Golden Hour)\n'
+      text += (r.sHr+2) + ':00-' + (r.sHr+4) + ':00 — Customer visits\n'
+      text += (r.sHr+4) + ':00-' + (r.sHr+5) + ':00 — Follow-ups\n'
+      text += (r.sHr+5) + ':00-' + (r.sHr+7) + ':00 — Proposals & offers\n'
+      text += (r.sHr+7) + ':00-' + r.eHr + ':00 — CRM & admin\n'
+    }
+    text += '\n---\nAI can make mistakes. Please verify before execution.\nPowered by B2B Sales Transformation 2.0'
+    return text
+  }
+
+  function printReport(scope: string) {
+    const text = getReportText(scope)
+    const html = '<!DOCTYPE html><html><head><title>B2BsalesBUDDY_Velocity_Report</title><style>body{font-family:Arial;padding:40px;max-width:700px;margin:0 auto;color:#1B2A4A}h1{color:#C8943E;border-bottom:3px solid #C8943E;padding-bottom:8px}pre{white-space:pre-wrap;line-height:1.8;font-size:13px;font-family:Arial}</style></head><body><h1>B2BsalesBUDDY — Sales Velocity Report</h1><pre>' + text + '</pre></body></html>'
+    const iframe = document.createElement('iframe')
+    iframe.style.display = 'none'
+    document.body.appendChild(iframe)
+    const doc = iframe.contentDocument || iframe.contentWindow?.document
+    if (doc) { doc.open(); doc.write(html); doc.close(); setTimeout(() => { iframe.contentWindow?.print(); setTimeout(() => document.body.removeChild(iframe), 1000) }, 500) }
+  }
+
+  function downloadWord(scope: string) {
+    const text = getReportText(scope)
+    const html = '<html xmlns:o="urn:schemas-microsoft-com:office:office"><head><meta charset="utf-8"><title>B2BsalesBUDDY_Velocity_Report</title><style>body{font-family:Calibri;margin:2cm;color:#1B2A4A}h1{color:#C8943E;border-bottom:3px solid #C8943E;padding-bottom:8px;font-size:18pt}pre{white-space:pre-wrap;font-family:Calibri;font-size:11pt;line-height:1.8}</style></head><body><h1>B2BsalesBUDDY — Sales Velocity Report</h1><pre>' + text + '</pre></body></html>'
+    const blob = new Blob(['\ufeff' + html], { type: 'application/msword' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url; a.download = 'B2BsalesBUDDY_Velocity_Report.doc'; a.click()
+    URL.revokeObjectURL(url)
   }
 
   async function finish() {
@@ -343,7 +409,7 @@ export default function VelocityPage() {
         </div>}
 
         {/* PHASE 4: RESULTS */}
-        {phase === 4 && results && <div>
+        {phase === 4 && results && <div id="velocity-results">
           <div style={{ background: '#0D1B2A', borderRadius: 12, padding: 24, color: '#fff', textAlign: 'center', marginBottom: 16 }}>
             <h2 style={{ fontSize: 20, fontWeight: 'bold' }}>Sales Velocity Dashboard</h2>
             <p style={{ fontSize: 36, fontWeight: 'bold', color: '#C8943E' }}>{sym}{Math.round(results.r).toLocaleString()}/hr</p>
@@ -353,20 +419,29 @@ export default function VelocityPage() {
 
           <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>📅 Combined Weekly Targets</h3>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 12, marginBottom: 16 }}>
-            {[{ l: 'Visits/Week', v: results.vpw, c: '#2563eb' }, { l: 'Enquiries/Week', v: results.eqw, c: '#16a34a' }, { l: 'Offers/Week', v: results.ofw, c: '#9333ea' }, { l: 'Orders/Week', v: results.opw, c: '#C8943E' }].map(m => <div key={m.l} style={{ background: '#fff', borderRadius: 10, padding: 16, textAlign: 'center' }}><p style={{ fontSize: 12, color: '#888' }}>{m.l}</p><p style={{ fontSize: 28, fontWeight: 'bold', color: m.c }}>{m.v}</p></div>)}
+            <div style={{ background: '#fff', borderRadius: 10, padding: 16, textAlign: 'center' }}><p style={{ fontSize: 12, color: '#888' }}>Visits / Week</p><p style={{ fontSize: 28, fontWeight: 'bold', color: '#2563eb' }}>{Math.ceil(parseFloat(results.vpw))}</p></div>
+            <div style={{ background: '#fff', borderRadius: 10, padding: 16, textAlign: 'center' }}><p style={{ fontSize: 12, color: '#888' }}>Enquiries / Week</p><p style={{ fontSize: 28, fontWeight: 'bold', color: '#16a34a' }}>{Math.ceil(parseFloat(results.eqw))}</p><p style={{ fontSize: 11, color: '#16a34a' }}>Worth {f(results.eqVal)}</p></div>
+            <div style={{ background: '#fff', borderRadius: 10, padding: 16, textAlign: 'center' }}><p style={{ fontSize: 12, color: '#888' }}>Offers / Week</p><p style={{ fontSize: 24, fontWeight: 'bold', color: '#9333ea' }}>{f(results.ofVal)}</p><p style={{ fontSize: 11, color: '#888' }}>{Math.ceil(parseFloat(results.ofw))} offers</p></div>
+            <div style={{ background: '#fff', borderRadius: 10, padding: 16, textAlign: 'center' }}><p style={{ fontSize: 12, color: '#888' }}>Orders / Week</p><p style={{ fontSize: 24, fontWeight: 'bold', color: '#C8943E' }}>{f(results.opVal)}</p><p style={{ fontSize: 11, color: '#888' }}>{Math.ceil(parseFloat(results.opw))} orders</p></div>
           </div>
 
           {results.hasProj && <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
             <div style={{ background: '#fff', borderRadius: 10, padding: 14, border: '2px solid #C8943E' }}>
               <h4 style={{ fontSize: 12, fontWeight: 700, color: '#C8943E', marginBottom: 8 }}>📦 Product Sale / Week</h4>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
-                {[{ l: 'Visits', v: results.pVpw }, { l: 'Enquiries', v: results.pEqw }, { l: 'Offers', v: results.pOfw }, { l: 'Orders', v: results.pOpw }].map(x => <div key={x.l}><span style={{ fontSize: 10, color: '#888' }}>{x.l}</span><p style={{ fontSize: 16, fontWeight: 700 }}>{x.v}</p></div>)}
+                <div><span style={{ fontSize: 10, color: '#888' }}>Visits</span><p style={{ fontSize: 16, fontWeight: 700 }}>{Math.ceil(parseFloat(results.pVpw))}</p></div>
+                <div><span style={{ fontSize: 10, color: '#888' }}>Enquiries</span><p style={{ fontSize: 16, fontWeight: 700 }}>{Math.ceil(parseFloat(results.pEqw))}</p><p style={{ fontSize: 9, color: '#C8943E' }}>{f(results.pEqVal)}</p></div>
+                <div><span style={{ fontSize: 10, color: '#888' }}>Offers</span><p style={{ fontSize: 14, fontWeight: 700 }}>{f(results.pOfVal)}</p></div>
+                <div><span style={{ fontSize: 10, color: '#888' }}>Orders</span><p style={{ fontSize: 14, fontWeight: 700 }}>{f(results.pOpVal)}</p></div>
               </div>
             </div>
             <div style={{ background: '#faf5ff', borderRadius: 10, padding: 14, border: '2px solid #9333ea' }}>
               <h4 style={{ fontSize: 12, fontWeight: 700, color: '#9333ea', marginBottom: 8 }}>🏗️ Project Sale / Week</h4>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
-                {[{ l: 'Visits', v: results.jVpw }, { l: 'Enquiries', v: results.jEqw }, { l: 'Offers', v: results.jOfw }, { l: 'Orders', v: results.jOpw }].map(x => <div key={x.l}><span style={{ fontSize: 10, color: '#888' }}>{x.l}</span><p style={{ fontSize: 16, fontWeight: 700 }}>{x.v}</p></div>)}
+                <div><span style={{ fontSize: 10, color: '#888' }}>Visits</span><p style={{ fontSize: 16, fontWeight: 700 }}>{Math.ceil(parseFloat(results.jVpw))}</p></div>
+                <div><span style={{ fontSize: 10, color: '#888' }}>Enquiries</span><p style={{ fontSize: 16, fontWeight: 700 }}>{Math.ceil(parseFloat(results.jEqw))}</p><p style={{ fontSize: 9, color: '#9333ea' }}>{f(results.jEqVal)}</p></div>
+                <div><span style={{ fontSize: 10, color: '#888' }}>Offers</span><p style={{ fontSize: 14, fontWeight: 700 }}>{f(results.jOfVal)}</p></div>
+                <div><span style={{ fontSize: 10, color: '#888' }}>Orders</span><p style={{ fontSize: 14, fontWeight: 700 }}>{f(results.jOpVal)}</p></div>
               </div>
             </div>
           </div>}
@@ -382,8 +457,11 @@ export default function VelocityPage() {
 
           <div style={{ background: '#fff', borderRadius: 10, padding: 16, marginBottom: 16 }}><h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>🔥 #1 Growth Lever</h3><p style={{ fontSize: 16, fontWeight: 700, color: '#C8943E' }}>{results.levers[0]?.n}</p><p style={{ fontSize: 13, color: '#666' }}>5% improvement adds {f(Math.round(results.levers[0]?.g || 0))}</p></div>
 
-          {/* WEEKLY ACTIVITY PLAN */}
-          <div style={{ background: '#fff', borderRadius: 12, padding: 20, marginBottom: 16 }}>
+          {/* PLAN MY WEEK TAB */}
+          <button onClick={() => setShowPlan(!showPlan)} style={{ width: '100%', padding: 14, background: '#0D1B2A', color: '#fff', border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 700, cursor: 'pointer', marginBottom: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span>📅 Plan My Week</span><span style={{ fontSize: 12 }}>{showPlan ? '▲ Hide' : '▼ Show Details'}</span>
+          </button>
+          {showPlan && <div style={{ background: '#fff', borderRadius: 12, padding: 20, marginBottom: 16 }}>
             <h3 style={{ fontSize: 16, fontWeight: 700, color: '#0D1B2A', marginBottom: 4 }}>📅 Your Weekly Action Plan</h3>
             <p style={{ fontSize: 12, color: '#888', marginBottom: 16 }}>Based on your velocity targets | Office: {results.sHr > 12 ? results.sHr-12 : results.sHr}:00 {results.sHr >= 12 ? 'PM' : 'AM'} to {results.eHr > 12 ? results.eHr-12 : results.eHr}:00 {results.eHr >= 12 ? 'PM' : 'AM'} | {results.dpw} days/week</p>
 
@@ -474,6 +552,18 @@ export default function VelocityPage() {
                 <br/><b>{results.sHr+5 > 12 ? results.sHr+5-12 : results.sHr+5}:00 - {results.sHr+7 > 12 ? results.sHr+7-12 : results.sHr+7}:00</b> — 📝 Proposals, quotations, technical submissions
                 <br/><b>{results.sHr+7 > 12 ? results.sHr+7-12 : results.sHr+7}:00 - {results.eHr > 12 ? results.eHr-12 : results.eHr}:00 {results.eHr >= 12 ? 'PM' : 'AM'}</b> — 📊 CRM updates, emails, next-day planning
               </p>
+            </div>
+          </div>}
+
+          {/* DOWNLOAD BUTTONS */}
+          <div style={{ background: '#fff', borderRadius: 10, padding: 16, marginBottom: 16 }}>
+            <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 10 }}>📥 Download Your Velocity Report</h3>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              <button onClick={() => { try { const el = document.getElementById('velocity-results'); if (el) navigator.clipboard.writeText(el.innerText); alert('Copied!') } catch(e) { alert('Please select and copy manually') } }} style={{ padding: '8px 16px', background: '#f3f4f6', border: 'none', borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>📋 Copy</button>
+              <button onClick={() => printReport('last')} style={{ padding: '8px 16px', background: '#dc2626', color: '#fff', border: 'none', borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>📥 Results → PDF</button>
+              <button onClick={() => printReport('full')} style={{ padding: '8px 16px', background: '#dc2626', color: '#fff', border: 'none', borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>📥 Full Report → PDF</button>
+              <button onClick={() => downloadWord('last')} style={{ padding: '8px 16px', background: '#2563eb', color: '#fff', border: 'none', borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>📄 Results → Word</button>
+              <button onClick={() => downloadWord('full')} style={{ padding: '8px 16px', background: '#2563eb', color: '#fff', border: 'none', borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>📄 Full Report → Word</button>
             </div>
           </div>
 
