@@ -458,103 +458,20 @@ export default function VelocityPage() {
 
           <div style={{ background: '#fff', borderRadius: 10, padding: 16, marginBottom: 16 }}><h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>🔥 #1 Growth Lever</h3><p style={{ fontSize: 16, fontWeight: 700, color: '#C8943E' }}>{results.levers[0]?.n}</p><p style={{ fontSize: 13, color: '#666' }}>5% improvement adds {f(Math.round(results.levers[0]?.g || 0))}</p></div>
 
-          {/* PLAN MY WEEK TAB */}
-          <button onClick={() => setShowPlan(!showPlan)} style={{ width: '100%', padding: 14, background: '#0D1B2A', color: '#fff', border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 700, cursor: 'pointer', marginBottom: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span>📅 Plan My Week</span><span style={{ fontSize: 12 }}>{showPlan ? '▲ Hide' : '▼ Show Details'}</span>
-          </button>
-          {showPlan && <div style={{ background: '#fff', borderRadius: 12, padding: 20, marginBottom: 16 }}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#0D1B2A', marginBottom: 4 }}>📅 Your Weekly Action Plan</h3>
-            <p style={{ fontSize: 12, color: '#888', marginBottom: 16 }}>Based on your velocity targets | Office: {results.sHr > 12 ? results.sHr-12 : results.sHr}:00 {results.sHr >= 12 ? 'PM' : 'AM'} to {results.eHr > 12 ? results.eHr-12 : results.eHr}:00 {results.eHr >= 12 ? 'PM' : 'AM'} | {results.dpw} days/week</p>
-
-            {/* PROSPECTING & NEW BUSINESS */}
-            <div style={{ background: '#fffbeb', borderRadius: 8, padding: 14, marginBottom: 12, borderLeft: '4px solid #C8943E' }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#92400e', marginBottom: 8 }}>🔍 PROSPECTING & NEW BUSINESS</h4>
-              <p style={{ fontSize: 12, color: '#444', lineHeight: 1.8 }}>
-                → Make <b>{results.vpw} customer visits per week</b> ({(parseFloat(results.vpw) / results.dpw).toFixed(1)} per day){results.hasProj && <><br/>→ Product Sale visits: <b>{results.pVpw}/week</b> | Project Sale visits: <b>{results.jVpw}/week</b></>}
-                <br/>→ Target <b>{results.eqw} new enquiries per week</b> from these visits{results.hasProj && <> (Product: {results.pEqw} + Project: {results.jEqw})</>}
-                <br/>→ Spend the <b>first 2 hours</b> ({results.sHr > 12 ? results.sHr-12 : results.sHr}:00 - {results.sHr+2 > 12 ? results.sHr+2-12 : results.sHr+2}:00 {results.sHr+2 >= 12 ? 'PM' : 'AM'}) on prospecting — this is your <b>Golden Hour</b>
-                <br/>→ Cold calls, LinkedIn outreach, referral follow-ups, territory mapping
-                <br/>→ Minimum <b>10-15 prospecting calls</b> before your first meeting each day
-              </p>
-            </div>
-
-            {/* ENQUIRY MANAGEMENT */}
-            <div style={{ background: '#f0fdf4', borderRadius: 8, padding: 14, marginBottom: 12, borderLeft: '4px solid #16a34a' }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#166534', marginBottom: 8 }}>📞 ENQUIRY FOLLOW-UP & QUALIFICATION</h4>
-              <p style={{ fontSize: 12, color: '#444', lineHeight: 1.8 }}>
-                → Follow up on <b>all open enquiries within 24 hours</b> — speed wins in B2B
-                <br/>→ Qualify using <b>DISCOVER™ framework</b>: Decision maker, Issues, Size, Competition, Outcome, Velocity, Evaluation process, Resources
-                <br/>→ Schedule <b>discovery meetings</b> with qualified prospects — aim for {(parseFloat(results.eqw) * 0.7).toFixed(0)}-{results.eqw} per week
-                <br/>→ Block <b>{results.sHr+2 > 12 ? results.sHr+2-12 : results.sHr+2}:00 - {results.sHr+3 > 12 ? results.sHr+3-12 : results.sHr+3}:00</b> daily for follow-up calls and emails
-                <br/>→ Update CRM with every interaction — no orphan enquiries
-              </p>
-            </div>
-
-            {/* OFFER & PROPOSAL */}
-            <div style={{ background: '#fef3e2', borderRadius: 8, padding: 14, marginBottom: 12, borderLeft: '4px solid #C8943E' }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#C8943E', marginBottom: 8 }}>📝 OFFERS, PROPOSALS & PRESENTATIONS</h4>
-              <p style={{ fontSize: 12, color: '#444', lineHeight: 1.8 }}>
-                → Prepare and submit <b>{results.ofw} offers/proposals per week</b>{results.hasProj && <> (Product: {results.pOfw} + Project: {results.jOfw})</>}
-                <br/>→ Use <b>VALUE™ framework</b> before sending any commercial offer — build value first
-                <br/>→ For large deals: <b>present the offer in person</b>, line by line — never email large proposals
-                <br/>→ Submit <b>technical offer first</b>, then commercial after value is established
-                <br/>→ Block <b>afternoon hours</b> ({results.sHr+5 > 12 ? results.sHr+5-12 : results.sHr+5}:00 - {results.sHr+6 > 12 ? results.sHr+6-12 : results.sHr+6}:00 PM) for proposal preparation
-                <br/>→ Follow up on every proposal within <b>48 hours</b> of submission
-              </p>
-            </div>
-
-            {/* ORDER CLOSURE */}
-            <div style={{ background: '#faf5ff', borderRadius: 8, padding: 14, marginBottom: 12, borderLeft: '4px solid #9333ea' }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#6b21a8', marginBottom: 8 }}>🎯 ORDER CLOSURE & NEGOTIATION</h4>
-              <p style={{ fontSize: 12, color: '#444', lineHeight: 1.8 }}>
-                → Close <b>{results.opw} orders per week</b> to stay on track{results.hasProj && <> (Product: {results.pOpw} + Project: {results.jOpw})</>}
-                <br/>→ Use <b>NEGOTIATE™ framework</b> for every negotiation — never give discounts without getting something back
-                <br/>→ Handle objections with <b>A-L-S-P-E-C-C™</b>: Acknowledge, Listen, Separate, Probe, Educate, Close, Confirm
-                <br/>→ Weekly cost of delay: <b>{f(results.cod)}</b> — every week without closure costs you this much
-                <br/>→ <b>Wednesday</b>: Review all deals in negotiation stage — push for closure
-                <br/>→ <b>Friday</b>: Pipeline review — update deal stages, remove dead deals, forecast next week
-              </p>
-            </div>
-
-            {results.hasProj && (
-              <div style={{ background: '#faf5ff', borderRadius: 8, padding: 14, marginBottom: 12, borderLeft: '4px solid #7c3aed' }}>
-                <h4 style={{ fontSize: 13, fontWeight: 700, color: '#7c3aed', marginBottom: 8 }}>🏗️ LARGE PROJECT ACTIVITIES</h4>
-                <p style={{ fontSize: 12, color: '#444', lineHeight: 1.8 }}>
-                  → Project visits need more stakeholders: <b>consultants, EPC contractors, end users, panel builders</b>
-                  <br/>→ Allocate <b>1-2 dedicated days per week</b> for project-related visits and meetings
-                  <br/>→ Each project enquiry needs <b>{results.jVpw && parseFloat(results.jVpw) > 0 ? Math.round(parseFloat(results.jVpw) / Math.max(0.1, parseFloat(results.jEqw))) : 8}+ visits</b> across multiple stakeholders
-                  <br/>→ Maintain <b>stakeholder mapping</b> for each project — who influences, who decides, who blocks
-                  <br/>→ Submit project proposals with <b>complete technical + commercial documentation</b>
-                  <br/>→ Build relationships with specifying consultants — they drive 60% of project decisions
-                </p>
-              </div>
-            )}
-
-            {/* KEY ACCOUNT & RETENTION */}
-            <div style={{ background: '#f0f9ff', borderRadius: 8, padding: 14, marginBottom: 12, borderLeft: '4px solid #2563eb' }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1d4ed8', marginBottom: 8 }}>🤝 KEY ACCOUNT MANAGEMENT & RETENTION</h4>
-              <p style={{ fontSize: 12, color: '#444', lineHeight: 1.8 }}>
-                → Allocate <b>Wednesday mid-morning</b> for key account reviews — are your top 5 accounts growing?
-                <br/>→ Schedule <b>quarterly business reviews</b> with top accounts
-                <br/>→ Use <b>EVOLVE™ framework</b> for customer success and growth
-                <br/>→ Track retainer business: <b>{f(parseFloat(retainer) || 0)}</b> expected — ensure nothing falls through
-                <br/>→ Cross-sell and upsell opportunities — map customer's full requirement vs your portfolio
-              </p>
-            </div>
-
-            {/* DAILY RHYTHM */}
-            <div style={{ background: '#0D1B2A', borderRadius: 8, padding: 14, color: '#fff' }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#C8943E', marginBottom: 8 }}>⏰ YOUR DAILY RHYTHM</h4>
-              <p style={{ fontSize: 12, color: '#ddd', lineHeight: 2 }}>
-                <b>{results.sHr > 12 ? results.sHr-12 : results.sHr}:00 {results.sHr >= 12 ? 'PM' : 'AM'}</b> — Plan the day: review targets, check pipeline, prioritise top 3 actions
-                <br/><b>{results.sHr > 12 ? results.sHr-12 : results.sHr}:30 - {results.sHr+2 > 12 ? results.sHr+2-12 : results.sHr+2}:00</b> — 🔍 Prospecting (Golden Hour): calls, outreach, territory
-                <br/><b>{results.sHr+2 > 12 ? results.sHr+2-12 : results.sHr+2}:00 - {results.sHr+4 > 12 ? results.sHr+4-12 : results.sHr+4}:00</b> — 📦 Customer visits (Product{results.hasProj ? ' + Project' : ''})
-                <br/><b>{results.sHr+4 > 12 ? results.sHr+4-12 : results.sHr+4}:00 - {results.sHr+5 > 12 ? results.sHr+5-12 : results.sHr+5}:00</b> — 📞 Follow-ups: enquiries, offers, pending orders
-                <br/><b>{results.sHr+5 > 12 ? results.sHr+5-12 : results.sHr+5}:00 - {results.sHr+7 > 12 ? results.sHr+7-12 : results.sHr+7}:00</b> — 📝 Proposals, quotations, technical submissions
-                <br/><b>{results.sHr+7 > 12 ? results.sHr+7-12 : results.sHr+7}:00 - {results.eHr > 12 ? results.eHr-12 : results.eHr}:00 {results.eHr >= 12 ? 'PM' : 'AM'}</b> — 📊 CRM updates, emails, next-day planning
-              </p>
-            </div>
-          </div>}
+          {/* PLAN MY WEEK — opens coaching chat */}
+          <a href={'/dashboard/chat?mode=velocity_plan&prompt=' + encodeURIComponent(
+            'Help me plan my week based on my Sales Velocity numbers. ' +
+            'I need ' + Math.ceil(parseFloat(results.vpw)) + ' customer visits per week (' + 
+            (results.hasProj ? 'Product: ' + Math.ceil(parseFloat(results.pVpw)) + ', Project: ' + Math.ceil(parseFloat(results.jVpw)) : 'all product sales') + '). ' +
+            'I need ' + Math.ceil(parseFloat(results.eqw)) + ' enquiries worth ' + f(results.eqVal) + ', ' +
+            'submit offers worth ' + f(results.ofVal) + ', and close orders worth ' + f(results.opVal) + ' per week. ' +
+            'My office hours are ' + results.sHr + ':00 AM to ' + (results.eHr > 12 ? results.eHr - 12 : results.eHr) + ':00 PM, ' + results.dpw + ' days per week. ' +
+            'My ROTIS is ' + sym + Math.round(results.r).toLocaleString() + '/hr. ' +
+            'Please create a detailed day-by-day weekly plan with specific time slots, activities for prospecting, follow-ups, visits, proposals, and admin. ' +
+            'Include both product sale and project sale activities separately if I have project business.'
+          )} style={{ display: 'block', width: '100%', padding: 14, background: '#0D1B2A', color: '#fff', border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 700, cursor: 'pointer', marginBottom: 12, textAlign: 'center', textDecoration: 'none' }}>
+            📅 Plan My Week → Get Coaching
+          </a>
 
           {/* DOWNLOAD */}
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16, position: 'relative' }}>
