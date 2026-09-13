@@ -97,6 +97,7 @@ export default function VelocityPage() {
   const [qIdx, setQIdx] = useState(0)
   const [results, setResults] = useState<any>(null)
   const [showPlan, setShowPlan] = useState(false)
+  const [showDL, setShowDL] = useState(false)
 
   useEffect(() => {
     if (orderBooking && billing) {
@@ -451,7 +452,7 @@ export default function VelocityPage() {
           <div style={{ background: '#fff', borderRadius: 10, padding: 16, marginBottom: 16 }}><h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>📈 Quarterly</h3><div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8 }}>{results.qT.map((t: number, i: number) => <div key={i} style={{ textAlign: 'center', background: '#f5f0e8', borderRadius: 8, padding: 10 }}><p style={{ fontSize: 12, color: '#888' }}>Q{i + 1} ({Q_SPLITS[qIdx].v[i]}%)</p><p style={{ fontSize: 16, fontWeight: 700, color: '#C8943E' }}>{f(t)}</p></div>)}</div></div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
-            <div style={{ background: '#fff', borderRadius: 10, padding: 16 }}><p style={{ fontSize: 11, color: '#888' }}>Coverage</p><p style={{ fontSize: 20, fontWeight: 700 }}>{results.cov}x</p><p style={{ fontSize: 11, color: '#888', marginTop: 8 }}>Achieved</p><p style={{ fontSize: 20, fontWeight: 700 }}>{results.pctA}%</p></div>
+            <div style={{ background: '#fff', borderRadius: 10, padding: 16 }}><p style={{ fontSize: 11, color: '#888' }}>Pipeline Coverage</p><p style={{ fontSize: 20, fontWeight: 700 }}>{results.cov}x</p><p style={{ fontSize: 9, color: '#888' }}>{parseFloat(results.cov) >= 3 ? '✅ Healthy' : parseFloat(results.cov) >= 2 ? '⚠️ Adequate' : '🔴 Low — need more pipeline'}</p><p style={{ fontSize: 11, color: '#888', marginTop: 8 }}>Achieved</p><p style={{ fontSize: 20, fontWeight: 700 }}>{results.pctA}%</p></div>
             <div style={{ background: results.ok ? '#f0fdf4' : '#fef2f2', borderRadius: 10, padding: 16, border: results.ok ? '1px solid #86efac' : '1px solid #fca5a5' }}><p style={{ fontSize: 14, fontWeight: 700, color: results.ok ? '#16a34a' : '#dc2626' }}>{results.ok ? '✅ FEASIBLE' : '⚠️ STRETCH'}</p><p style={{ fontSize: 12, color: '#666', marginTop: 4 }}>Need {results.hpw} hrs/week</p><p style={{ fontSize: 12, color: '#666' }}>Available: {results.avail} hrs</p><p style={{ fontSize: 12, color: '#C8943E', fontWeight: 600, marginTop: 8 }}>Delay cost: {f(results.cod)}/week</p></div>
           </div>
 
@@ -555,16 +556,17 @@ export default function VelocityPage() {
             </div>
           </div>}
 
-          {/* DOWNLOAD BUTTONS */}
-          <div style={{ background: '#fff', borderRadius: 10, padding: 16, marginBottom: 16 }}>
-            <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 10 }}>📥 Download Your Velocity Report</h3>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              <button onClick={() => { try { const el = document.getElementById('velocity-results'); if (el) navigator.clipboard.writeText(el.innerText); alert('Copied!') } catch(e) { alert('Please select and copy manually') } }} style={{ padding: '8px 16px', background: '#f3f4f6', border: 'none', borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>📋 Copy</button>
-              <button onClick={() => printReport('last')} style={{ padding: '8px 16px', background: '#dc2626', color: '#fff', border: 'none', borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>📥 Results → PDF</button>
-              <button onClick={() => printReport('full')} style={{ padding: '8px 16px', background: '#dc2626', color: '#fff', border: 'none', borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>📥 Full Report → PDF</button>
-              <button onClick={() => downloadWord('last')} style={{ padding: '8px 16px', background: '#2563eb', color: '#fff', border: 'none', borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>📄 Results → Word</button>
-              <button onClick={() => downloadWord('full')} style={{ padding: '8px 16px', background: '#2563eb', color: '#fff', border: 'none', borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>📄 Full Report → Word</button>
-            </div>
+          {/* DOWNLOAD */}
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16, position: 'relative' }}>
+            <button onClick={() => { try { navigator.clipboard.writeText(getReportText('full')); alert('Copied!') } catch(e) { alert('Please try again') } }} style={{ padding: '8px 16px', background: '#f3f4f6', border: 'none', borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>📋 Copy</button>
+            <button onClick={() => setShowDL(!showDL)} style={{ padding: '8px 16px', background: '#dc2626', color: '#fff', border: 'none', borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>📥 Download ▾</button>
+            {showDL && <div style={{ position: 'absolute', bottom: '100%', left: 80, background: '#fff', borderRadius: 8, boxShadow: '0 4px 16px rgba(0,0,0,0.15)', padding: 8, zIndex: 10, minWidth: 220 }}>
+              <p style={{ fontSize: 10, color: '#888', padding: '4px 8px', fontWeight: 600 }}>What to download?</p>
+              <button onClick={() => { setShowDL(false); printReport('last') }} style={{ display: 'block', width: '100%', padding: '8px 12px', background: 'none', border: 'none', textAlign: 'left', fontSize: 12, cursor: 'pointer', borderRadius: 4 }}>📥 Results Only → PDF</button>
+              <button onClick={() => { setShowDL(false); printReport('full') }} style={{ display: 'block', width: '100%', padding: '8px 12px', background: 'none', border: 'none', textAlign: 'left', fontSize: 12, cursor: 'pointer', borderRadius: 4 }}>📥 Full Report → PDF</button>
+              <button onClick={() => { setShowDL(false); downloadWord('last') }} style={{ display: 'block', width: '100%', padding: '8px 12px', background: 'none', border: 'none', textAlign: 'left', fontSize: 12, cursor: 'pointer', borderRadius: 4 }}>📄 Results Only → Word</button>
+              <button onClick={() => { setShowDL(false); downloadWord('full') }} style={{ display: 'block', width: '100%', padding: '8px 12px', background: 'none', border: 'none', textAlign: 'left', fontSize: 12, cursor: 'pointer', borderRadius: 4 }}>📄 Full Report → Word</button>
+            </div>}
           </div>
 
           <div style={{ display: 'flex', gap: 8 }}><button onClick={() => setPhase(3)} style={{ padding: '10px 16px', background: '#fff', border: '1px solid #ddd', borderRadius: 8, cursor: 'pointer' }}>← Edit</button><Link href="/dashboard" style={{ padding: '10px 16px', background: '#0D1B2A', color: '#fff', borderRadius: 8, fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>← Dashboard</Link></div>
