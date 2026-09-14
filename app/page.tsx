@@ -6,7 +6,7 @@ import Link from 'next/link'
 
 const FEATURES = [
   { icon: '💬', title: 'Ask BUDDY', desc: 'Get instant, framework-backed coaching for any sales situation. Personalised to your industry, product, and customer.' },
-  { icon: '🎯', title: 'Coach a Deal', desc: 'Create a real deal, get personalised coaching for YOUR customer. Structured 11-step journey from prospecting to post-sales with visual staircase tracking and deal winning probability.' },
+  { icon: '🎯', title: 'Coach a Deal', desc: 'Create your real deal. Get personalised 11-step coaching with staircase tracking and deal winning probability.' },
   { icon: '📊', title: 'Score Everything', desc: '7 scoring models — IMPACT, KYCW, RAPPORT, DISCOVER, VALUE, Deal Win, Customer Evolution.' },
   { icon: '🚀', title: 'Sales Velocity', desc: 'Calculate your ROTIS (per-hour value), weekly targets, and find your #1 growth lever. Get a personalised weekly activity plan.' },
   { icon: '🔥', title: 'ASK Assessment', desc: '31 questions across Attitude, Skill, Knowledge. Get a personalised development plan.' },
@@ -223,11 +223,17 @@ export default function HomePage() {
         <div style={{maxWidth:700,margin:'0 auto'}}>
           
           <h2 style={{fontFamily:'Georgia,serif',fontSize:28,marginBottom:8}}>Built by a Practitioner. Not a Programmer.</h2>
-          <p style={{fontSize:15,color:'#C8943E',fontWeight:600,marginBottom:16}}>The only AI sales coach built by someone who has actually sold ₹100+ Crore in B2B</p>
-          <p style={{fontSize:14,color:'#666',lineHeight:1.8}}>30+ years of B2B sales in OEM, channel partner, large project sales across Manufacturing, Automation, and Industrial markets.</p>
-          <p style={{fontSize:14,color:'#666',lineHeight:1.8,marginTop:12}}>Leadership experience at Danfoss and Bharat Bijlee. Author of the Amazon #1 Best Seller:</p>
-          <p style={{fontFamily:'Georgia,serif',fontSize:15,fontWeight:700,color:'#C8943E',margin:'12px 0'}}>"B2B Sales Transformation 2.0: Master the Art of Customer Acquisition and Retention"</p>
-          <p style={{fontSize:14,color:'#666',lineHeight:1.8}}>Every framework inside 🎯 B2BsalesBUDDY is battle-tested — from real deals, real negotiations, and real results in Indian B2B markets.</p>
+          <p style={{fontSize:15,color:'#C8943E',fontWeight:600,marginBottom:24}}>The only AI sales coach built by someone who has actually sold ₹100+ Crore in B2B</p>
+          <div style={{background:'linear-gradient(135deg,#0D1B2A 0%,#1B2A4A 100%)',borderRadius:14,padding:'28px 32px',color:'#fff',textAlign:'left',border:'2px solid #C8943E',boxShadow:'0 4px 24px rgba(200,148,62,0.15)'}}>
+            <p style={{fontSize:14,color:'#cbd5e1',lineHeight:1.8}}>30+ years of B2B sales in OEM, channel partner, large project sales across Manufacturing, Automation, and Industrial markets.</p>
+            <p style={{fontSize:14,color:'#cbd5e1',lineHeight:1.8,marginTop:10}}>Leadership experience at Danfoss and Bharat Bijlee.</p>
+            <div style={{margin:'16px 0',padding:'14px 18px',background:'rgba(200,148,62,0.1)',borderRadius:8,borderLeft:'4px solid #C8943E'}}>
+              <p style={{fontSize:11,color:'#C8943E',fontWeight:600,marginBottom:4}}>AMAZON #1 BEST SELLER</p>
+              <p style={{fontFamily:'Georgia,serif',fontSize:15,fontWeight:700,color:'#fff',margin:0}}>B2B Sales Transformation 2.0</p>
+              <p style={{fontFamily:'Georgia,serif',fontSize:13,color:'#C8943E',margin:0}}>Master the Art of Customer Acquisition and Retention</p>
+            </div>
+            <p style={{fontSize:13,color:'#94a3b8',lineHeight:1.7,margin:0}}>Every framework inside <span style={{color:'#C8943E',fontWeight:600}}>{'🎯\u00A0B2BsalesBUDDY'}</span> is battle-tested — from real deals, real negotiations, and real results in Indian B2B markets.</p>
+          </div>
         </div>
       </section>
 
