@@ -6,12 +6,12 @@ import Link from 'next/link'
 
 const FEATURES = [
   { icon: '💬', title: 'Ask BUDDY', desc: 'Get instant, framework-backed coaching for any sales situation. Personalised to your industry, product, and customer.' },
-  { icon: '🎯', title: 'Coach a Deal', desc: 'Structured 11-step coaching from prospecting to post-sales. Visual staircase tracking for every deal.' },
+  { icon: '🎯', title: 'Coach a Deal', desc: 'Create a real deal, get personalised coaching for YOUR customer. Structured 11-step journey from prospecting to post-sales with visual staircase tracking and deal winning probability.' },
   { icon: '📊', title: 'Score Everything', desc: '7 scoring models — IMPACT, KYCW, RAPPORT, DISCOVER, VALUE, Deal Win, Customer Evolution.' },
-  { icon: '🚀', title: 'Sales Velocity', desc: 'Calculate your ROTIS (per-hour value), weekly targets, and find your #1 growth lever.' },
+  { icon: '🚀', title: 'Sales Velocity', desc: 'Calculate your ROTIS (per-hour value), weekly targets, and find your #1 growth lever. Get a personalised weekly activity plan.' },
   { icon: '🔥', title: 'ASK Assessment', desc: '31 questions across Attitude, Skill, Knowledge. Get a personalised development plan.' },
   { icon: '⚖️', title: 'Work-Life Balance', desc: 'Wheel of Life with spider diagram, gap analysis, and a 21-day improvement challenge.' },
-  { icon: '📚', title: 'Learn 11 Steps', desc: 'Master all 24 proprietary frameworks with scripts, templates, and practice tools.' },
+  { icon: '📚', title: 'Learn 11 Steps', desc: 'Master all 24 proprietary frameworks with scripts, templates, and practice tools. Create a customised Sales Playbook for your organisation.' },
 ]
 
 const PAINS = [
@@ -21,6 +21,9 @@ const PAINS = [
   { icon: '📊', title: 'No Scoring, No Priority', desc: 'A1 customers and time-wasters get equal attention.' },
   { icon: '🔄', title: 'Follow-Ups Go Nowhere', desc: '"Just checking in" messages that destroy credibility.' },
   { icon: '⚖️', title: 'Work-Life Imbalance', desc: 'Sales targets consume everything. Health and family suffer.' },
+  { icon: '📋', title: 'No Sales Process or Playbook', desc: 'No standard sales process for the organisation. Every salesperson does sales their own way — no consistency, no repeatability.' },
+  { icon: '📉', title: 'Order Forecast Struggles', desc: 'Sales leaders and business owners struggle with accurate order forecasting. Pipeline reviews become guesswork instead of data-driven decisions.' },
+  { icon: '🎓', title: 'Training Doesn\'t Sustain', desc: 'Expensive sales trainings create short-term excitement but learning fades the moment the trainer leaves. No daily reinforcement system.' },
 ]
 
 const FRAMEWORKS = ['IMPACT Score','ROTIS','KYCW','DISCOVER','RAPPORT','VALUE','STORY','CPV Elevation','OFFER','A-L-S-P-E-C-C','NEGOTIATE','Deal Win Probability','EVOLVE','PULSE','ASK','BALANCE','Sales Velocity Engine','Growth Lever Finder','Golden Hour','SIIS','STRATEGIC','Customer Success Matrix','Customer Evolution Score','SCARF Neuroscience']
@@ -37,7 +40,7 @@ export default function HomePage() {
     })
   }, [router])
 
-  if (checking) return <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:'#0D1B2A'}}><p style={{color:'#C8943E',fontSize:18,fontFamily:'Georgia,serif'}}>B2BsalesBUDDY</p></div>
+  if (checking) return <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:'#0D1B2A'}}><p style={{color:'#C8943E',fontSize:18,fontFamily:'Georgia,serif'}}>🎯 B2BsalesBUDDY</p></div>
 
   return (
     <div style={{fontFamily:'-apple-system,BlinkMacSystemFont,Segoe UI,Arial,sans-serif',color:'#1B2A4A',overflowX:'hidden'}}>
@@ -46,13 +49,14 @@ export default function HomePage() {
       <nav style={{position:'sticky',top:0,zIndex:100,background:'rgba(13,27,42,0.97)',backdropFilter:'blur(8px)',padding:'14px 0',borderBottom:'1px solid rgba(200,148,62,0.2)'}}>
         <div style={{maxWidth:1100,margin:'0 auto',padding:'0 24px',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
           <div>
-            <span style={{fontFamily:'Georgia,serif',fontSize:22,color:'#C8943E',fontWeight:700}}>B2BsalesBUDDY</span>
+            <span style={{fontFamily:'Georgia,serif',fontSize:22,color:'#C8943E',fontWeight:700}}>🎯 B2BsalesBUDDY</span>
             <span style={{fontSize:11,color:'#6B7280',marginLeft:8}}>Your Personal AI Sales Coach</span>
           </div>
           <div style={{display:'flex',gap:24,alignItems:'center'}}>
             <a href="#features" style={{color:'#ccc',textDecoration:'none',fontSize:13}}>Features</a>
             <a href="#pricing" style={{color:'#ccc',textDecoration:'none',fontSize:13}}>Pricing</a>
             <a href="#frameworks" style={{color:'#ccc',textDecoration:'none',fontSize:13}}>Frameworks</a>
+            <Link href="/blog" style={{color:'#ccc',textDecoration:'none',fontSize:13}}>Blog</Link>
             <Link href="/auth/login" style={{color:'#C8943E',textDecoration:'none',fontSize:13,fontWeight:600}}>Login</Link>
             <Link href="/auth/signup" style={{background:'#C8943E',color:'#fff',padding:'8px 20px',borderRadius:6,textDecoration:'none',fontSize:13,fontWeight:600}}>Start Free Trial</Link>
           </div>
@@ -63,9 +67,9 @@ export default function HomePage() {
       <section style={{background:'linear-gradient(135deg,#0D1B2A 0%,#1B2A4A 50%,#0D1B2A 100%)',color:'#fff',padding:'80px 24px 60px',textAlign:'center',position:'relative',overflow:'hidden'}}>
         <div style={{position:'absolute',top:0,left:0,right:0,bottom:0,background:'radial-gradient(circle at 30% 50%, rgba(200,148,62,0.08) 0%, transparent 60%)',pointerEvents:'none'}} />
         <div style={{maxWidth:800,margin:'0 auto',position:'relative',zIndex:1}}>
-          <div style={{display:'inline-block',background:'rgba(200,148,62,0.15)',border:'1px solid rgba(200,148,62,0.3)',borderRadius:20,padding:'6px 16px',fontSize:12,color:'#C8943E',marginBottom:24}}>Powered by Amazon #1 Best Seller — B2B Sales Transformation 2.0</div>
+          <div style={{display:'inline-block',background:'rgba(200,148,62,0.15)',border:'1px solid rgba(200,148,62,0.3)',borderRadius:20,padding:'6px 16px',fontSize:12,color:'#C8943E',marginBottom:24}}>Powered by Amazon #1 Best Seller — B2B Sales Transformation 2.0: Master the Art of Customer Acquisition and Retention</div>
           <h1 style={{fontFamily:'Georgia,serif',fontSize:48,lineHeight:1.15,marginBottom:20,fontWeight:700}}>Stop Guessing.<br/><span style={{color:'#C8943E'}}>Start Coaching Every Deal to Close.</span></h1>
-          <p style={{fontSize:18,color:'#94a3b8',lineHeight:1.7,marginBottom:36,maxWidth:650,margin:'0 auto 36px'}}>The first AI sales coach built for Indian B2B professionals. Trained on 24 proprietary frameworks. Available 24/7 at the cost of a coffee per day.</p>
+          <p style={{fontSize:18,color:'#94a3b8',lineHeight:1.7,marginBottom:36,maxWidth:650,margin:'0 auto 36px'}}>The first AI sales coach built for Indian B2B professionals. Trained on 24 proprietary frameworks across 30+ industry verticals. Available 24/7 at the cost of a coffee per day.</p>
           <div style={{display:'flex',gap:16,justifyContent:'center',flexWrap:'wrap'}}>
             <Link href="/auth/signup" style={{background:'#C8943E',color:'#fff',padding:'14px 36px',borderRadius:8,textDecoration:'none',fontSize:16,fontWeight:700}}>Start 7-Day Free Trial</Link>
             <a href="#features" style={{background:'transparent',color:'#C8943E',padding:'14px 36px',borderRadius:8,textDecoration:'none',fontSize:16,fontWeight:600,border:'1px solid #C8943E'}}>See How It Works</a>
@@ -76,7 +80,7 @@ export default function HomePage() {
 
       {/* SOCIAL PROOF BAR */}
       <section style={{background:'#F5F0E8',padding:'16px 24px',textAlign:'center'}}>
-        <p style={{fontSize:13,color:'#888'}}>Trusted by <strong style={{color:'#0D1B2A'}}>B2B sales professionals</strong> across Manufacturing, Automation, Pharma, IT Services, and 20+ industries</p>
+        <p style={{fontSize:13,color:'#888'}}>Trusted by <strong style={{color:'#0D1B2A'}}>B2B sales professionals</strong> across Manufacturing, Automation, Pharma, Chemical, Automotive, E-Mobility, Material Handling, Oil & Gas, Construction, Healthcare, FMCG, SaaS, Renewable Energy, HVAC, Semiconductor, Data Centre, Logistics, Textiles, Education, Aerospace & Defence</p>
       </section>
 
       {/* PAIN POINTS */}
@@ -105,8 +109,8 @@ export default function HomePage() {
             <h2 style={{fontFamily:'Georgia,serif',fontSize:32,marginBottom:12}}>One Platform. Complete Sales Coaching.</h2>
           </div>
           <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(300px,1fr))',gap:16}}>
-            {FEATURES.map(f => (
-              <div key={f.title} style={{background:'rgba(255,255,255,0.05)',borderRadius:10,padding:'24px',border:'1px solid rgba(200,148,62,0.15)'}}>
+            {FEATURES.map((f, idx) => (
+              <div key={f.title} style={{background:'rgba(255,255,255,0.05)',borderRadius:10,padding:'24px',border:'1px solid rgba(200,148,62,0.15)',gridColumn:idx===FEATURES.length-1?'1 / -1':'auto',maxWidth:idx===FEATURES.length-1?500:'none',margin:idx===FEATURES.length-1?'0 auto':'0'}}>
                 <span style={{fontSize:32}}>{f.icon}</span>
                 <h3 style={{fontSize:16,fontWeight:700,margin:'12px 0 8px',color:'#C8943E'}}>{f.title}</h3>
                 <p style={{fontSize:13,color:'#94a3b8',lineHeight:1.7}}>{f.desc}</p>
@@ -154,7 +158,7 @@ export default function HomePage() {
       {/* RESULTS */}
       <section style={{padding:'60px 24px',textAlign:'center'}}>
         <div style={{maxWidth:800,margin:'0 auto'}}>
-          <h2 style={{fontFamily:'Georgia,serif',fontSize:32,marginBottom:40}}>Why Sales Leaders Choose B2BsalesBUDDY</h2>
+          <h2 style={{fontFamily:'Georgia,serif',fontSize:32,marginBottom:40}}>Why Sales Leaders and SME Professionals Choose 🎯 B2BsalesBUDDY</h2>
           <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:24}}>
             {[
               {num:'24/7',label:'Always-On Coach',sub:'No scheduling. No waiting. Coaching when you need it.'},
@@ -218,7 +222,7 @@ export default function HomePage() {
         <div style={{maxWidth:700,margin:'0 auto'}}>
           <p style={{fontSize:12,color:'#C8943E',fontWeight:700,letterSpacing:2,marginBottom:8}}>BUILT BY A PRACTITIONER, NOT A PROGRAMMER</p>
           <h2 style={{fontFamily:'Georgia,serif',fontSize:28,marginBottom:16}}>The Only AI Sales Coach Built by Someone Who Has Actually Sold ₹100+ Crore in B2B</h2>
-          <p style={{fontSize:14,color:'#666',lineHeight:1.8}}>Bhadresh Dani brings 29+ years of industrial B2B sales experience at Danfoss, Bharat Bijlee, and Connectwell. Author of the Amazon #1 Best Seller "B2B Sales Transformation 2.0". Every framework in B2BsalesBUDDY comes from real deals, real negotiations, and real results in Indian markets.</p>
+          <p style={{fontSize:14,color:'#666',lineHeight:1.8}}>Bhadresh Dani brings 30+ years of industrial B2B sales and business development experience in OEM, channel partner, and large project sales to corporate end users and consultants.</p><p style={{fontSize:14,color:'#666',lineHeight:1.8,marginTop:12}}>Leadership experience at Danfoss, Bharat Bijlee — driving revenue across Manufacturing, Automation, and Industrial markets.</p><p style={{fontSize:14,color:'#666',lineHeight:1.8,marginTop:12}}>Author of the Amazon #1 Best Seller "B2B Sales Transformation 2.0: Master the Art of Customer Acquisition and Retention".</p><p style={{fontSize:14,color:'#666',lineHeight:1.8,marginTop:12}}>Every framework in 🎯 B2BsalesBUDDY comes from real deals, real negotiations, and real results in Indian markets.</p>
         </div>
       </section>
 
@@ -236,13 +240,14 @@ export default function HomePage() {
       <footer style={{background:'#0A1628',color:'#6B7280',padding:'32px 24px',fontSize:12}}>
         <div style={{maxWidth:1100,margin:'0 auto',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:16}}>
           <div>
-            <span style={{fontFamily:'Georgia,serif',fontSize:16,color:'#C8943E'}}>B2BsalesBUDDY</span>
-            <p style={{marginTop:4}}>Powered by B2B Sales Transformation 2.0 by Bhadresh Dani</p>
+            <span style={{fontFamily:'Georgia,serif',fontSize:16,color:'#C8943E'}}>🎯 B2BsalesBUDDY</span>
+            <p style={{marginTop:4}}>Powered by B2B Sales Transformation 2.0: Master the Art of Customer Acquisition and Retention — by Bhadresh Dani</p>
           </div>
           <div style={{display:'flex',gap:20}}>
             <Link href="/auth/login" style={{color:'#888',textDecoration:'none'}}>Login</Link>
             <Link href="/auth/signup" style={{color:'#888',textDecoration:'none'}}>Sign Up</Link>
             <a href="https://chat.whatsapp.com/FPBo1Vj2P6jG8Siztvlbrf" style={{color:'#888',textDecoration:'none'}}>Community</a>
+            <Link href="/blog" style={{color:'#888',textDecoration:'none'}}>Blog</Link>
             <a href="https://calendly.com/bhadreshdani/b2bsalesbuddy-coaching-call" style={{color:'#888',textDecoration:'none'}}>Book a Call</a>
           </div>
           <p>© 2026 Bhadresh Dani. All rights reserved.</p>
