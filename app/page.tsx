@@ -67,7 +67,8 @@ export default function HomePage() {
       <section style={{background:'linear-gradient(135deg,#0D1B2A 0%,#1B2A4A 50%,#0D1B2A 100%)',color:'#fff',padding:'80px 24px 60px',textAlign:'center',position:'relative',overflow:'hidden'}}>
         <div style={{position:'absolute',top:0,left:0,right:0,bottom:0,background:'radial-gradient(circle at 30% 50%, rgba(200,148,62,0.08) 0%, transparent 60%)',pointerEvents:'none'}} />
         <div style={{maxWidth:800,margin:'0 auto',position:'relative',zIndex:1}}>
-          <div style={{display:'inline-block',background:'rgba(200,148,62,0.15)',border:'1px solid rgba(200,148,62,0.3)',borderRadius:20,padding:'6px 16px',fontSize:12,color:'#C8943E',marginBottom:24}}>Powered by Amazon #1 Best Seller — B2B Sales Transformation 2.0: Master the Art of Customer Acquisition and Retention</div>
+          <div style={{display:'inline-block',background:'rgba(200,148,62,0.15)',border:'1px solid rgba(200,148,62,0.3)',borderRadius:20,padding:'6px 16px',fontSize:12,color:'#C8943E',marginBottom:12}}>Powered by Amazon #1 Best Seller</div>
+          <p style={{fontFamily:'Georgia,serif',fontSize:16,color:'#C8943E',fontWeight:600,marginBottom:24}}>"B2B Sales Transformation 2.0: Master the Art of Customer Acquisition and Retention"</p>
           <h1 style={{fontFamily:'Georgia,serif',fontSize:48,lineHeight:1.15,marginBottom:20,fontWeight:700}}>Stop Guessing.<br/><span style={{color:'#C8943E'}}>Start Coaching Every Deal to Close.</span></h1>
           <p style={{fontSize:18,color:'#94a3b8',lineHeight:1.7,marginBottom:36,maxWidth:650,margin:'0 auto 36px'}}>The first AI sales coach built for Indian B2B professionals. Trained on 24 proprietary frameworks across 30+ industry verticals. Available 24/7 at the cost of a coffee per day.</p>
           <div style={{display:'flex',gap:16,justifyContent:'center',flexWrap:'wrap'}}>
@@ -80,7 +81,7 @@ export default function HomePage() {
 
       {/* SOCIAL PROOF BAR */}
       <section style={{background:'#F5F0E8',padding:'16px 24px',textAlign:'center'}}>
-        <p style={{fontSize:13,color:'#888'}}>Trusted by <strong style={{color:'#0D1B2A'}}>B2B sales professionals</strong> across Manufacturing, Automation, Pharma, Chemical, Automotive, E-Mobility, Material Handling, Oil & Gas, Construction, Healthcare, FMCG, SaaS, Renewable Energy, HVAC, Semiconductor, Data Centre, Logistics, Textiles, Education, Aerospace & Defence</p>
+        <p style={{fontSize:13,color:'#888'}}>Trusted by <strong style={{color:'#0D1B2A'}}>B2B sales professionals</strong> across Manufacturing, Automation, Pharma, Chemical, Automotive, E-Mobility, Material Handling, Oil & Gas, Construction, Healthcare, FMCG, SaaS, BFSI, Renewable Energy, HVAC, Semiconductor, Data Centre, Logistics, Textiles, Education, Aerospace & Defence, Power & Energy, Food Processing, Packaging, Printing, Water & Wastewater, Mining & Metals, Plastics & Rubber, Electronics, Cement & Building Materials</p>
       </section>
 
       {/* PAIN POINTS */}
@@ -221,8 +222,12 @@ export default function HomePage() {
       <section style={{padding:'60px 24px',textAlign:'center'}}>
         <div style={{maxWidth:700,margin:'0 auto'}}>
           <p style={{fontSize:12,color:'#C8943E',fontWeight:700,letterSpacing:2,marginBottom:8}}>BUILT BY A PRACTITIONER, NOT A PROGRAMMER</p>
-          <h2 style={{fontFamily:'Georgia,serif',fontSize:28,marginBottom:16}}>The Only AI Sales Coach Built by Someone Who Has Actually Sold ₹100+ Crore in B2B</h2>
-          <p style={{fontSize:14,color:'#666',lineHeight:1.8}}>Bhadresh Dani brings 30+ years of industrial B2B sales and business development experience in OEM, channel partner, and large project sales to corporate end users and consultants.</p><p style={{fontSize:14,color:'#666',lineHeight:1.8,marginTop:12}}>Leadership experience at Danfoss, Bharat Bijlee — driving revenue across Manufacturing, Automation, and Industrial markets.</p><p style={{fontSize:14,color:'#666',lineHeight:1.8,marginTop:12}}>Author of the Amazon #1 Best Seller "B2B Sales Transformation 2.0: Master the Art of Customer Acquisition and Retention".</p><p style={{fontSize:14,color:'#666',lineHeight:1.8,marginTop:12}}>Every framework in 🎯 B2BsalesBUDDY comes from real deals, real negotiations, and real results in Indian markets.</p>
+          <h2 style={{fontFamily:'Georgia,serif',fontSize:28,marginBottom:8}}>Built by a Practitioner. Not a Programmer.</h2>
+          <p style={{fontSize:15,color:'#C8943E',fontWeight:600,marginBottom:16}}>The only AI sales coach built by someone who has actually sold ₹100+ Crore in B2B</p>
+          <p style={{fontSize:14,color:'#666',lineHeight:1.8}}>30+ years of B2B sales and business development in OEM, channel partner, and large project sales — serving corporate end users and consultants across Manufacturing, Automation, and Industrial markets.</p>
+          <p style={{fontSize:14,color:'#666',lineHeight:1.8,marginTop:12}}>Leadership experience at Danfoss and Bharat Bijlee. Author of the Amazon #1 Best Seller:</p>
+          <p style={{fontFamily:'Georgia,serif',fontSize:18,fontWeight:700,color:'#C8943E',margin:'12px 0'}}>"B2B Sales Transformation 2.0: Master the Art of Customer Acquisition and Retention"</p>
+          <p style={{fontSize:14,color:'#666',lineHeight:1.8}}>Every framework inside 🎯 B2BsalesBUDDY is battle-tested — from real deals, real negotiations, and real results in Indian B2B markets.</p>
         </div>
       </section>
 
@@ -241,7 +246,7 @@ export default function HomePage() {
         <div style={{maxWidth:1100,margin:'0 auto',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:16}}>
           <div>
             <span style={{fontFamily:'Georgia,serif',fontSize:16,color:'#C8943E'}}>🎯 B2BsalesBUDDY</span>
-            <p style={{marginTop:4}}>Powered by B2B Sales Transformation 2.0: Master the Art of Customer Acquisition and Retention — by Bhadresh Dani</p>
+            <p style={{marginTop:4}}><span style={{fontFamily:'Georgia,serif',color:'#C8943E'}}>B2B Sales Transformation 2.0</span> — by Bhadresh Dani</p>
           </div>
           <div style={{display:'flex',gap:20}}>
             <Link href="/auth/login" style={{color:'#888',textDecoration:'none'}}>Login</Link>
