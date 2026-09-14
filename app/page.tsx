@@ -159,7 +159,7 @@ export default function HomePage() {
       {/* RESULTS */}
       <section style={{padding:'60px 24px',textAlign:'center'}}>
         <div style={{maxWidth:800,margin:'0 auto'}}>
-          <h2 style={{fontFamily:'Georgia,serif',fontSize:32,marginBottom:40}}>Why Sales Leaders and SME Professionals Choose 🎯 B2BsalesBUDDY</h2>
+          <h2 style={{fontFamily:'Georgia,serif',fontSize:32,marginBottom:40}}>Why Sales Leaders and SME Professionals Choose 🎯 B2BsalesBUDDY</h2>
           <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:24}}>
             {[
               {num:'24/7',label:'Always-On Coach',sub:'No scheduling. No waiting. Coaching when you need it.'},
@@ -224,7 +224,7 @@ export default function HomePage() {
           
           <h2 style={{fontFamily:'Georgia,serif',fontSize:28,marginBottom:8}}>Built by a Practitioner. Not a Programmer.</h2>
           <p style={{fontSize:15,color:'#C8943E',fontWeight:600,marginBottom:16}}>The only AI sales coach built by someone who has actually sold ₹100+ Crore in B2B</p>
-          <p style={{fontSize:14,color:'#666',lineHeight:1.8}}>30+ years of B2B sales and business development in OEM, channel partner, and large project sales — serving corporate end users and consultants across Manufacturing, Automation, and Industrial markets.</p>
+          <p style={{fontSize:14,color:'#666',lineHeight:1.8}}>30+ years of B2B sales in OEM, channel partner, large project sales across Manufacturing, Automation, and Industrial markets.</p>
           <p style={{fontSize:14,color:'#666',lineHeight:1.8,marginTop:12}}>Leadership experience at Danfoss and Bharat Bijlee. Author of the Amazon #1 Best Seller:</p>
           <p style={{fontFamily:'Georgia,serif',fontSize:15,fontWeight:700,color:'#C8943E',margin:'12px 0'}}>"B2B Sales Transformation 2.0: Master the Art of Customer Acquisition and Retention"</p>
           <p style={{fontSize:14,color:'#666',lineHeight:1.8}}>Every framework inside 🎯 B2BsalesBUDDY is battle-tested — from real deals, real negotiations, and real results in Indian B2B markets.</p>
