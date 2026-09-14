@@ -23,9 +23,9 @@ export default function DashboardPage() {
   const [authUser, setAuthUser] = useState<any>(null)
   const [deals, setDeals] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [showRating, setShowRating] = useState(false)
-  const [pendingRating, setPendingRating] = useState(false)
-  const [tip] = useState(DAILY_TIPS[Math.floor(Math.random() * DAILY_TIPS.length)])
+  const [showFeedback, setShowFeedback] = useState(false)
+  const [logoutPending, setLogoutPending] = useState(false)
+      const [tip] = useState(DAILY_TIPS[Math.floor(Math.random() * DAILY_TIPS.length)])
 
   function formatCurrency(val: number): string {
     if (val >= 10000000) return (val / 10000000).toFixed(1) + ' Cr'
@@ -48,9 +48,9 @@ export default function DashboardPage() {
       const { data: d } = await supabase.from('deals').select('*').eq('user_id', user.id).eq('status', 'active').order('updated_at', { ascending: false }).limit(5)
       setDeals(d || [])
       // Check if user has a pending rating
-      const feedbackRes = await fetch('/api/feedback?userId=' + user.id)
-      const feedbackData = await feedbackRes.json().catch(() => ({}))
-      if (feedbackData.pendingRating) setPendingRating(true)
+      const fbRes = await fetch('/api/feedback?userId=' + user.id)
+      const fbData = await fbRes.json().catch(() => ({}))
+      if (fbData.needsFeedback) setShowFeedback(true)
       
       setLoading(false)
     }
@@ -58,6 +58,12 @@ export default function DashboardPage() {
   }, [router])
 
   async function handleLogout() {
+    // Show feedback before logout
+    setLogoutPending(true)
+    setShowFeedback(true)
+  }
+
+  async function doLogout() {
     const supabase = createClient()
     await supabase.auth.signOut()
     router.push('/auth/login')
@@ -202,12 +208,17 @@ export default function DashboardPage() {
 
       {/* AI Disclaimer */}
       <p style={{textAlign:'center',fontSize:11,color:'#000',fontStyle:'italic',padding:'12px 0',marginTop:16}}>AI can make mistakes. Please verify coaching content before you execute.</p>
+      {showFeedback && authUser && (
+        <StarRating 
+          userId={authUser.id} 
+          onComplete={() => { setShowFeedback(false); if (logoutPending) doLogout() }}
+          onSkip={() => { setShowFeedback(false); if (logoutPending) doLogout() }}
+        />
+      )}
       <CalendlyButton />
 
       {/* Star Rating Modal */}
-      {pendingRating && (
-        <StarRating userId={profile?.id} onComplete={() => setPendingRating(false)} />
-      )}
+
     </div>
   )
 }
