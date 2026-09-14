@@ -21,9 +21,9 @@ const PAINS = [
   { icon: '📊', title: 'No Scoring, No Priority', desc: 'A1 customers and time-wasters get equal attention.' },
   { icon: '🔄', title: 'Follow-Ups Go Nowhere', desc: '"Just checking in" messages that destroy credibility.' },
   { icon: '⚖️', title: 'Work-Life Imbalance', desc: 'Sales targets consume everything. Health and family suffer.' },
-  { icon: '📋', title: 'No Sales Process or Playbook', desc: 'No standard sales process for the organisation. Every salesperson does sales their own way — no consistency, no repeatability.' },
-  { icon: '📉', title: 'Order Forecast Struggles', desc: 'Sales leaders and business owners struggle with accurate order forecasting. Pipeline reviews become guesswork instead of data-driven decisions.' },
-  { icon: '🎓', title: 'Training Doesn\'t Sustain', desc: 'Expensive sales trainings create short-term excitement but learning fades the moment the trainer leaves. No daily reinforcement system.' },
+  { icon: '📋', title: 'No Sales Process or Playbook', desc: 'Every salesperson sells their own way. No playbook, no consistency, no repeatability.' },
+  { icon: '📉', title: 'Order Forecast Struggles', desc: 'Pipeline reviews become guesswork. No data-driven order forecasting.' },
+  { icon: '🎓', title: 'Training Doesn\'t Sustain', desc: 'Expensive training creates excitement that fades in weeks. No daily reinforcement.' },
 ]
 
 const FRAMEWORKS = ['IMPACT Score','ROTIS','KYCW','DISCOVER','RAPPORT','VALUE','STORY','CPV Elevation','OFFER','A-L-S-P-E-C-C','NEGOTIATE','Deal Win Probability','EVOLVE','PULSE','ASK','BALANCE','Sales Velocity Engine','Growth Lever Finder','Golden Hour','SIIS','STRATEGIC','Customer Success Matrix','Customer Evolution Score','SCARF Neuroscience']
@@ -68,7 +68,7 @@ export default function HomePage() {
         <div style={{position:'absolute',top:0,left:0,right:0,bottom:0,background:'radial-gradient(circle at 30% 50%, rgba(200,148,62,0.08) 0%, transparent 60%)',pointerEvents:'none'}} />
         <div style={{maxWidth:800,margin:'0 auto',position:'relative',zIndex:1}}>
           <div style={{display:'inline-block',background:'rgba(200,148,62,0.15)',border:'1px solid rgba(200,148,62,0.3)',borderRadius:20,padding:'6px 16px',fontSize:12,color:'#C8943E',marginBottom:12}}>Powered by Amazon #1 Best Seller</div>
-          <p style={{fontFamily:'Georgia,serif',fontSize:16,color:'#C8943E',fontWeight:600,marginBottom:24}}>"B2B Sales Transformation 2.0: Master the Art of Customer Acquisition and Retention"</p>
+          <p style={{fontFamily:'Georgia,serif',fontSize:14,color:'#C8943E',fontWeight:600,marginBottom:24}}>"B2B Sales Transformation 2.0: Master the Art of Customer Acquisition and Retention"</p>
           <h1 style={{fontFamily:'Georgia,serif',fontSize:48,lineHeight:1.15,marginBottom:20,fontWeight:700}}>Stop Guessing.<br/><span style={{color:'#C8943E'}}>Start Coaching Every Deal to Close.</span></h1>
           <p style={{fontSize:18,color:'#94a3b8',lineHeight:1.7,marginBottom:36,maxWidth:650,margin:'0 auto 36px'}}>The first AI sales coach built for Indian B2B professionals. Trained on 24 proprietary frameworks across 30+ industry verticals. Available 24/7 at the cost of a coffee per day.</p>
           <div style={{display:'flex',gap:16,justifyContent:'center',flexWrap:'wrap'}}>
@@ -221,12 +221,12 @@ export default function HomePage() {
       {/* AUTHOR / TRUST */}
       <section style={{padding:'60px 24px',textAlign:'center'}}>
         <div style={{maxWidth:700,margin:'0 auto'}}>
-          <p style={{fontSize:12,color:'#C8943E',fontWeight:700,letterSpacing:2,marginBottom:8}}>BUILT BY A PRACTITIONER, NOT A PROGRAMMER</p>
+          
           <h2 style={{fontFamily:'Georgia,serif',fontSize:28,marginBottom:8}}>Built by a Practitioner. Not a Programmer.</h2>
           <p style={{fontSize:15,color:'#C8943E',fontWeight:600,marginBottom:16}}>The only AI sales coach built by someone who has actually sold ₹100+ Crore in B2B</p>
           <p style={{fontSize:14,color:'#666',lineHeight:1.8}}>30+ years of B2B sales and business development in OEM, channel partner, and large project sales — serving corporate end users and consultants across Manufacturing, Automation, and Industrial markets.</p>
           <p style={{fontSize:14,color:'#666',lineHeight:1.8,marginTop:12}}>Leadership experience at Danfoss and Bharat Bijlee. Author of the Amazon #1 Best Seller:</p>
-          <p style={{fontFamily:'Georgia,serif',fontSize:18,fontWeight:700,color:'#C8943E',margin:'12px 0'}}>"B2B Sales Transformation 2.0: Master the Art of Customer Acquisition and Retention"</p>
+          <p style={{fontFamily:'Georgia,serif',fontSize:15,fontWeight:700,color:'#C8943E',margin:'12px 0'}}>"B2B Sales Transformation 2.0: Master the Art of Customer Acquisition and Retention"</p>
           <p style={{fontSize:14,color:'#666',lineHeight:1.8}}>Every framework inside 🎯 B2BsalesBUDDY is battle-tested — from real deals, real negotiations, and real results in Indian B2B markets.</p>
         </div>
       </section>
